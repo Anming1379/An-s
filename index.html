@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人主页</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', -apple-system, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+            opacity: 0;
+            animation: fadeIn 1s ease-in forwards;
+        }
+
+        /* 页面加载动画 */
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* 容器 */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* 头部 */
+        header {
+            background-color: #fff;
+            padding: 30px 0;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            flex-wrap: wrap;
+            text-align: left;
+            justify-content: center;
+        }
+
+        .avatar-placeholder {
+            width: 140px;
+            height: 140px;
+            background: linear-gradient(135deg, #7c3aed, #3b82f6);
+            border-radius: 8px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            overflow: hidden;
+        }
+
+        .avatar-placeholder:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+        }
+
+        .header-text {
+            text-align: center;
+        }
+
+        .header-text h1 {
+            font-size: 2.2rem;
+            color: #222;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .header-text .subtitle {
+            font-size: 1.1rem;
+            color: #6b7280;
+        }
+
+        /* 通用标题 */
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: #222;
+            position: relative;
+            display: inline-block;
+            text-align: center;
+            width: 100%;
+        }
+
+        h2::after {
+            content: '';
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(to right, #7c3aed, #3b82f6);
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* 关于我 */
+        .about {
+            padding: 50px 0;
+            background-color: #fff;
+            text-align: center;
+        }
+
+        .about p {
+            font-size: 1.05rem;
+            max-width: 700px;
+            margin: 0 auto;
+            color: #444;
+            animation: slideUp 0.8s ease-out;
+            line-height: 1.7;
+            text-align: center;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 技能 */
+        .skills {
+            padding: 50px 0;
+            background-color: #fafafa;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            justify-items: center;
+        }
+
+        .skill-card {
+            background-color: #fff;
+            padding: 20px 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .skill-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, #7c3aed, #3b82f6);
+            transform: translateX(-100%);
+            transition: transform 0.4s ease;
+        }
+
+        .skill-card:hover::before {
+            transform: translateX(0);
+        }
+
+        .skill-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .skill-card h3 {
+            font-size: 1.15rem;
+            margin-bottom: 10px;
+            color: #222;
+        }
+
+        .skill-card p {
+            font-size: 0.9rem;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        /* 项目 */
+        .projects {
+            padding: 50px 0;
+            background-color: #fff;
+        }
+
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .project-card {
+            background-color: #fafafa;
+            padding: 25px 20px;
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.4s ease;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.6s ease-out forwards;
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 200px;
+        }
+
+        .project-card:nth-child(1) { animation-delay: 0.2s; }
+        .project-card:nth-child(2) { animation-delay: 0.4s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .project-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            color: #222;
+        }
+
+        .project-card p {
+            font-size: 0.95rem;
+            color: #555;
+            margin-bottom: 15px;
+            line-height: 1.6;
+            flex-grow: 1;
+        }
+
+        .project-card a {
+            color: #7c3aed;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .project-card a:hover {
+            color: #3b82f6;
+            text-decoration: underline;
+        }
+
+        /* 小工具栏 */
+        .tools {
+            padding: 50px 0;
+            background-color: #fff;
+            text-align: center;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            justify-items: center;
+            margin-top: 20px;
+        }
+
+        .tool-card {
+            background-color: #fafafa;
+            padding: 20px 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, #7c3aed, #3b82f6);
+            transform: translateX(-100%);
+            transition: transform 0.4s ease;
+        }
+
+        .tool-card:hover::before {
+            transform: translateX(0);
+        }
+
+        .tool-card h3 {
+            font-size: 1.15rem;
+            margin-bottom: 0;
+            color: #222;
+        }
+
+        /* 联系方式 */
+        .contact {
+            padding: 50px 0;
+            background-color: #fafafa;
+            text-align: center;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            justify-items: center;
+            margin-top: 20px;
+        }
+
+        .contact-card {
+            background-color: #fff;
+            padding: 20px 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .contact-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, #7c3aed, #3b82f6);
+            transform: translateX(-100%);
+            transition: transform 0.4s ease;
+        }
+
+        .contact-card:hover::before {
+            transform: translateX(0);
+        }
+
+        .contact-card h3 {
+            font-size: 1.15rem;
+            margin-bottom: 8px;
+            color: #222;
+        }
+
+        .contact-card p {
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .contact-card.hidden-content p {
+            display: none;
+        }
+
+        .contact-card.show-content p {
+            display: block;
+        }
+
+        /* 页脚 */
+        footer {
+            background: linear-gradient(to right, #7c3aed, #3b82f6);
+            color: #fff;
+            text-align: center;
+            padding: 20px 0;
+            font-size: 0.9rem;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+            }
+
+            .avatar-placeholder {
+                width: 120px;
+                height: 120px;
+            }
+
+            .header-text h1 {
+                font-size: 1.9rem;
+            }
+
+            .header-text .subtitle {
+                font-size: 1rem;
+            }
+
+            h2 {
+                font-size: 1.6rem;
+                margin-bottom: 20px;
+            }
+
+            .skills-grid, .contact-grid, .tools-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 15px;
+            }
+
+            .project-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .skill-card, .contact-card, .tool-card {
+                padding: 18px 12px;
+                min-height: 110px;
+            }
+
+            .project-card {
+                min-height: 180px;
+                padding: 20px;
+            }
+
+            .about p {
+                font-size: 1rem;
+                padding: 0 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 15px;
+            }
+
+            header {
+                padding: 25px 0;
+            }
+
+            .avatar-placeholder {
+                width: 100px;
+                height: 100px;
+            }
+
+            .header-text h1 {
+                font-size: 1.7rem;
+            }
+
+            h2 {
+                font-size: 1.4rem;
+                margin-bottom: 18px;
+            }
+
+            .about p, .contact-card p, .project-card p {
+                font-size: 0.95rem;
+            }
+
+            .skill-card h3, .contact-card h3, .tool-card h3 {
+                font-size: 1.05rem;
+            }
+
+            .skill-card p {
+                font-size: 0.85rem;
+            }
+
+            .skills-grid, .contact-grid, .tools-grid {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 12px;
+            }
+
+            .skill-card, .contact-card, .tool-card {
+                min-height: 90px;
+                padding: 15px 10px;
+            }
+
+            .project-card {
+                min-height: 170px;
+                padding: 18px 15px;
+            }
+
+            .project-card a {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <!-- 修改后的头像部分 -->
+                <div class="avatar-placeholder" style="background: none;">
+                    <img src="avatar.jpg" alt="头像" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                </div>
+                <div class="header-text">
+                    <h1>桉铭_Cat</h1>
+                    <p class="subtitle">高中生  创作者  知名UP主</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="about">
+        <div class="container">
+            <h2>关于我</h2>
+            <p>Hi我是桉铭! 我是创作者! 平时就整点小动画写点曲啥的 不会写代码所以这个网页由AI完成qwq</p>
+        </div>
+    </section>
+
+    <section class="skills">
+        <div class="container">
+            <h2>技能</h2>
+            <div class="skills-grid">
+                <div class="skill-card">
+                    <h3>动画设计</h3>
+                    <p>MG动画的设计与制作</p>
+                </div>
+                <div class="skill-card">
+                    <h3>视频剪辑</h3>
+                    <p>"老本行awa"</p>
+                </div>
+                <div class="skill-card">
+                    <h3>作曲编曲</h3>
+                    <p>"还在学怎么写"</p>
+                </div>
+                <div class="skill-card">
+                    <h3>平面设计</h3>
+                    <p>会点简单的排版</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="projects">
+        <div class="container">
+            <h2>关于我的更多</h2>
+            <div class="project-grid">
+                <div class="project-card">
+                    <h3>我的爱好</h3>
+                    <p>爱好就是创作! 觉得能自己原创做出来就很酷! 想学画画想学程序但是我又没啥石粒qwq</p>
+                    <a href="https://qm.qq.com/q/dBRTjO0w6c" target="_blank">点击加我好友</a>
+                </div>
+                <div class="project-card">
+                    <h3>我的B站主页</h3>
+                    <p>主要是做点动画教程啥的up主</p>
+                    <a href="https://b23.tv/TqYdcZA" target="_blank">跳转到BiliBili</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="tools">
+        <div class="container">
+            <h2>看看孩子整的小工具嘛qwq</h2>
+            <div class="tools-grid">
+                <div class="tool-card" onclick="window.open('https://caliper.pages.dev', '_blank')">
+                    <h3>CalipEr</h3>
+                </div>
+                <div class="tool-card" onclick="window.open('https://github.com/Anming1379/CalipEr-', '_blank')">
+                    <h3>CalipEr的源代码(Github)</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="contact">
+        <div class="container">
+            <h2>联系我</h2>
+            <div class="contact-grid">
+                <div class="contact-card" onclick="window.open('mailto:Anmingwork@outlook.com', '_self')">
+                    <h3>Email</h3>
+                    <p>Anmingwork@outlook.com</p>
+                </div>
+                <div class="contact-card" onclick="window.open('https://github.com/Anming1379', '_blank')">
+                    <h3>GitHub</h3>
+                    <p>https://github.com/Anming1379</p>
+                </div>
+                <div class="contact-card" onclick="window.open('https://qm.qq.com/q/dBRTjO0w6c', '_blank')">
+                    <h3>QQ</h3>
+                    <p class="hidden-content">3865768909</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>By AnmingCat ( 网页是AI写的我不会写代码qwq )</p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleContent(element) {
+            const content = element.querySelector('p');
+            if (content.classList.contains('hidden-content')) {
+                content.classList.remove('hidden-content');
+                content.classList.add('show-content');
+            } else {
+                content.classList.add('hidden-content');
+                content.classList.remove('show-content');
+            }
+        }
+    </script>
+</body>
+</html>
