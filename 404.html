@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+  <title>页面未找到 - An's web page</title>
+
+  <!-- 共享样式文件 -->
+  <link rel="stylesheet" href="style.css" />
+  
+  <style>
+    /* 404页面简约样式 */
+    .error-container {
+      min-height: 60vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: var(--spacing-xl) 0;
+    }
+    
+    .error-code {
+      font-size: clamp(4rem, 10vw, 8rem);
+      font-weight: 300;
+      color: var(--color-contrast);
+      line-height: 1;
+      margin-bottom: var(--spacing-sm);
+      font-family: var(--font-main);
+    }
+    
+    .error-title {
+      font-size: var(--font-size-xl);
+      color: var(--color-contrast);
+      margin-bottom: var(--spacing-md);
+      font-weight: 400;
+    }
+    
+    .error-message {
+      max-width: 600px;
+      margin: 0 auto var(--spacing-lg);
+      color: var(--color-text-light);
+      font-size: var(--font-size-md);
+    }
+    
+    .error-actions {
+      margin-top: var(--spacing-md);
+      display: flex;
+      justify-content: center;
+    }
+    
+    /* 响应式调整 - 与主站保持一致 */
+    @media (max-width: 767px) {
+      .error-actions {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+      }
+      
+      .error-actions .btn {
+        width: 100%;
+        max-width: 300px;
+        min-height: 2.75rem; /* 触摸友好 */
+        margin-bottom: var(--spacing-sm);
+      }
+    }
+    
+    /* PC端按钮优化 - 与主站保持一致 */
+    @media (min-width: 768px) {
+      .error-actions {
+        gap: var(--spacing-md);
+      }
+      
+      .error-actions .btn {
+        min-height: 3rem; /* 确保按钮有足够的最小高度 */
+      }
+    }
+    
+    /* 中等屏幕进一步优化 */
+    @media (min-width: 1024px) {
+      .error-actions {
+        gap: var(--spacing-lg); /* 在更大的屏幕上进一步增加按钮间距 */
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 导航栏 - 与主站保持一致 -->
+  <header class="header">
+    <div class="container">
+      <nav class="nav" aria-label="主导航">
+        <!-- 品牌 -->
+        <div class="brand">
+          <div class="brand-text">
+            <h1><a href="/">An's web page</a></h1>
+            <p class="tagline">桉的网页!你要陪桉一起玩嘛～</p>
+          </div>
+        </div>
+
+        <!-- 菜单按钮 -->
+        <button
+          class="nav-toggle"
+          aria-label="切换导航菜单"
+          aria-controls="primary-menu"
+          aria-expanded="false"
+          type="button"
+        >☰</button>
+
+        <!-- 导航菜单 -->
+        <ul id="primary-menu" class="nav-menu" role="menu">
+          <li role="none"><a role="menuitem" href="/"> 首页 </a></li>
+          <li role="none"><a role="menuitem" href="/#about"> 笔记 </a></li>
+          <li role="none"><a role="menuitem" href="/#blog"> ALambda </a></li>
+          <li role="none"><a role="menuitem" href="/#contact"> 联系 </a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- 404错误内容 -->
+  <main class="main">
+    <div class="container">
+      <div class="error-container">
+        <div class="error-code">404</div>
+        <h2 class="error-title">Not found</h2>
+        
+        <p class="error-message">
+          哎？好像...迷路了......
+        </p>
+        
+        <!-- 返回按钮 - 与主站按钮保持一致 -->
+        <div class="error-actions">
+          <a href="/" class="btn btn-primary">返回首页</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 页脚 - 与主站保持一致 -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>An's web page</h3>
+          <p>这里是桉的个人网页哦</p>
+        </div>
+
+        <div class="footer-section">
+          <h4>快速链接</h4>
+          <ul class="footer-links">
+            <li><a href="/">首页</a></li>
+            <li><a href="/#about">关于</a></li>
+            <li><a href="/#blog">博客</a></li>
+            <li><a href="/#contact">联系</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="copyright">
+        <p>© 2025 AnmingCat</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 脚本文件 -->
+  <script src="script.js"></script>
+  
+  <script>
+    // 复用主站的脚本功能
+    document.addEventListener('DOMContentLoaded', () => {
+      // 平滑滚动（复用主站的平滑滚动功能）
+      if (typeof setupSmoothScrolling === 'function') {
+        setupSmoothScrolling();
+      }
+    });
+  </script>
+</body>
+</html>
