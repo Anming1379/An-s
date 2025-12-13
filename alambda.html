@@ -3,13 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-  <title>ALambda - 工具集导航</title>
+  <title>ALambda</title>
   
   <link rel="stylesheet" href="../style.css" />
   
   <style>
-    
-    /* 工具卡片特定样式 */
+    /* 保持原样的样式，不变 */
     .tools-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -33,7 +32,6 @@
       border-color: var(--color-accent);
     }
     
-    /* 确保 Material Icons 正确显示 */
     .material-icons {
       font-family: 'Material Icons', 'Material Icons Local', sans-serif !important;
       font-weight: normal;
@@ -54,7 +52,6 @@
       width: 100%;
     }
     
-    /* 专门针对工具卡片的图标样式 */
     .tool-card .material-icons {
       font-size: 3rem;
       height: 60px;
@@ -74,9 +71,15 @@
       flex-grow: 1;
     }
     
-    .tool-link {
-      margin-top: auto;
+
+    .tool-link a {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 0.5rem 0;
+      box-sizing: border-box;
     }
+
     
     .page-header {
       text-align: center;
@@ -95,7 +98,6 @@
       color: var(--color-text-light);
     }
     
-    /* 响应式调整 */
     @media (max-width: 767px) {
       .tools-grid {
         grid-template-columns: 1fr;
@@ -111,14 +113,14 @@
   </style>
 </head>
 <body>
-  <!-- 导航栏 - 与原页面相同 -->
+  <!-- 导航栏 -->
   <header class="header">
     <div class="container">
       <nav class="nav" aria-label="主导航">
         <div class="brand">
           <div class="brand-text">
-            <h1><a href="index.html">An's web page</a></h1>
-            <p class="tagline">桉的网页!你要陪桉一起玩嘛～</p>
+            <h1><a href="/index.html">An's web page</a></h1>
+            <p class="tagline">有很多乱七八糟的好玩的～</p>
           </div>
         </div>
 
@@ -128,31 +130,29 @@
           aria-controls="primary-menu"
           aria-expanded="false"
           type="button"
-        >☰</button>
+        >
+          <span class="material-icons">menu</span>
+        </button>
 
-        <!-- 导航菜单 -->
+
         <ul id="primary-menu" class="nav-menu" role="menu">
-          <li role="none"><a role="menuitem" href="index.html">首页</a></li>
-          <li role="none"><a role="menuitem" href="note.html">笔记</a></li>
-          <li role="none"><a role="menuitem" href="alambda.html" class="active">ALambda</a></li>
-          <li role="none"><a role="menuitem" href="contact.html">联系</a></li>
+          <li role="none"><a role="menuitem" href="index.html"> 首页 </a></li>
+          <li role="none"><a role="menuitem" href="note.html"> 笔记 </a></li>
+          <li role="none"><a role="menuitem" href="alambda.html" class="active"> ALambda </a></li>
+          <li role="none"><a role="menuitem" href="contact.html" > 联系 </a></li>
         </ul>
       </nav>
     </div>
   </header>
 
-  <!-- 主内容 -->
   <main class="main">
     <div class="container">
-      <!-- 页面标题 -->
       <div class="page-header">
-        <h1>ALambda 工具集</h1>
-        <p class="page-description">一个简洁实用的工具集合，包含各种日常和开发工具，帮助你提高效率</p>
+        <h1>ALambda</h1>
+        <p class="page-description">一个网页小工具集，各种各样乱七八糟的好玩的小工具</p>
       </div>
       
-      <!-- 工具卡片网格 -->
       <div class="tools-grid">
-        <!-- 答案之书卡片 -->
         <div class="tool-card">
           <span class="material-icons">menu_book</span>
           <h3 class="tool-title">答案之书</h3>
@@ -163,8 +163,7 @@
             <a href="pages/book.html" class="btn btn-primary">打开工具</a>
           </div>
         </div>
-        
-        <!-- 二维码生成器卡片 -->
+
         <div class="tool-card">
           <span class="material-icons">qr_code_scanner</span>
           <h3 class="tool-title">二维码生成器</h3>
@@ -175,10 +174,20 @@
             <a href="pages/qr.html" class="btn btn-primary">打开工具</a>
           </div>
         </div>
-        
-        <!-- 占位卡片：更多工具即将推出 -->
+
         <div class="tool-card">
-          <span class="material-icons">rocket_launch</span>
+          <span class="material-icons">collections</span>
+          <h3 class="tool-title">图片转换/隐写</h3>
+          <p class="tool-description">
+            图片隐写, 图片格式转换, 图片压缩工具, 对 jpg , png , webp 等格式图片进行处理
+          </p>
+          <div class="tool-link">
+            <a href="contact.html" class="btn btn-primary">打开工具</a>
+          </div>
+        </div>
+
+        <div class="tool-card">
+          <span class="material-icons">more_horiz</span>
           <h3 class="tool-title">更多工具</h3>
           <p class="tool-description">
             我们正在开发更多实用工具，包括时间管理、文件转换、开发辅助等，敬请期待！
@@ -187,43 +196,16 @@
             <a href="#" class="btn btn-secondary" onclick="return false;">即将推出</a>
           </div>
         </div>
-        
-        <!-- 占位卡片：建议工具 -->
-        <div class="tool-card">
-          <span class="material-icons">lightbulb</span>
-          <h3 class="tool-title">你的建议</h3>
-          <p class="tool-description">
-            如果你有希望添加的工具类型，欢迎通过联系页面告诉我们，我们会考虑开发。
-          </p>
-          <div class="tool-link">
-            <a href="contact.html" class="btn btn-secondary">联系我</a>
-          </div>
-        </div>
       </div>
-      
-      <!-- 工具集介绍 -->
-      <section class="content-section">
-        <h2>关于 ALambda 工具集</h2>
-        <p>ALambda 是一个简洁实用的工具集合网站，致力于为用户提供便捷高效的在线工具。我们相信，好的工具应该简单易用，能够真正解决实际问题。</p>
-        <p>所有工具都设计为无需注册、免费使用，并针对移动设备和桌面设备进行了优化。</p>
-        <p>目前我们提供答案之书和二维码生成器两个工具，未来将持续添加更多实用工具，包括：</p>
-        <ul>
-          <li>文本处理工具（字数统计、格式转换等）</li>
-          <li>时间与日期工具（倒计时、时间戳转换等）</li>
-          <li>图像处理工具（尺寸调整、格式转换等）</li>
-          <li>开发工具（编码解码、JSON格式化等）</li>
-        </ul>
-      </section>
     </div>
   </main>
 
-  <!-- 页脚 -->
   <footer class="footer">
     <div class="container">
       <div class="footer-content">
         <div class="footer-section">
           <h3>An's web page</h3>
-          <p>桉的个人网页，分享艺术作品、技术笔记和生活点滴。</p>
+          <p>桉的个人网页, 在这里发点好玩的</p>
         </div>
 
         <div class="footer-section">
@@ -235,46 +217,30 @@
             <li><a href="contact.html">联系</a></li>
           </ul>
         </div>
-        
+      </div>
+      
       <div class="copyright">
         <p>© 2025 AnmingCat</p>
       </div>
     </div>
   </footer>
 
-  <!-- 脚本文件 -->
-  <script src="script.js"></script>
-  
-  <!-- 页面特定脚本 -->
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // 导航菜单切换
-      const navToggle = document.querySelector('.nav-toggle');
-      const navMenu = document.querySelector('#primary-menu');
-      
-      if (navToggle) {
-        navToggle.addEventListener('click', function() {
-          const isExpanded = this.getAttribute('aria-expanded') === 'true';
-          this.setAttribute('aria-expanded', !isExpanded);
-          navMenu.classList.toggle('active');
-        });
-      }
-      
-      // 检查 Material Icons 是否加载成功
-      const testIcon = document.createElement('span');
-      testIcon.className = 'material-icons';
-      testIcon.textContent = 'check_circle';
-      testIcon.style.position = 'absolute';
-      testIcon.style.left = '-9999px';
-      document.body.appendChild(testIcon);
-      
-      setTimeout(() => {
-        const isLoaded = testIcon.offsetWidth > 10 || testIcon.offsetHeight > 10;
-        console.log('Material Icons 字体加载状态:', isLoaded ? '成功' : '可能失败');
-        document.body.removeChild(testIcon);
-      }, 100);
-    });
+    // 检查 Material Icons 是否加载成功
+    const testIcon = document.createElement('span');
+    testIcon.className = 'material-icons';
+    testIcon.textContent = 'check_circle';
+    testIcon.style.position = 'absolute';
+    testIcon.style.left = '-9999px';
+    document.body.appendChild(testIcon);
+    
+    setTimeout(() => {
+      const isLoaded = testIcon.offsetWidth > 10 || testIcon.offsetHeight > 10;
+      console.log('Material Icons 字体加载状态:', isLoaded ? '成功' : '可能失败');
+      document.body.removeChild(testIcon);
+    }, 100);
   </script>
-  <script src="script.js"></script>
+  
+  <script src="/script.js"></script>
 </body>
 </html>

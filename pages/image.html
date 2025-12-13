@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+  <title>图片工具合集 - An's web page</title>
+  <meta name="description" content="图片隐写和格式转换工具合集" />
+  <link rel="stylesheet" href="../style.css" />
+  <style>
+    /* 工具特定样式 */
+    .tool-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: var(--color-base);
+      padding: 2rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .tab-container {
+      display: flex;
+      margin-bottom: 2rem;
+      border-bottom: 2px solid var(--color-border);
+    }
+
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 1rem 0;
+      cursor: pointer;
+      font-weight: 500;
+      color: var(--color-text-light);
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .tab:hover {
+      color: var(--color-contrast);
+    }
+
+    .tab.active {
+      color: var(--color-accent);
+      font-weight: 600;
+    }
+
+    .tab.active::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -2px;
+      width: 100%;
+      height: 2px;
+      background-color: var(--color-accent);
+    }
+
+    /* 主内容区域隐藏/显示 */
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .input-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--color-text);
+    }
+
+    .input-group input[type="file"],
+    .input-group select,
+    .input-group input[type="range"],
+    .input-group input[type="text"] {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-base);
+      font-family: inherit;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .input-group input[type="file"]:hover,
+    .input-group select:focus,
+    .input-group input[type="range"]:focus,
+    .input-group input[type="text"]:focus {
+      border-color: var(--color-accent);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(62, 80, 182, 0.1);
+    }
+
+    .input-group input[type="range"] {
+      padding: 0.5rem 0;
+    }
+
+    .hint {
+      font-size: 0.875rem;
+      color: var(--color-text-light);
+      text-align: center;
+      margin-bottom: 2rem;
+      padding: 0.75rem;
+      background: rgba(62, 80, 182, 0.05);
+      border-radius: var(--radius-md);
+      border-left: 3px solid var(--color-accent);
+    }
+
+    .tool-btn {
+      width: 100%;
+      padding: 1rem;
+      background: var(--color-contrast);
+      color: var(--color-base);
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 1rem;
+    }
+
+    .tool-btn:hover {
+      background: var(--color-accent);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(62, 80, 182, 0.2);
+    }
+
+    .tool-btn:active {
+      transform: translateY(0);
+    }
+
+    .tool-btn.processing {
+      background: var(--color-accent);
+      opacity: 0.8;
+      cursor: not-allowed;
+    }
+
+    .status-message {
+      text-align: center;
+      margin-top: 1.5rem;
+      padding: 1rem;
+      border-radius: var(--radius-md);
+      display: none;
+    }
+
+    .status-message.success {
+      background: rgba(46, 204, 113, 0.1);
+      color: #27ae60;
+      border-left: 3px solid #27ae60;
+    }
+
+    .status-message.error {
+      background: rgba(231, 76, 60, 0.1);
+      color: #c0392b;
+      border-left: 3px solid #c0392b;
+    }
+
+    .download-link {
+      text-align: center;
+      margin-top: 1.5rem;
+      display: none;
+    }
+
+    .download-link a {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background: var(--color-accent);
+      color: var(--color-base);
+      text-decoration: none;
+      border-radius: var(--radius-md);
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .download-link a:hover {
+      background: #2c3e50;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .canvas-container {
+      margin: 1.5rem 0;
+      border: 2px dashed var(--color-border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: rgba(62, 80, 182, 0.02);
+    }
+
+    #myCanvas {
+      display: block;
+      max-width: 100%;
+      margin: 0 auto;
+    }
+
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+
+    .slider-container input[type="range"] {
+      flex: 1;
+    }
+
+    .quality-value {
+      min-width: 3rem;
+      text-align: center;
+      font-weight: 500;
+      color: var(--color-accent);
+    }
+
+    .sub-tab-container {
+      display: flex;
+      margin-bottom: 1.5rem;
+      background: var(--color-background-light);
+      border-radius: var(--radius-md);
+      padding: 0.25rem;
+    }
+
+    .sub-tab {
+      flex: 1;
+      text-align: center;
+      padding: 0.75rem;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--color-text-light);
+      border-radius: calc(var(--radius-md) - 2px);
+      transition: all 0.3s ease;
+    }
+
+    .sub-tab:hover {
+      color: var(--color-contrast);
+    }
+
+    .sub-tab.active {
+      background: var(--color-base);
+      color: var(--color-accent);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 响应式调整 */
+    @media (max-width: 768px) {
+      .tool-container {
+        padding: 1rem;
+      }
+      
+      .tab {
+        font-size: 0.875rem;
+        padding: 0.75rem 0;
+      }
+      
+      .sub-tab {
+        font-size: 0.75rem;
+        padding: 0.5rem;
+      }
+      
+      .tool-btn {
+        padding: 0.875rem;
+        font-size: 0.875rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .tool-container {
+        padding: 0.75rem;
+      }
+      
+      .tab-container {
+        flex-direction: column;
+        border-bottom: none;
+        margin-bottom: 1rem;
+      }
+      
+      .tab {
+        border-bottom: 2px solid var(--color-border);
+        margin-bottom: 0.5rem;
+      }
+      
+      .tab.active::after {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <nav class="nav" aria-label="主导航">
+        <div class="back-home">
+          <a href="/index.html" class="back-button">← 返回首页</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+      <div class="profile" id="home">
+        <div class="profile-content">
+          <h1>图片工具</h1>
+          <p class="description">提供图片隐写和格式转换功能，支持多种图片格式处理</p>
+        </div>
+      </div>    
+      
+      <div class="tool-container">
+        <div class="tab-container">
+          <div class="tab active" data-tab="steganography">图片隐写</div>
+          <div class="tab" data-tab="converter">格式转换</div>
+        </div>
+
+        <div id="steganographyTab" class="tab-content active">
+          <div class="sub-tab-container">
+            <div class="sub-tab active" data-subtab="merge">合并文件</div>
+            <div class="sub-tab" data-subtab="extract">提取文件</div>
+          </div>
+          
+          <div id="mergeSubTab" class="tab-content active">
+            <div class="hint">选择图片文件和压缩文件，将它们合并成一个图片文件</div>
+            <div class="input-group">
+              <label for="imageFile">图片文件 (PNG, JPG, JPEG, WebP)</label>
+              <input type="file" id="imageFile" accept="image/png, image/jpeg, image/webp" />
+            </div>
+            <div class="input-group">
+              <label for="archiveFile">压缩文件 (ZIP, RAR)</label>
+              <input type="file" id="archiveFile" accept=".zip, .rar" />
+            </div>
+            <button id="mergeButton" class="tool-btn">开始合并</button>
+            <div id="mergeStatus" class="status-message"></div>
+            <div class="download-link" id="downloadLinkContainerMerge">
+              <a id="downloadLinkMerge"></a>
+            </div>
+          </div>
+
+          <div id="extractSubTab" class="tab-content">
+            <div class="hint">选择合并后的图片文件，从中提取出原始压缩文件</div>
+            <div class="input-group">
+              <label for="mergedFile">合并后的图片文件</label>
+              <input type="file" id="mergedFile" accept="image/png, image/jpeg, image/webp" />
+            </div>
+            <button id="extractButton" class="tool-btn">开始提取</button>
+            <div id="extractStatus" class="status-message"></div>
+            <div class="download-link" id="downloadLinkContainerExtract">
+              <a id="downloadLinkExtract"></a>
+            </div>
+          </div>
+        </div>
+
+        <div id="converterTab" class="tab-content">
+          <div class="hint">上传图片进行格式转换，支持调整压缩质量和自定义文件名</div>
+          
+          <div class="input-group">
+            <label for="upload">选择图片文件</label>
+            <input type="file" id="upload" accept="image/*">
+          </div>
+          
+          <div class="canvas-container">
+            <canvas id="myCanvas"></canvas>
+          </div>
+          
+          <div class="input-group">
+            <label for="format">选择输出格式：</label>
+            <select id="format">
+              <option value="image/jpeg">JPEG</option>
+              <option value="image/png">PNG</option>
+              <option value="image/webp">WEBP</option>
+            </select>
+          </div>
+          
+          <div class="input-group">
+            <label for="quality">压缩质量 (0.0 - 1.0)：</label>
+            <div class="slider-container">
+              <input type="range" id="quality" min="0" max="1" step="0.01" value="1">
+              <span id="qualityValue" class="quality-value">1.00</span>
+            </div>
+          </div>
+          
+          <div class="input-group">
+            <label for="filename">更改文件名（不含扩展名）：</label>
+            <input type="text" id="filename" placeholder="请输入文件名，不输入则不更改">
+          </div>
+          
+          <button id="downloadBtn" class="tool-btn">保存图片</button>
+          <div id="converterStatus" class="status-message"></div>
+        </div>
+      </div>
+        
+      <div class="contact-details">
+         <div class="contact-item">
+           <h3>使用说明</h3>
+           <p>1. 图片隐写工具：可以将ZIP或RAR文件隐藏在图片中，也可以从图片中提取隐藏的压缩文件</p>
+           <p>2. 格式转换工具：支持JPEG、PNG、WEBP格式转换，可调整压缩质量</p>
+         </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="../script.js"></script>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 存储临时的 URL 对象
+      let lastMergeUrl = null;
+      let lastExtractUrl = null;
+
+      // --- 修复后的主选项卡切换功能 ---
+      // 逻辑说明：切换主Tab时，只隐藏主Tab的内容，不误伤里面的子Tab内容
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          // 如果是子Tab按钮，跳过不处理
+          if (tab.hasAttribute('data-subtab')) return;
+          
+          // 1. 处理顶部导航栏高亮
+          document.querySelectorAll('.tab-container .tab').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          
+          // 2. 隐藏所有的主功能区 (隐写区 和 转换区)
+          document.getElementById('steganographyTab').classList.remove('active');
+          document.getElementById('converterTab').classList.remove('active');
+          
+          // 3. 显示当前选中的主功能区
+          const tabId = tab.getAttribute('data-tab');
+          document.getElementById(`${tabId}Tab`).classList.add('active');
+
+          // 4. 特殊处理：如果是切回“图片隐写”，确保子内容可见
+          if (tabId === 'steganography') {
+            const activeSubTab = document.querySelector('.sub-tab.active');
+            if (activeSubTab) {
+              const subTabId = activeSubTab.getAttribute('data-subtab');
+              // 强制让对应的子内容显示出来
+              document.getElementById(`${subTabId}SubTab`).classList.add('active');
+            }
+          }
+        });
+      });
+
+      // --- 隐写工具子选项卡切换 ---
+      document.querySelectorAll('.sub-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          // 1. 移除所有子Tab按钮的高亮
+          document.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
+          
+          // 2. 只隐藏隐写工具下的子内容区域 (避免误伤Converter)
+          document.querySelectorAll('#steganographyTab .tab-content').forEach(c => c.classList.remove('active'));
+          
+          // 3. 激活当前点击的子Tab
+          tab.classList.add('active');
+          const subtabId = tab.getAttribute('data-subtab');
+          document.getElementById(`${subtabId}SubTab`).classList.add('active');
+        });
+      });
+
+      // 文件合并功能
+      document.getElementById('mergeButton').addEventListener('click', async () => {
+        const imageFile = document.getElementById('imageFile').files[0];
+        const archiveFile = document.getElementById('archiveFile').files[0];
+        const statusMessage = document.getElementById('mergeStatus');
+        const button = document.getElementById('mergeButton');
+        const downloadContainer = document.getElementById('downloadLinkContainerMerge');
+
+        if (!imageFile || !archiveFile) {
+          statusMessage.textContent = '请先选择图片和压缩文件';
+          statusMessage.className = 'status-message error';
+          statusMessage.style.display = 'block';
+          return;
+        }
+
+        try {
+          button.textContent = '处理中...';
+          button.classList.add('processing');
+          statusMessage.style.display = 'none';
+          downloadContainer.style.display = 'none';
+
+          const imageArrayBuffer = await imageFile.arrayBuffer();
+          const imageData = new Uint8Array(imageArrayBuffer);
+          const archiveArrayBuffer = await archiveFile.arrayBuffer();
+          const archiveData = new Uint8Array(archiveArrayBuffer);
+          const combinedData = new Uint8Array(imageData.length + archiveData.length);
+          combinedData.set(imageData);
+          combinedData.set(archiveData, imageData.length);
+          const blob = new Blob([combinedData], { type: imageFile.type });
+
+          if (lastMergeUrl) URL.revokeObjectURL(lastMergeUrl);
+          
+          const downloadLink = document.getElementById('downloadLinkMerge');
+          lastMergeUrl = URL.createObjectURL(blob);
+          downloadLink.href = lastMergeUrl;
+          downloadLink.download = `merged_${imageFile.name}`;
+          downloadLink.textContent = `下载合并后的文件`;
+          
+          statusMessage.textContent = '文件合并成功！';
+          statusMessage.className = 'status-message success';
+          statusMessage.style.display = 'block';
+          downloadContainer.style.display = 'block';
+
+        } catch (error) {
+          console.error('发生错误:', error);
+          statusMessage.textContent = '文件合并失败，请重试';
+          statusMessage.className = 'status-message error';
+          statusMessage.style.display = 'block';
+        } finally {
+          button.textContent = '开始合并';
+          button.classList.remove('processing');
+        }
+      });
+
+      // 图片提取功能
+      document.getElementById('extractButton').addEventListener('click', async () => {
+        const mergedFile = document.getElementById('mergedFile').files[0];
+        const statusMessage = document.getElementById('extractStatus');
+        const button = document.getElementById('extractButton');
+        const downloadContainer = document.getElementById('downloadLinkContainerExtract');
+
+        if (!mergedFile) {
+          statusMessage.textContent = '请先选择要提取的图片';
+          statusMessage.className = 'status-message error';
+          statusMessage.style.display = 'block';
+          return;
+        }
+
+        try {
+          button.textContent = '处理中...';
+          button.classList.add('processing');
+          statusMessage.style.display = 'none';
+          downloadContainer.style.display = 'none';
+          
+          const mergedArrayBuffer = await mergedFile.arrayBuffer();
+          const mergedData = new Uint8Array(mergedArrayBuffer);
+
+          let archiveStartIndex = -1;
+          let archiveType = '';
+
+          // 检查ZIP文件头
+          for (let i = 0; i < mergedData.length - 4; i++) {
+            if (mergedData[i] === 0x50 && mergedData[i+1] === 0x4B && mergedData[i+2] === 0x03 && mergedData[i+3] === 0x04) {
+              archiveStartIndex = i;
+              archiveType = 'zip';
+              if (i > 0) break; 
+            }
+          }
+
+          // 检查RAR文件头
+          if (archiveStartIndex === -1 || (archiveStartIndex === 0 && archiveType === 'zip')) {
+            for (let i = 0; i < mergedData.length - 4; i++) {
+              if (mergedData[i] === 0x52 && mergedData[i+1] === 0x61 && mergedData[i+2] === 0x72 && mergedData[i+3] === 0x21) {
+                archiveStartIndex = i;
+                archiveType = 'rar';
+                if (i > 0) break;
+              }
+            }
+          }
+
+          if (archiveStartIndex === -1) {
+            statusMessage.textContent = '没有检测到有效的压缩文件头';
+            statusMessage.className = 'status-message error';
+            statusMessage.style.display = 'block';
+            return;
+          }
+
+          const archiveData = mergedData.subarray(archiveStartIndex);
+          const blob = new Blob([archiveData], { type: archiveType === 'zip' ? 'application/zip' : 'application/x-rar-compressed' });
+
+          if (lastExtractUrl) URL.revokeObjectURL(lastExtractUrl);
+
+          const downloadLink = document.getElementById('downloadLinkExtract');
+          lastExtractUrl = URL.createObjectURL(blob);
+          downloadLink.href = lastExtractUrl;
+          downloadLink.download = `extracted_archive.${archiveType}`;
+          downloadLink.textContent = `下载提取的${archiveType.toUpperCase()}文件`;
+
+          statusMessage.textContent = '文件提取成功！';
+          statusMessage.className = 'status-message success';
+          statusMessage.style.display = 'block';
+          downloadContainer.style.display = 'block';
+
+        } catch (error) {
+          console.error('发生错误:', error);
+          statusMessage.textContent = '文件提取失败，请重试';
+          statusMessage.className = 'status-message error';
+          statusMessage.style.display = 'block';
+        } finally {
+          button.textContent = '开始提取';
+          button.classList.remove('processing');
+        }
+      });
+
+      // 图片格式转换功能
+      const upload = document.getElementById('upload');
+      const canvas = document.getElementById('myCanvas');
+      const ctx = canvas.getContext('2d');
+      const qualityInput = document.getElementById('quality');
+      const qualityValueLabel = document.getElementById('qualityValue');
+      const formatSelect = document.getElementById('format');
+      const filenameInput = document.getElementById('filename');
+      const downloadBtn = document.getElementById('downloadBtn');
+      const converterStatus = document.getElementById('converterStatus');
+
+      let img = new Image();
+
+      qualityInput.addEventListener('input', () => {
+        qualityValueLabel.textContent = parseFloat(qualityInput.value).toFixed(2);
+      });
+
+      upload.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        converterStatus.style.display = 'none';
+        
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          img = new Image();
+          img.onload = function() {
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0);
+            
+            const maxDisplayWidth = 600;
+            const maxDisplayHeight = 400;
+            let width = img.width;
+            let height = img.height;
+            
+            const ratio = Math.min(maxDisplayWidth / width, maxDisplayHeight / height);
+            
+            if (ratio < 1) {
+                canvas.style.width = `${width * ratio}px`;
+                canvas.style.height = `${height * ratio}px`;
+            } else {
+                canvas.style.width = 'auto';
+                canvas.style.height = 'auto';
+                canvas.style.maxWidth = '100%';
+            }
+          }
+          img.onerror = function() {
+            converterStatus.textContent = '图片加载失败';
+            converterStatus.className = 'status-message error';
+            converterStatus.style.display = 'block';
+          }
+          img.src = evt.target.result;
+        }
+        reader.onerror = function() {
+          converterStatus.textContent = '文件读取失败';
+          converterStatus.className = 'status-message error';
+          converterStatus.style.display = 'block';
+        }
+        reader.readAsDataURL(file);
+      });
+
+      downloadBtn.addEventListener('click', () => {
+        if (!upload.files[0]) {
+          converterStatus.textContent = '请先选择要转换的图片';
+          converterStatus.className = 'status-message error';
+          converterStatus.style.display = 'block';
+          return;
+        }
+
+        try {
+          const format = formatSelect.value;
+          const quality = parseFloat(qualityInput.value) || 0.8;
+          const fileName = filenameInput.value.trim() || "converted_image";
+          const ext = format.split('/')[1] === 'jpeg' ? 'jpg' : format.split('/')[1];
+
+          ctx.drawImage(img, 0, 0);
+          
+          const dataURL = canvas.toDataURL(format, quality);
+
+          const a = document.createElement('a');
+          a.href = dataURL;
+          a.download = `${fileName}.${ext}`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+
+          converterStatus.textContent = '图片转换成功，开始下载！';
+          converterStatus.className = 'status-message success';
+          converterStatus.style.display = 'block';
+
+        } catch (error) {
+          console.error('转换错误:', error);
+          converterStatus.textContent = '图片转换失败，请重试';
+          converterStatus.className = 'status-message error';
+          converterStatus.style.display = 'block';
+        }
+      });
+
+      function setupSmoothScrolling() {
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetTab = document.querySelector(`.tab[data-tab="${targetId}"]`);
+                if (targetTab) {
+                    targetTab.click();
+                    const container = document.querySelector('.tool-container');
+                    if (container) {
+                        container.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+            });
+        });
+      }
+
+      setupSmoothScrolling();
+    });
+  </script>
+</body>
+</html>

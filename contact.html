@@ -7,170 +7,8 @@
 
   <!-- 样式文件 -->
   <link rel="stylesheet" href="style.css" />
-  
-  <!-- Google Fonts (可选，如已使用) -->
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
-</head>
-<body>
-  <!-- 导航栏 -->
-  <header class="header">
-    <div class="container">
-      <nav class="nav" aria-label="主导航">
-        <!-- 品牌 -->
-        <div class="brand">
-          <div class="brand-text">
-            <h1><a href="index.html">An's web page</a></h1>
-            <p class="tagline">桉的网页!你要陪桉一起玩嘛～</p>
-          </div>
-        </div>
 
-        <!-- 菜单按钮 -->
-        <button
-          class="nav-toggle"
-          aria-label="切换导航菜单"
-          aria-controls="primary-menu"
-          aria-expanded="false"
-          type="button"
-        >☰</button>
-
-        <!-- 导航菜单 -->
-        <ul id="primary-menu" class="nav-menu" role="menu">
-          <li role="none"><a role="menuitem" href="index.html"> 首页 </a></li>
-          <li role="none"><a role="menuitem" href="note.html"> 笔记 </a></li>
-          <li role="none"><a role="menuitem" href="alambda.html"> ALambda </a></li>
-          <li role="none"><a role="menuitem" href="contact.html" class="active"> 联系 </a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
-
-  <!-- 主内容 -->
-  <main class="main">
-    <div class="container">
-      <!-- 页面标题 -->
-      <div class="page-header" id="home">
-        <h1>联系我</h1>
-        <p class="description">如果你对我的作品感兴趣，或者想要交流，欢迎通过这些方式联系我。</p>
-      </div>
-
-      <!-- 联系内容区域 -->
-      <div class="content">
-        <!-- 联系信息部分 -->
-        <section class="content-section" id="contact-info">
-          <h2>联系方式</h2>
-          <p>找我玩！耶！</p>
-          
-          <div class="contact-details">
-            <div class="contact-item">
-              <h3>邮箱</h3>
-              <p><a href="mailto:lyric_x@outlook.com">lyric_x@outlook.com</a></p>
-              <h3>QQ</h3>
-              <p><span class="contact-value">3865768909</span></p>
-              <h3>微信</h3>
-              <p><span class="contact-value">Anming1379</span></p>
-            </div>
-          </div>
-        </section>
-
-        <!-- 社交媒体部分 -->
-        <section class="content-section" id="social-media">
-          <h2>社交媒体</h2>
-          <p>关注我的bb空间！qwq</p>
-          
-          <div class="social-media-links">
-            <div class="social-item">
-              <h3>Bilibili</h3>
-              <p><a href="https://b23.tv/st2JEJA" target="_blank" rel="noopener noreferrer">https://b23.tv/st2JEJA</a></p>
-              <p class="social-description">我的B站主页，发点动画，教程之类的视频</p>
-              <h3>GitHub</h3>
-              <p><a href="https://github.com/Anming1379" target="_blank" rel="noopener noreferrer">https://github.com/Anming1379</a></p>
-              <p class="social-description">我的Github，其实里面没啥东西（</p>
-            </div>
-          </div>
-        </section>
-
-        <!-- 联系提示 -->
-        <section class="content-section" id="contact-tips">
-          <h2>Q＆A</h2>
-            <h2>- 可以找你玩嘛</h2>
-            <p>＂可以可以我最喜欢交友了！＂</p>
-          
-            <h2>- 接不接合作/商单</h2>
-            <p>＂不...要......我...补药work......好累＂</p>
-          </div>
-        </section>
-      </div>
-    </div>
-  </main>
-
-  <!-- 页脚 -->
-  <footer class="footer">
-    <div class="container">
-      <div class="footer-content">
-        <div class="footer-section">
-          <h3>An's web page</h3>
-          <p>桉的个人网页，分享艺术作品、技术笔记和生活点滴。</p>
-        </div>
-
-        <div class="footer-section">
-          <h4>快速链接</h4>
-          <ul class="footer-links">
-            <li><a href="index.html">首页</a></li>
-            <li><a href="note.html">笔记</a></li>
-            <li><a href="alambda.html">ALambda</a></li>
-            <li><a href="contact.html">联系</a></li>
-          </ul>
-        </div>
-        
-      <div class="copyright">
-        <p>© 2025 AnmingCat</p>
-      </div>
-    </div>
-  </footer>
-
-  <!-- 脚本文件 -->
-  <script src="script.js"></script>
-  
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // 添加当前页面高亮
-      const currentPage = window.location.pathname.split('/').pop();
-      const navLinks = document.querySelectorAll('.nav-menu a');
-      
-      navLinks.forEach(link => {
-        const linkHref = link.getAttribute('href');
-        if (linkHref === currentPage || (currentPage === '' && linkHref === 'index.html')) {
-          link.classList.add('active');
-        }
-      });
-      
-      // QQ和微信复制功能
-      const contactValues = document.querySelectorAll('.contact-value');
-      contactValues.forEach(item => {
-        item.addEventListener('click', function() {
-          const textToCopy = this.textContent;
-          navigator.clipboard.writeText(textToCopy).then(() => {
-            // 显示复制成功提示
-            const originalText = this.textContent;
-            this.textContent = '已复制到剪贴板！';
-            this.style.color = 'var(--color-accent)';
-            
-            setTimeout(() => {
-              this.textContent = originalText;
-              this.style.color = '';
-            }, 2000);
-          }).catch(err => {
-            console.error('复制失败: ', err);
-          });
-        });
-        
-        // 添加提示样式
-        item.style.cursor = 'pointer';
-        item.title = '点击复制';
-      });
-    });
-  </script>
-  
+  <!-- 联系页面特定样式 -->
   <style>
     /* 联系页面特定样式 */
     .page-header {
@@ -181,6 +19,13 @@
     .page-header h1 {
       margin-bottom: var(--spacing-sm);
     }
+    
+     .page-header .description {
+      text-align: center;      /* 文本居中 */
+      max-width: 600px;        /* 限制宽度，让它不要太宽 */
+      margin: 0 auto;          /* 水平居中块 */
+    }
+
     
     .contact-details,
     .social-media-links {
@@ -251,5 +96,156 @@
       }
     }
   </style>
+</head>
+<body>
+  <!-- 导航栏 -->
+  <header class="header">
+    <div class="container">
+      <nav class="nav" aria-label="主导航">
+        <!-- 品牌 -->
+        <div class="brand">
+          <div class="brand-text">
+            <h1><a href="index.html">An's web page</a></h1>
+            <p class="tagline">找桉一起玩!</p>
+          </div>
+        </div>
+
+        <button
+          class="nav-toggle"
+          aria-label="切换导航菜单"
+          aria-controls="primary-menu"
+          aria-expanded="false"
+          type="button"
+        >
+          <span class="material-icons">menu</span>
+        </button>
+
+
+        <ul id="primary-menu" class="nav-menu" role="menu">
+          <li role="none"><a role="menuitem" href="index.html"> 首页 </a></li>
+          <li role="none"><a role="menuitem" href="note.html"> 笔记 </a></li>
+          <li role="none"><a role="menuitem" href="alambda.html" > ALambda </a></li>
+          <li role="none"><a role="menuitem" href="contact.html" class="active"> 联系 </a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- 主内容 -->
+  <main class="main">
+    <div class="container">
+      <!-- 页面标题 -->
+      <div class="page-header" id="home">
+        <h1>联系我</h1>
+        <p class="description">如果你想找我问问题, 或者只是找我交友, 我都欢迎!</p>
+      </div>
+
+      <!-- 联系内容区域 -->
+      <div class="content">
+        <!-- 联系信息部分 -->
+        <section class="content-section" id="contact-info">
+          <h2>一起玩</h2>
+          <p>找我玩！耶！交友!</p>
+          
+          <div class="contact-details">
+            <div class="contact-item">
+              <h3>邮箱</h3>
+              <p><a href="mailto:lyric_x@outlook.com">lyric_x@outlook.com</a></p>
+              <h3>QQ</h3>
+              <p><span class="contact-value">3865768909</span></p>
+              <h3>微信</h3>
+              <p><span class="contact-value">Anming1379</span></p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 社交媒体部分 -->
+        <section class="content-section" id="social-media">
+          <h2>社交媒体</h2>
+          <p>关注我的bb空间！qwq</p>
+          
+          <div class="social-media-links">
+            <div class="social-item">
+              <h3>Bilibili</h3>
+              <p><a href="https://b23.tv/st2JEJA" target="_blank" rel="noopener noreferrer">https://b23.tv/st2JEJA</a></p>
+              <p class="social-description">我的B站主页，发点动画，教程之类的视频</p>
+              <h3>GitHub</h3>
+              <p><a href="https://github.com/Anming1379" target="_blank" rel="noopener noreferrer">https://github.com/Anming1379</a></p>
+              <p class="social-description">我的Github，其实里面没啥东西（</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>An's web page</h3>
+          <p>你要找桉一起玩嘛?</p>
+        </div>
+
+        <div class="footer-section">
+          <h4>快速链接</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="note.html">笔记</a></li>
+            <li><a href="alambda.html">ALambda</a></li>
+            <li><a href="contact.html">联系</a></li>
+          </ul>
+        </div>
+        
+        <div class="copyright">
+          <p>© 2025 AnmingCat</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 脚本文件 -->
+  <script src="script.js"></script>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 添加当前页面高亮
+      const currentPage = window.location.pathname.split('/').pop();
+      const navLinks = document.querySelectorAll('.nav-menu a');
+      
+      navLinks.forEach(link => {
+        const linkHref = link.getAttribute('href');
+        if (linkHref === currentPage || (currentPage === '' && linkHref === 'index.html')) {
+          link.classList.add('active');
+        }
+      });
+      
+      // QQ和微信复制功能
+      const contactValues = document.querySelectorAll('.contact-value');
+      contactValues.forEach(item => {
+        item.addEventListener('click', function() {
+          const textToCopy = this.textContent;
+          navigator.clipboard.writeText(textToCopy).then(() => {
+            // 显示复制成功提示
+            const originalText = this.textContent;
+            this.textContent = '已复制到剪贴板！';
+            this.style.color = 'var(--color-accent)';
+            
+            setTimeout(() => {
+              this.textContent = originalText;
+              this.style.color = '';
+            }, 2000);
+          }).catch(err => {
+            console.error('复制失败: ', err);
+          });
+        });
+        
+        // 添加提示样式
+        item.style.cursor = 'pointer';
+        item.title = '点击复制';
+      });
+    });
+  </script>
 </body>
 </html>

@@ -12,16 +12,17 @@ document.addEventListener('DOMContentLoaded', () => {
 function setupMobileMenu() {
     const navToggle = document.querySelector('.nav-toggle');
     const navMenu = document.querySelector('.nav-menu');
-    
-    if (!navToggle || !navMenu) return;
-    
+    const icon = navToggle?.querySelector('.material-icons'); // 找到图标
+
+    if (!navToggle || !navMenu || !icon) return;
+
     // 切换菜单
     navToggle.addEventListener('click', () => {
         const isExpanded = navMenu.classList.toggle('active');
         navToggle.setAttribute('aria-expanded', String(isExpanded));
-        navToggle.textContent = isExpanded ? '✕' : '☰';
+        icon.textContent = isExpanded ? 'close' : 'menu'; // 切换图标
     });
-    
+
     // 点击外部关闭
     document.addEventListener('click', (event) => {
         const isMobile = window.innerWidth <= 767;
@@ -29,17 +30,17 @@ function setupMobileMenu() {
         if (!navMenu.contains(event.target) && !navToggle.contains(event.target)) {
             navMenu.classList.remove('active');
             navToggle.setAttribute('aria-expanded', 'false');
-            navToggle.textContent = '☰';
+            icon.textContent = 'menu';
         }
     });
-    
+
     // 点击菜单项（移动端）自动收起
     navMenu.querySelectorAll('a[href^="#"]').forEach(link => {
         link.addEventListener('click', () => {
             if (window.innerWidth <= 767) {
                 navMenu.classList.remove('active');
                 navToggle.setAttribute('aria-expanded', 'false');
-                navToggle.textContent = '☰';
+                icon.textContent = 'menu';
             }
         });
     });
@@ -51,14 +52,14 @@ function setupSmoothScrolling() {
         anchor.addEventListener('click', (e) => {
             const href = anchor.getAttribute('href');
             if (!href || href === '#' || href === '#!') return;
-            
+
             const target = document.querySelector(href);
             if (!target) return;
-            
+
             e.preventDefault();
             const headerHeight = document.querySelector('.header')?.offsetHeight || 80;
             const top = Math.max(0, target.getBoundingClientRect().top + window.pageYOffset - headerHeight);
-            
+
             window.scrollTo({ top, behavior: 'smooth' });
             // 更新哈希（避免 pushState 异常返回行为）
             setTimeout(() => { location.hash = href; }, 200);
@@ -69,11 +70,10 @@ function setupSmoothScrolling() {
 /** 图片加载优化 */
 function setupImageLoading() {
     const images = document.querySelectorAll('img');
-    
+
     images.forEach(img => {
-        // 原生懒加载回退：若未设置则补上
         if (!img.hasAttribute('loading')) img.setAttribute('loading', 'lazy');
-        
+
         if (img.complete) {
             img.classList.add('loaded');
         } else {
@@ -93,15 +93,16 @@ function setupResponsiveBehavior() {
     const resetOnDesktop = debounce(() => {
         const navMenu = document.querySelector('.nav-menu');
         const navToggle = document.querySelector('.nav-toggle');
-        if (!navMenu || !navToggle) return;
-        
+        const icon = navToggle?.querySelector('.material-icons');
+        if (!navMenu || !navToggle || !icon) return;
+
         if (window.innerWidth > 767) {
             navMenu.classList.remove('active');
             navToggle.setAttribute('aria-expanded', 'false');
-            navToggle.textContent = '☰';
+            icon.textContent = 'menu';
         }
     }, 200);
-    
+
     window.addEventListener('resize', resetOnDesktop);
     resetOnDesktop();
 }

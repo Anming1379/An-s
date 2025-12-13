@@ -1,8 +1,8 @@
 /* 变量部分保持不变 */
 :root {
   --color-base: #FFFFFF;
-  --color-contrast: #111111;
-  --color-accent: #3E50B6;
+  --color-contrast: #32354d;
+  --color-accent: #5152c5;
   --color-text: #333333;
   --color-text-light: #666666;
   --color-background-light: #f8f9fa;
@@ -10,7 +10,7 @@
   --font-main: 'font1', serif;
   --font-size-xs: .75rem;
   --font-size-sm: .875rem;
-  --font-size-md: 0.9rem;
+  --font-size-md: 1rem;
   --font-size-lg: clamp(1.25rem, 1.25rem + ((1vw - 0.2rem) * 0.2), 1.5rem);
   --font-size-xl: clamp(1.75rem, 1.75rem + ((1vw - 0.2rem) * 0.3), 2rem);
   --font-size-xxl: clamp(2rem, 2rem + ((1vw - 0.2rem) * 0.5), 2.5rem);
@@ -39,7 +39,6 @@
   font-style: normal;
   font-weight: 400;
   src: url('./fonts/MaterialIcons-Regular.woff2') format('woff2'),
-    url('./fonts/MaterialIcons-Regular.woff') format('woff'),
     url('./fonts/MaterialIcons-Regular.ttf') format('truetype');
 }
 
@@ -96,8 +95,27 @@ body {
   padding: 0 var(--spacing-md);
 }
 
-@media (min-width: 1200px) {
-  .container { width: var(--container-lg); }
+/* 响应式设计 - 这里是重点 */
+@media (max-width: 767px) {
+    /* ...省略其他样式... */
+
+    .nav { 
+        position: relative; 
+        z-index: 1000; /* 提升 nav 容器的层级 */
+    }
+
+    .nav-toggle { 
+        display: block; 
+        z-index: 1001; /* 确保切换按钮在最上层 */
+        /* 如果你的 header 是 fixed/sticky，可能要给 header 也设置 z-index */
+    }
+
+    .nav-menu {
+        /* ...省略其他样式... */
+        z-index: 999; /* 菜单层级要低于按钮，但高于页面其他内容 */
+    }
+    
+    /* ...省略其他样式... */
 }
 
 /* 标题与文字部分保持不变 */
@@ -113,7 +131,7 @@ h2 { font-size: var(--font-size-xl); }
 h3 { font-size: var(--font-size-lg); }
 p { margin-bottom: var(--spacing-sm); }
 .tagline { font-size: var(--font-size-xs); color: var(--color-text-light); font-weight: 300; }
-.description { font-size: var(--font-size-lg); max-width: 400px; margin-bottom: var(--spacing-md); font-weight: 300; }
+.description { font-size: var(--font-size-md); max-width: 400px; margin-bottom: var(--spacing-md); font-weight: 300; }
 
 /* 链接部分保持不变 */
 a {
@@ -267,6 +285,70 @@ img { max-width: 100%; height: auto; display: block; }
 .footer-links a:hover { color: var(--color-contrast); }
 .copyright { border-top: 1px solid var(--color-border); padding-top: var(--spacing-md); font-size: var(--font-size-xs); color: var(--color-text-light); }
 
+/* ==================== */
+/* 联系页面特定样式 */
+/* ==================== */
+
+.page-header {
+  margin-bottom: var(--spacing-xl);
+  text-align: center;
+}
+
+.page-header h1 {
+  margin-bottom: var(--spacing-sm);
+}
+
+.contact-details,
+.social-media-links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-md);
+}
+
+.contact-item,
+.social-item,
+.tips-item {
+  padding: var(--spacing-md);
+  background: var(--color-background-light);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--color-accent);
+}
+
+.contact-item h3,
+.social-item h3,
+.tips-item h3 {
+  font-size: var(--font-size-md);
+  margin-bottom: var(--spacing-xs);
+  color: var(--color-accent);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.contact-value {
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  background: rgba(62, 80, 182, 0.1);
+  border-radius: var(--radius-sm);
+  transition: background-color var(--transition-fast);
+}
+
+.contact-value:hover {
+  background: rgba(62, 80, 182, 0.2);
+}
+
+.social-description {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-light);
+  margin-top: var(--spacing-xs);
+}
+
+.nav-menu a.active {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
 /* 响应式设计 - 这里是重点 */
 @media (min-width: 768px) {
   .profile {
@@ -313,6 +395,23 @@ img { max-width: 100%; height: auto; display: block; }
     flex: 1;
     min-width: 200px;
   }
+  
+  /* 联系页面响应式 */
+  .contact-details,
+  .social-media-links {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  .contact-item,
+  .social-item {
+    flex: 1;
+    min-width: 250px;
+  }
+  
+  .tips-item {
+    margin-bottom: var(--spacing-md);
+  }
 }
 
 /* 中等屏幕进一步优化（例如平板横屏） */
@@ -326,7 +425,33 @@ img { max-width: 100%; height: auto; display: block; }
 @media (max-width: 767px) {
   .container { padding: 0 var(--spacing-sm); }
   
-  .nav-toggle { display: block; }
+.nav-toggle {
+  position: relative;           /* 让子元素绝对定位基于按钮 */
+  width: 48px;                  /* 按钮宽度，可按需求调整 */
+  height: 48px;                 /* 按钮高度，可按需求调整 */
+  display: inline-flex;         /* 保证内部居中 */
+  align-items: center;          /* 垂直居中 */
+  justify-content: center;      /* 水平居中 */
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.nav-toggle .material-icons {
+  position: absolute;
+  top: 50%;                     /* 先移动到父元素高度一半 */
+  left: 50%;                    /* 水平中心 */
+  transform: translate(-50%, -50%); /* 精准居中 */
+  font-size: 2rem;              /* 调整大小 */
+  line-height: 1;               /* 避免偏移 */
+  color: #333333;
+}
+
+}
+
+
+
   
   .nav { position: relative; }
   

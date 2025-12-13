@@ -7,19 +7,15 @@
   <meta name="keywords" content="笔记">
   <title>桉的笔记 </title>
 
-  <!-- 引入主样式文件 -->
   <link rel="stylesheet" href="style.css" />
   
-  <!-- 依赖（CDN）-->
   <script src="assets/marked.min.js"></script>
   
   <script src="assets/purify.min.js"></script>
   
   <link rel="stylesheet" href="assets/github.min.css">
   
-  <script src="assets/highlight.min.js"></script>
-  
-  <!-- Markdown 阅读器专用样式 -->
+  <script src="assets/highlight.min.js"></script>  
   <style>
     /* 文件树样式 */
     .file-tree {
@@ -62,6 +58,19 @@
     
     .children.collapsed {
       max-height: 0;
+    }
+
+    /* 【新的修复 1】: 导航栏改为正常滚动 (不再固定) */
+    .header {
+      /* 移除 position: fixed; top/left/right，使其随页面滚动 */
+      z-index: 1001; /* 保持层级，防止与其他元素意外重叠 */
+      background: var(--color-base); 
+      border-bottom: 1px solid var(--color-border);
+    }
+    
+    /* 【新的修复 2】: 移除 Main 内容的顶部内边距，让内容紧跟 Header 后自然流动 */
+    .main {
+      padding-top: 0; 
     }
 
     /* 工具栏 */
@@ -378,14 +387,14 @@
       font-weight: 500;
     }
 
-    /* 侧边栏 */
+    /* 【修复 3-基础】: 侧边栏改为全屏高度的 Overlay 模式 */
     .sidebar {
       position: fixed;
-      left: -320px;
+      left: -550px; /* 使用一个安全值，确保在 PC 端也被隐藏 */
       top: 0;
       bottom: 0;
-      z-index: 1000;
-      width: 280px;
+      z-index: 1002; /* 确保高于 Header (1001) */
+      width: 280px; /* 默认移动端宽度 */
       background: var(--color-base);
       border-right: 1px solid var(--color-border);
       padding: var(--spacing-md);
@@ -393,10 +402,12 @@
       overflow-y: auto;
       transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+      max-height: 100vh;
     }
     
     .sidebar.open {
       left: 0;
+      box-shadow: 4px 0 12px rgba(0, 0, 0, 0.25);
     }
     
     .sidebar-header {
@@ -426,13 +437,13 @@
       position: fixed;
       right: 16px;
       bottom: 16px;
-      z-index: 100;
+      z-index: 1003; /* 确保在侧边栏之上 */
       border: 1px solid var(--color-border);
       background: var(--color-base);
       color: var(--color-text);
       border-radius: 50%;
       padding: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       cursor: pointer;
       width: 48px;
       height: 48px;
@@ -452,7 +463,7 @@
       position: fixed;
       inset: 0;
       background: rgba(0, 0, 0, 0.25);
-      z-index: 999;
+      z-index: 1001; /* 在 Header (1001) 和 Sidebar (1002) 之间 */
       backdrop-filter: blur(2px);
     }
     
@@ -460,30 +471,31 @@
       display: block;
     }
 
-    /* 布局 - 修复PC端右侧空白问题 */
+    /* 布局 - 现在主内容不再需要为侧边栏留白，始终占满可用空间 */
     .md-layout {
       display: flex;
       gap: var(--spacing-xl);
       align-items: flex-start;
+      width: 100%; /* 确保布局容器占满 */
     }
     
     .md-main {
       flex: 1;
-      min-width: 0; /* 防止内容溢出 */
-      width: 100%; /* 确保占满可用空间 */
+      min-width: 0;
+      width: 100%; 
     }
     
     /* 主容器调整，确保内容居中 */
     .main .container {
       display: flex;
       flex-direction: column;
-      align-items: center; /* 使容器内的所有内容居中 */
+      align-items: center; 
     }
 
     /* 空状态提示 */
     .empty-state {
       text-align: center;
-      : var(--spacing-xl);
+      padding: var(--spacing-xl);
       color: var(--color-text-light);
     }
     
@@ -515,7 +527,7 @@
       }
       
       .md-content {
-        max-width: 100%; /* 移动端占满宽度 */
+        max-width: 100%; 
         padding: 0 var(--spacing-sm);
       }
       
@@ -526,39 +538,27 @@
     }
 
     @media (min-width: 981px) {
-      /* PC端：固定侧边栏 */
+      /* 【修复 3-PC】: PC端改为 Overlay 模式，占满左半屏 */
       .sidebar {
-        position: fixed;
-        left: 0;
-        width: 280px;
-        height: calc(100vh - var(--header-height, 80px));
-        top: var(--header-height, 80px);
-        box-shadow: none;
-        border-right: 1px solid var(--color-border);
-        background: var(--color-base);
-        z-index: 10;
+        width: 50%; /* 占满左半屏 */
+        max-width: 500px; /* 限制最大宽度 */
+        /* left: -550px; 已经由基础样式定义 */
       }
       
-      .close-btn {
-        display: none;
-      }
-      
-      /* PC端主内容区域布局调整 */
+      /* PC端主内容区域布局调整：移除所有 margin/width 偏移 */
       .md-main {
-        margin-left: 280px; /* 为侧边栏留出空间 */
-        width: calc(100% - 280px); /* 计算剩余宽度 */
+        margin-left: 0; 
+        width: 100%; 
       }
       
       .md-content {
-        max-width: 600px; /* 限制内容最大宽度 */
-        margin: 0 auto; /* 居中显示 */
+        max-width: 800px; 
+        margin: 0 auto; 
       }
       
-      .toolbar {
-        width: 100%;
-        max-width: 1200px; /* 工具栏也限制最大宽度 */
-        margin-left: auto;
-        margin-right: auto;
+      /* TOC 按钮在 PC 端也显示 */
+      .toc-fab {
+        display: flex;
       }
     }
     
@@ -601,11 +601,9 @@
   </style>
 </head>
 <body>
-  <!-- 导航栏 -->
   <header class="header">
     <div class="container">
       <nav class="nav" aria-label="主导航">
-        <!-- 品牌 -->
         <div class="brand">
           <div class="brand-text">
             <h1><a href="index.html">An's web page</a></h1>
@@ -613,27 +611,27 @@
           </div>
         </div>
 
-        <!-- 菜单按钮 -->
         <button
           class="nav-toggle"
           aria-label="切换导航菜单"
           aria-controls="primary-menu"
           aria-expanded="false"
           type="button"
-        >☰</button>
+        >
+          <span class="material-icons">menu</span>
+        </button>
 
-        <!-- 导航菜单 -->
+
         <ul id="primary-menu" class="nav-menu" role="menu">
           <li role="none"><a role="menuitem" href="index.html"> 首页 </a></li>
-          <li role="none"><a role="menuitem" href="note.html"> 笔记 </a></li>
-          <li role="none"><a role="menuitem" href="alambda.html"> ALambda </a></li>
-          <li role="none"><a role="menuitem" href="contact.html"> 联系 </a></li>
+          <li role="none"><a role="menuitem" href="note.html" class="active"> 笔记 </a></li>
+          <li role="none"><a role="menuitem" href="alambda.html" > ALambda </a></li>
+          <li role="none"><a role="menuitem" href="contact.html" > 联系 </a></li>
         </ul>
       </nav>
     </div>
   </header>
 
-  <!-- 侧边栏（文件列表和目录） -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <div class="logo" style="font-weight: 500; font-size: var(--font-size-sm);">桉的笔记本</div>
@@ -646,7 +644,6 @@
       <div class="loading-indicator"></div> 正在加载笔记...
     </div>
     
-    <!-- 目录区域 -->
     <div class="toc-section">
       <div class="toc-header">
         <div class="toc-title">目录</div>
@@ -678,7 +675,6 @@
     </div>
   </main>
 
-  <!-- 移动端侧边栏按钮 -->
   <button id="tocFab" class="toc-fab" aria-label="打开侧边栏">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <path d="M4 6h16M4 12h16M4 18h16"/>
@@ -686,7 +682,6 @@
   </button>
   <div id="tocBackdrop" class="toc-backdrop" aria-hidden="true"></div>
 
-  <!-- 页脚 -->
   <footer class="footer">
     <div class="container">
       <div class="footer-content">
@@ -705,26 +700,23 @@
           </ul>
         </div>
         
-      <div class="copyright">
-        <p>© 2025 AnmingCat</p>
+        <div class="copyright">
+          <p>© 2025 AnmingCat</p>
+        </div>
       </div>
     </div>
   </footer>
 
-  <!-- 脚本文件 -->
   <script src="script.js"></script>
 
-  <!-- 直接引入 manifest.js（必须在主脚本前） -->
   <script src="./manifest.js"></script>
 
-  <!-- 回退内嵌 manifest（当 manifest.js 不存在或未定义 window.filesManifest 时使用） -->
   <script type="application/json" id="embedded-manifest">
   {
     "README.md": "# Markdown 阅读器\n\n欢迎使用 Markdown 阅读器！\n\n这是一个简单的 Markdown 阅读器，支持：\n\n- **代码高亮** - 使用 Highlight.js\n- **目录导航** - 自动生成文档目录\n- **文件浏览** - 从文件树中选择文档\n- **响应式设计** - 适配各种设备屏幕\n\n## 功能示例\n\n### 代码块\n\n```javascript\n// 这是一个 JavaScript 示例\nfunction helloWorld() {\n  console.log('Hello, Markdown!');\n  return true;\n}\n```\n\n### 表格\n\n| 功能 | 状态 | 说明 |\n|------|------|------|\n| 代码高亮 | ✅ 已支持 | 使用 Highlight.js |\n| 目录导航 | ✅ 已支持 | 自动生成文档目录 |\n| 文件搜索 | ✅ 已支持 | 按文件名或内容搜索 |\n\n### 引用\n\n> Markdown 是一种轻量级标记语言，允许人们使用易读易写的纯文本格式编写文档。\n\n### 列表\n\n- 项目 1\n- 项目 2\n  - 子项目 2.1\n  - 子项目 2.2\n- 项目 3\n\n### 链接\n\n[访问 GitHub](https://github.com)\n\n### 图片\n\n![示例图片](https://via.placeholder.com/400x200.png?text=Markdown+Image)\n\n## 开始使用\n\n1. 从左侧文件树中选择一个文档\n2. 使用目录快速导航\n3. 在移动设备上使用右下角按钮打开目录\n"
   }
   </script>
 
-  <!-- 主脚本 -->
   <script>
   (function(){
     const fileTreeEl = document.getElementById('fileTree');
@@ -741,10 +733,9 @@
 
     // 设置 header 高度变量
     function updateHeaderHeight() {
-      const header = document.querySelector('.header');
-      if (header) {
-        document.documentElement.style.setProperty('--header-height', header.offsetHeight + 'px');
-      }
+      // 由于导航栏不再固定，并且侧边栏采用全屏 Overlay 模式，
+      // 不需要计算 Header 高度来调整其他元素的定位或边距。
+      // 此函数现在是一个空操作。
     }
     
     updateHeaderHeight();
@@ -764,7 +755,7 @@
     
     if (closeSidebar) closeSidebar.addEventListener('click', closeSidebarFn);
     
-    // 移动端侧边栏按钮
+    // 移动端/PC端 侧边栏按钮
     if (tocFab) {
       tocFab.addEventListener('click', openSidebar);
     }
@@ -785,13 +776,8 @@
       });
     }
 
-    // 窗口大小变化时关闭移动端侧边栏
+    // 窗口大小变化时只更新 Header 高度 (移除关闭侧边栏的逻辑)
     window.addEventListener('resize', () => {
-      if (window.innerWidth > 980) {
-        closeSidebarFn();
-      }
-      
-      // 更新 header 高度
       updateHeaderHeight();
     });
 
@@ -1019,10 +1005,8 @@
       
       renderMarkdown(entry.text);
       
-      // 在移动端选择文件后自动关闭侧边栏
-      if (window.innerWidth <= 980) {
-        closeSidebarFn();
-      }
+      // 选择文件后自动关闭侧边栏（无论PC还是移动端）
+      closeSidebarFn();
     }
 
     // 渲染 Markdown
@@ -1104,10 +1088,8 @@
                   target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                   history.replaceState(null, '', `#${item.id}`);
                   
-                  // 在移动端点击目录后自动关闭侧边栏
-                  if (window.innerWidth <= 980) {
-                    closeSidebarFn();
-                  }
+                  // 点击目录后自动关闭侧边栏
+                  closeSidebarFn();
                 });
                 tocEl.appendChild(a);
               });
