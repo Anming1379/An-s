@@ -193,7 +193,7 @@ const doConvert = () => {
 
 <template>
   <div class="top-controls">
-      <a href="/alambda" class="back-home" ref="backHomeBtn">← 返回首页</a>
+      <RouterLink to="/alambda" class="back-home" ref="backHomeBtn">← 返回首页</RouterLink>
       <button class="close-answer-top" ref="closeAnswerTopBtn" aria-label="关闭答案">× 关闭</button>
     </div>
   <main class="main">
