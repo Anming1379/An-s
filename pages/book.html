@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>答案之书 - 你的问题，总有答案</title>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        /* 基础样式 */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-base);
+}
+
+/* 顶部控制栏 */
+.top-controls {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(5px);
+    border-bottom: 1px solid var(--color-border);
+}
+
+/* 返回按钮 */
+.back-home {
+    padding: 0.4rem 0.8rem;
+    background: transparent;
+    border: none;
+    color: var(--color-text-light);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+    transition: all var(--transition-normal);
+}
+
+.back-home:hover {
+    color: var(--color-accent);
+}
+
+/* 关闭答案按钮 - 放在右上角 */
+.close-answer-top {
+    padding: 0.4rem 0.8rem;
+    background: transparent;
+    border: none;
+    color: var(--color-text-light);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    display: none; /* 默认隐藏，全屏时显示 */
+}
+
+.close-answer-top:hover {
+    color: var(--color-accent);
+}
+
+/* 主容器 */
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: calc(var(--spacing-xl) + 50px) 0 var(--spacing-xl);
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* 问题区域 */
+.question-container {
+    text-align: center;
+    animation: fadeInUp 1.5s ease-out;
+}
+
+/* 调大标题文字 */
+.question-title {
+    margin-bottom: var(--spacing-md);
+    font-size: var(--font-size-xxl); /* 使用最大的字体变量 */
+    line-height: 1.2;
+}
+
+/* 改小描述文字 */
+.description {
+    font-size: var(--font-size-md); /* 使用较小的字体变量 */
+    color: var(--color-text-light);
+    line-height: 1.6;
+    margin-bottom: var(--spacing-lg);
+}
+
+.question-input {
+    width: 100%;
+    padding: var(--spacing-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-family: var(--font-main);
+    font-size: var(--font-size-md);
+    line-height: 1.6;
+    background: var(--color-background-light);
+    resize: none;
+    min-height: 120px;
+    transition: all var(--transition-normal);
+    margin-bottom: var(--spacing-md);
+}
+
+.question-input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(62, 80, 182, 0.1);
+}
+
+/* 按钮容器 */
+.action-buttons {
+    display: flex;
+    gap: var(--spacing-sm);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* 随机按钮样式 - 无色按钮加边框 */
+.btn-random {
+    background: transparent;
+    color: var(--color-contrast);
+    border: 2px solid var(--color-contrast);
+    box-shadow: none;
+}
+
+.btn-random:hover {
+    background: var(--color-accent);
+    color: var(--color-base);
+    border-color: var(--color-accent);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 答案全屏显示区域 */
+.answer-fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--color-base);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: var(--spacing-xl);
+    opacity: 0;
+    visibility: hidden;
+    z-index: 100;
+    transition: all var(--transition-normal);
+}
+
+.answer-fullscreen.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.answer-content {
+    max-width: 800px;
+    width: 90%;
+    text-align: center;
+    padding: var(--spacing-xl);
+}
+
+.answer-text {
+    font-size: clamp(1.5rem, 4vw, 2.2rem); /* 答案文字大小 */
+    line-height: 1.5;
+    font-weight: 300;
+    color: var(--color-contrast);
+    margin-bottom: var(--spacing-lg);
+    opacity: 0;
+    transform: translateY(20px);
+    will-change: opacity, transform; /* 性能优化 */
+}
+
+.answer-number {
+    font-size: var(--font-size-sm); /* 答案编号使用小字体 */
+    color: var(--color-text-light);
+    padding: 0.5rem 1.5rem;
+    border-radius: 20px;
+    background: var(--color-background-light);
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(10px);
+    will-change: opacity, transform; /* 性能优化 */
+}
+
+/* 屏幕阅读器专用样式 */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* 动画 */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes textReveal {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 响应式调整 */
+@media (max-width: 767px) {
+    .top-controls {
+        padding: var(--spacing-xs) var(--spacing-sm);
+    }
+    
+    .back-home, .close-answer-top {
+        font-size: var(--font-size-xs);
+    }
+    
+    .main {
+        padding: calc(var(--spacing-lg) + 40px) 0 var(--spacing-lg);
+    }
+    
+    /* 移动端标题调整 */
+    .question-title {
+        font-size: var(--font-size-xl); /* 移动端使用稍小的标题大小 */
+    }
+    
+    /* 移动端描述调整 */
+    .description {
+        font-size: var(--font-size-xll); /* 移动端使用最小的字体 */
+    }
+    
+    .question-input {
+        min-height: 100px;
+        padding: var(--spacing-sm);
+        margin-bottom: var(--spacing-sm);
+        font-size: var(--font-size-sm);
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .action-buttons .btn {
+        width: 100%;
+        min-height: 44px; /* 苹果推荐的最小触摸目标 */
+    }
+    
+    .answer-text {
+        font-size: clamp(1.3rem, 5vw, 1.8rem);
+        line-height: 1.5;
+    }
+    
+    .answer-content {
+        padding: var(--spacing-md);
+        width: 95%;
+    }
+}
+
+@media (min-width: 768px) {
+    .container {
+        padding: 0 var(--spacing-lg);
+    }
+    
+    .question-input {
+        min-height: 140px;
+    }
+    
+    .action-buttons {
+        flex-direction: row;
+    }
+    
+    /* 确保PC端居中 */
+    .question-container,
+    .answer-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+@media (min-width: 1200px) {
+    .container {
+        max-width: 700px;
+    }
+    
+    .answer-text {
+        font-size: clamp(1.6rem, 3vw, 2rem);
+        line-height: 1.5;
+        max-width: 90%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+    </style>
+</head>
+<body>
+    <!-- 顶部控制栏 -->
+    <div class="top-controls">
+        <!-- 返回首页按钮 - 非全屏时显示 -->
+        <a href="../alambda.html" class="back-home" id="backHomeBtn">
+            ← 返回首页
+        </a>
+        
+        <!-- 关闭答案按钮 - 全屏时显示 -->
+        <button class="close-answer-top" id="closeAnswerTopBtn" aria-label="关闭答案">× 关闭</button>
+    </div>
+    
+    <!-- 主内容区域 -->
+    <main class="main">
+        <div class="container">
+            <div class="question-container">
+                <div class="profile">
+                    <div class="profile-content">
+                        <h1 class="question-title">答案之书</h1>
+                        <p class="description">问任何问题，或是随机翻开一页吧</p>
+                    </div>
+                </div>
+                
+                <form class="question-form" id="questionForm">
+                    <textarea 
+                        class="question-input" 
+                        id="questionInput" 
+                        placeholder="输入你的问题...."
+                        required
+                        aria-label="输入您的问题"
+                        aria-describedby="descriptionText"
+                    ></textarea>
+                    
+                    <p id="descriptionText" class="sr-only">
+                        在这里输入您的问题，然后点击获取答案按钮，或者点击随机翻开按钮获得随机答案
+                    </p>
+                    
+                    <div class="action-buttons">
+                        <button type="submit" class="btn btn-primary" aria-label="获取答案">获取答案</button>
+                        <button type="button" class="btn btn-random" id="randomAnswerBtn" aria-label="随机翻开一页">随机翻开</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+    
+    <!-- 全屏答案显示区域 -->
+    <div class="answer-fullscreen" id="answerFullscreen" role="dialog" aria-modal="true" aria-labelledby="answerText" aria-describedby="answerNumber">
+        <div class="answer-content">
+            <div class="answer-text" id="answerText"></div>
+            <div class="answer-number" id="answerNumber"></div>
+        </div>
+    </div>
+
+    <script>
+        // 答案之书的50个答案（已更新）
+        const ANSWERS = [
+            "再等等，会更清晰的。",
+            "现在下结论还太早。",
+            "不，但这并非定局。",
+            "你已经比想象中更接近了。",
+            "转个方向，会有不同的景色。",
+            "看似无路，其实暗藏转机。",
+            "顺其自然，答案会自己冒出来。",
+            "不是现在，但以后可能。",
+            "有些事，需要你轻轻推一下。",
+            "别急，风还没吹到你这边。",
+            "保持好奇，会有新发现。",
+            "别这么问。",
+            "你需要一点耐心，也需要一点勇气。",
+            "等一等。",
+            "它在向你靠近，但还差一步。",
+            "你已经知道该怎么做了，只是还没承认。",
+            "事情比你担心的简单。",
+            "一切正在悄悄展开。",
+            "放松一点，答案会浮上来。",
+            "不必全部理解，也能继续前进。",
+            "环境会帮你做出选择。",
+            "时机不对。",
+            "你想的没错，只是时机未到。",
+            "它会在最意外的瞬间解决。",
+            "越想越乱，不如静一静。",
+            "你会得到回应，只是不是现在。",
+            "小小的尝试，会打开大门。",
+            "真相正在变得更清楚。",
+            "不要忽略那些微小的提示。",
+            "是时候相信直觉了。",
+            "结果会比你预期的柔和。",
+            "放下执念，新的可能就进来了。",
+            "它不会按你想象的方式发生。",
+            "现在的犹豫也有它的意义。",
+            "再确认一次，你会更踏实。",
+            "因缘还在悄悄排队。",
+            "你的下一步比现在更重要。",
+            "你需要一点点冒险。",
+            "它正在向好的方向发展。",
+            "你会得到你需要的，而不是你以为的。",
+            "给自己留一个退路，也留一个入口。",
+            "也许吧。",
+            "不排除这种可能性。",
+            "结果会出现在你预料之外。",
+            "你会在途中找到线索。",
+            "轻轻改变一点点，就会完全不一样。",
+            "你已经准备好了，只是还没意识到。",
+            "概率很大。",
+            "你该把注意力放在最简单的那一步。",
+            "这个不一定。"
+        ];
+
+        // ==================== 用户身份管理 ====================
+        
+        // 生成一个简单的用户ID（不一定是标准UUID，但足够唯一）
+        function generateUserId() {
+            // 使用时间戳和随机数生成唯一ID
+            const timestamp = Date.now().toString(36);
+            const randomStr = Math.random().toString(36).substr(2, 9);
+            return 'user_' + timestamp + '_' + randomStr;
+        }
+
+        // 获取或创建用户ID
+        function getOrCreateUserId() {
+            let userId = localStorage.getItem('answerBookUserId');
+            if (!userId) {
+                userId = generateUserId();
+                localStorage.setItem('answerBookUserId', userId);
+            }
+            return userId;
+        }
+
+        // ==================== 答案生成逻辑 ====================
+        
+        // 简单的哈希函数
+        function simpleHash(str) {
+            let hash = 0;
+            const inputStr = String(str).toLowerCase();
+            
+            for (let i = 0; i < inputStr.length; i++) {
+                const char = inputStr.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash; // 转换为32位整数
+            }
+            
+            return Math.abs(hash);
+        }
+
+        // 根据用户ID和问题获取答案
+        function getAnswerByQuestion(question, userId) {
+            // 组合用户ID和问题内容作为哈希输入
+            const combinedInput = userId + '_' + question.trim().toLowerCase();
+            const hash = simpleHash(combinedInput);
+            const index = hash % ANSWERS.length;
+            
+            return {
+                text: ANSWERS[index],
+                index: index
+            };
+        }
+        
+        // 随机获取一个答案
+        function getRandomAnswer() {
+            const randomIndex = Math.floor(Math.random() * ANSWERS.length);
+            return {
+                text: ANSWERS[randomIndex],
+                index: randomIndex
+            };
+        }
+
+        // ==================== 全屏答案显示 ====================
+        
+        // 显示全屏答案（使用Web Animations API）
+        function showFullscreenAnswer(answer, index) {
+            const answerFullscreen = document.getElementById('answerFullscreen');
+            const answerText = document.getElementById('answerText');
+            const answerNumber = document.getElementById('answerNumber');
+            const backHomeBtn = document.getElementById('backHomeBtn');
+            const closeAnswerTopBtn = document.getElementById('closeAnswerTopBtn');
+            
+            // 设置答案内容
+            answerText.textContent = answer;
+            answerNumber.textContent = `答案 #${index + 1}`;
+            
+            // 显示全屏答案区域
+            answerFullscreen.classList.add('active');
+            
+            // 设置ARIA属性
+            answerFullscreen.setAttribute('aria-hidden', 'false');
+            
+            // 切换顶部按钮显示
+            backHomeBtn.style.display = 'none';
+            closeAnswerTopBtn.style.display = 'block';
+            
+            // 使用Web Animations API获得更好的性能
+            answerText.animate([
+                { opacity: 0, transform: 'translateY(20px)' },
+                { opacity: 1, transform: 'translateY(0)' }
+            ], {
+                duration: 1000,
+                easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+                fill: 'forwards'
+            });
+            
+            answerNumber.animate([
+                { opacity: 0, transform: 'translateY(10px)' },
+                { opacity: 1, transform: 'translateY(0)' }
+            ], {
+                duration: 800,
+                delay: 500,
+                easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+                fill: 'forwards'
+            });
+            
+            // 防止背景滚动
+            document.body.style.overflow = 'hidden';
+            
+            // 将焦点移动到答案区域，便于屏幕阅读器访问
+            setTimeout(() => {
+                answerFullscreen.focus();
+            }, 100);
+        }
+
+        // 关闭全屏答案
+        function closeFullscreenAnswer() {
+            const answerFullscreen = document.getElementById('answerFullscreen');
+            const answerText = document.getElementById('answerText');
+            const answerNumber = document.getElementById('answerNumber');
+            const backHomeBtn = document.getElementById('backHomeBtn');
+            const closeAnswerTopBtn = document.getElementById('closeAnswerTopBtn');
+            
+            // 移除动画
+            answerText.getAnimations().forEach(animation => animation.cancel());
+            answerNumber.getAnimations().forEach(animation => animation.cancel());
+            
+            // 隐藏全屏答案区域
+            answerFullscreen.classList.remove('active');
+            
+            // 设置ARIA属性
+            answerFullscreen.setAttribute('aria-hidden', 'true');
+            
+            // 切换顶部按钮显示
+            backHomeBtn.style.display = 'block';
+            closeAnswerTopBtn.style.display = 'none';
+            
+            // 恢复背景滚动
+            document.body.style.overflow = '';
+            
+            // 将焦点移回问题输入框
+            const questionInput = document.getElementById('questionInput');
+            questionInput.focus();
+        }
+
+        // ==================== 初始化 ====================
+        
+        // DOM加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            const questionForm = document.getElementById('questionForm');
+            const questionInput = document.getElementById('questionInput');
+            const closeAnswerTopBtn = document.getElementById('closeAnswerTopBtn');
+            const randomAnswerBtn = document.getElementById('randomAnswerBtn');
+            const answerFullscreen = document.getElementById('answerFullscreen');
+            
+            // 初始化用户ID（但不显示）
+            getOrCreateUserId();
+            
+            // 确保关闭按钮初始隐藏
+            closeAnswerTopBtn.style.display = 'none';
+            
+            // 设置ARIA属性
+            answerFullscreen.setAttribute('aria-hidden', 'true');
+            
+            // 表单提交 - 基于问题获取答案
+            questionForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const question = questionInput.value.trim();
+                if (!question) {
+                    alert('请输入问题');
+                    return;
+                }
+                
+                // 获取当前用户ID
+                const userId = getOrCreateUserId();
+                
+                // 显示加载状态
+                const submitBtn = questionForm.querySelector('button[type="submit"]');
+                const originalText = submitBtn.textContent;
+                submitBtn.textContent = '思考中...';
+                submitBtn.disabled = true;
+                
+                // 模拟思考时间（添加一点延迟使体验更自然）
+                setTimeout(() => {
+                    try {
+                        const { text, index } = getAnswerByQuestion(question, userId);
+                        showFullscreenAnswer(text, index);
+                    } catch (error) {
+                        console.error('获取答案时出错:', error);
+                        
+                        // 显示用户友好的错误信息
+                        const errorAnswer = {
+                            text: "答案之书暂时无法回应，请稍后再试。",
+                            index: 0
+                        };
+                        showFullscreenAnswer(errorAnswer.text, errorAnswer.index);
+                    } finally {
+                        // 恢复按钮状态
+                        submitBtn.textContent = originalText;
+                        submitBtn.disabled = false;
+                    }
+                }, 800);
+            });
+            
+            // 随机答案按钮
+            randomAnswerBtn.addEventListener('click', function() {
+                const { text, index } = getRandomAnswer();
+                showFullscreenAnswer(text, index);
+            });
+            
+            // 顶部关闭答案按钮
+            closeAnswerTopBtn.addEventListener('click', closeFullscreenAnswer);
+            
+            // 点击全屏区域任意位置关闭答案
+            answerFullscreen.addEventListener('click', function(e) {
+                // 只有当点击的是背景区域（而不是内容区域）时才关闭
+                if (e.target === this) {
+                    closeFullscreenAnswer();
+                }
+            });
+            
+            // 按ESC键关闭答案
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && answerFullscreen.classList.contains('active')) {
+                    closeFullscreenAnswer();
+                }
+            });
+            
+            // 确保PC端文字居中
+            const adjustTextAlignment = () => {
+                const answerText = document.getElementById('answerText');
+                if (window.innerWidth >= 768) {
+                    answerText.style.marginLeft = 'auto';
+                    answerText.style.marginRight = 'auto';
+                    answerText.style.maxWidth = '80%';
+                } else {
+                    answerText.style.marginLeft = '';
+                    answerText.style.marginRight = '';
+                    answerText.style.maxWidth = '';
+                }
+            };
+            
+            // 初始调整和窗口大小变化时调整
+            adjustTextAlignment();
+            window.addEventListener('resize', adjustTextAlignment);
+            
+            // 移动端触摸优化
+            if ('ontouchstart' in window) {
+                // 为触摸设备优化
+                document.querySelectorAll('.btn').forEach(btn => {
+                    btn.style.touchAction = 'manipulation';
+                });
+            }
+        });
+    </script>
+</body>
+</html>

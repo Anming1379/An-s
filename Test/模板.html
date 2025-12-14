@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+  <title>An's web page</title>
+  <meta name="description" content="An's web page" />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <!-- 导航栏 -->
+  <header class="header">
+    <div class="container">
+      <nav class="nav" aria-label="主导航">
+        <!-- 返回首页按钮 -->
+        <div class="back-home">
+          <a href="/index.html" class="back-button">← 返回首页</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+      <div class="profile" id="home">
+        <div class="profile-content">
+          <h1>标题示例</h1>
+          <p class="description">文字示例</p>
+
+          <div class="profile-actions">
+            <a href="#portfolio" class="btn btn-primary">按钮示例</a>
+            <a href="#contact" class="btn btn-secondary">按钮示例2</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 内容区域 -->
+      <div class="content">
+        <section class="content-section" id="portfolio">
+          <h2>卡片示例</h2>
+          <p>卡片描述</p>
+        </section>
+      </div>
+        
+      <div class="contact-details">
+         <div class="contact-item">
+                 <h3>卡片2标题</h3>
+                 <p>卡片2普通文字示例</p>
+                 <p><a href="跳转文本示例">卡片2链接文字示例</a></p>
+             <p><span class="contact-value">复制文本按钮</span></p>
+             </div>
+          </div>
+        
+    </div>
+  </main>
+
+  <!-- 脚本文件 -->
+  <script src="../script.js"></script>
+
+<!-- 
+
+使用说明
+需要什么元素就用这里有的,不要的就删掉,不一定要用上所有元素,可以自己添加元素 
+引用的css,js路径不要改,也不要删 
+
+以下是stycle.css 和 script.js 的完整内容,直接引用即可
+
+
+/* 变量部分保持不变 */
+:root {
+  --color-base: #FFFFFF;
+  --color-contrast: #111111;
+  --color-accent: #3E50B6;
+  --color-text: #333333;
+  --color-text-light: #666666;
+  --color-background-light: #f8f9fa;
+  --color-border: #e9ecef;
+  --font-main: 'font1', serif;
+  --font-size-xs: .75rem;
+  --font-size-sm: .875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: clamp(1.25rem, 1.25rem + ((1vw - 0.2rem) * 0.2), 1.5rem);
+  --font-size-xl: clamp(1.75rem, 1.75rem + ((1vw - 0.2rem) * 0.3), 2rem);
+  --font-size-xxl: clamp(2rem, 2rem + ((1vw - 0.2rem) * 0.5), 2.5rem);
+  --spacing-xs: .75rem;
+  --spacing-sm: 1.25rem;
+  --spacing-md: 2rem;
+  --spacing-lg: 3rem;
+  --spacing-xl: 4rem;
+  --container-md: min(90%, 1200px);
+  --container-lg: min(95%, 1400px);
+  --radius-sm: 1px;
+  --radius-md: 2px;
+  --radius-lg: 4px;
+  --transition-fast: .2s ease;
+  --transition-normal: .3s ease;
+  /* 新增按钮相关变量 */
+  --btn-padding-sm: .75rem 1.5rem;
+  --btn-padding-lg: 0.5rem 3rem;
+  --btn-font-size-sm: var(--font-size-sm);
+  --btn-font-size-lg: var(--font-size-md);
+}
+
+/* Material Icons 字体定义 - 使用正确的编码 */
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: url('./fonts/MaterialIcons-Regular.woff2') format('woff2'),
+    url('./fonts/MaterialIcons-Regular.woff') format('woff'),
+    url('./fonts/MaterialIcons-Regular.ttf') format('truetype');
+}
+
+/* Material Icons 基础样式 */
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'liga';
+}
+
+/* 不同尺寸的图标类 */
+.material-icons.md-18 { font-size: 18px; }
+.material-icons.md-24 { font-size: 24px; }
+.material-icons.md-36 { font-size: 36px; }
+.material-icons.md-48 { font-size: 48px; }
+
+/* 不同颜色的图标类 */
+.material-icons.md-dark { color: rgba(0, 0, 0, 0.54); }
+.material-icons.md-dark.md-inactive { color: rgba(0, 0, 0, 0.26); }
+.material-icons.md-light { color: rgba(255, 255, 255, 1); }
+.material-icons.md-light.md-inactive { color: rgba(255, 255, 255, 0.3); }
+
+/* reset部分保持不变 */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-main);
+  font-size: var(--font-size-md);
+  line-height: 1.6;
+  color: var(--color-text);
+  background: var(--color-base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* 容器部分保持不变 */
+.container {
+  width: var(--container-md);
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+}
+
+@media (min-width: 1200px) {
+  .container { width: var(--container-lg); }
+}
+
+/* 标题与文字部分保持不变 */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--color-contrast);
+  margin-bottom: var(--spacing-sm);
+}
+
+h1 { font-size: var(--font-size-xxl); }
+h2 { font-size: var(--font-size-xl); }
+h3 { font-size: var(--font-size-lg); }
+p { margin-bottom: var(--spacing-sm); }
+.tagline { font-size: var(--font-size-xs); color: var(--color-text-light); font-weight: 300; }
+.description { font-size: var(--font-size-md); max-width: 400px; margin-bottom: var(--spacing-md); font-weight: 300; }
+
+/* 链接部分保持不变 */
+a {
+  color: var(--color-contrast);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover { color: var(--color-accent); text-decoration: underline; }
+a:focus { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+/* 按钮优化部分 - 这里是重点 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--btn-padding-sm);
+  font-size: var(--btn-font-size-sm);
+  font-weight: 400; /* 稍微加粗，增加可读性 */
+  border-radius: var(--radius-md); /* 使用稍大的圆角，更现代 */
+  border: none;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: all var(--transition-normal); /* 使用normal过渡时间，更平滑 */
+  white-space: nowrap; /* 防止按钮文字换行 */
+}
+
+.btn-primary {
+  background: var(--color-contrast);
+  color: var(--color-base);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 添加轻微阴影增加层次感 */
+}
+
+.btn-primary:hover {
+  background: var(--color-accent);
+  color: var(--color-base);
+  transform: translateY(-1px); /* 添加悬停微动效果 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* 悬停时增加阴影 */
+}
+
+.btn-primary:active {
+  transform: translateY(0); /* 点击时恢复位置 */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); /* 点击时减少阴影 */
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--color-contrast);
+  border: 2px solid var(--color-contrast);
+}
+
+.btn-secondary:hover {
+  background: var(--color-accent);
+  color: var(--color-base);
+  border-color: var(--color-accent);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-secondary:active {
+  transform: translateY(0);
+}
+
+/* 图片部分保持不变 */
+img { max-width: 100%; height: auto; display: block; }
+
+/* 导航部分保持不变 */
+.header {
+  padding: var(--spacing-md) 0;
+  border-bottom: 1px solid var(--color-border);
+  position: relative;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand { margin-top: 1.2rem; display: flex; align-items: center; gap: var(--spacing-sm); }
+.brand-text h1 { font-size: var(--font-size-lg); margin-bottom: .25rem; }
+.brand-text h1 a:hover { text-decoration: none; }
+
+.nav-toggle {
+  display: none;
+  background: none;
+  border: 1px solid transparent;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--color-contrast);
+  padding: .25rem .5rem;
+  border-radius: var(--radius-sm);
+}
+
+.nav-toggle:focus { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+.nav-menu {
+  display: flex;
+  list-style: none;
+  gap: var(--spacing-md);
+  align-items: center;
+}
+
+.nav-menu li a { padding: .5rem .75rem; font-weight: 500; }
+
+/* 主内容部分 */
+.main { padding: var(--spacing-xl) 0; min-height: 60vh; }
+
+.profile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.profile-image {
+  width: 120px;
+  height: 120px;
+  border-radius: 0;
+  object-fit: cover;
+}
+
+.profile-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+}
+
+/* 内容区部分保持不变 */
+.content { display: flex; flex-direction: column; gap: var(--spacing-lg); }
+.content-section { padding: var(--spacing-md); background: var(--color-base); border-radius: var(--radius-md); border: 1px solid var(--color-border); }
+
+/* 页脚部分保持不变 */
+.footer {
+  background: var(--color-background-light);
+  border-top: 1px solid var(--color-border);
+  padding: var(--spacing-xl) 0 var(--spacing-lg);
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+}
+
+.footer-links { list-style: none; }
+.footer-links li { margin-bottom: var(--spacing-xs); }
+.footer-links a { color: var(--color-text-light); }
+.footer-links a:hover { color: var(--color-contrast); }
+.copyright { border-top: 1px solid var(--color-border); padding-top: var(--spacing-md); font-size: var(--font-size-xs); color: var(--color-text-light); }
+
+/* ==================== */
+/* 联系页面特定样式 */
+/* ==================== */
+
+.page-header {
+  margin-bottom: var(--spacing-xl);
+  text-align: center;
+}
+
+.page-header h1 {
+  margin-bottom: var(--spacing-sm);
+}
+
+.contact-details,
+.social-media-links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-md);
+}
+
+.contact-item,
+.social-item,
+.tips-item {
+  padding: var(--spacing-md);
+  background: var(--color-background-light);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--color-accent);
+}
+
+.contact-item h3,
+.social-item h3,
+.tips-item h3 {
+  font-size: var(--font-size-md);
+  margin-bottom: var(--spacing-xs);
+  color: var(--color-accent);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.contact-value {
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  background: rgba(62, 80, 182, 0.1);
+  border-radius: var(--radius-sm);
+  transition: background-color var(--transition-fast);
+}
+
+.contact-value:hover {
+  background: rgba(62, 80, 182, 0.2);
+}
+
+.social-description {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-light);
+  margin-top: var(--spacing-xs);
+}
+
+.nav-menu a.active {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+/* 响应式设计 - 这里是重点 */
+@media (min-width: 768px) {
+  .profile {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--spacing-xl);
+  }
+  
+  .profile-image {
+    width: 150px;
+    height: 150px;
+  }
+  
+  /* PC端按钮优化 */
+  .btn {
+    padding: var(--btn-padding-lg); 
+    font-size: var(--btn-font-size-lg); 
+    min-height: 3rem; 
+  }
+  
+  .profile-actions {
+    gap: var(--spacing-md); 
+    flex-wrap: wrap; 
+  }
+  
+  .content {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--spacing-xl);
+  }
+  
+  .content-section {
+    flex: 1;
+    min-width: 300px;
+  }
+  
+  .footer-content {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: var(--spacing-xl);
+  }
+  
+  .footer-section {
+    flex: 1;
+    min-width: 200px;
+  }
+  
+  /* 联系页面响应式 */
+  .contact-details,
+  .social-media-links {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  .contact-item,
+  .social-item {
+    flex: 1;
+    min-width: 250px;
+  }
+  
+  .tips-item {
+    margin-bottom: var(--spacing-md);
+  }
+}
+
+/* 中等屏幕进一步优化（例如平板横屏） */
+@media (min-width: 1024px) {
+  .profile-actions {
+    gap: var(--spacing-lg); /* 在更大的屏幕上进一步增加按钮间距 */
+  }
+}
+
+/* 移动端样式保持不变 */
+@media (max-width: 767px) {
+  .container { padding: 0 var(--spacing-sm); }
+  
+  .nav-toggle { display: block; }
+  
+  .nav { position: relative; }
+  
+  .nav-menu {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--color-base);
+    padding: var(--spacing-md);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    gap: var(--spacing-sm);
+  }
+  
+  .nav-menu.active { display: flex; }
+  
+  .profile-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .btn {
+    width: 100%; /* 移动端按钮占满宽度 */
+    min-height: 2.75rem; /* 确保触摸友好 */
+  }
+  
+  .content-section { padding: var(--spacing-sm); }
+}
+
+/* 打印样式保持不变 */
+@media print {
+  .header, .footer, .btn { display: none; }
+  body { font-size: 12pt; line-height: 1.5; }
+  .container { width: 100%; padding: 0; }
+  h1, h2, h3 { page-break-after: avoid; }
+  img { max-width: 50% !important; }
+  * { background: transparent !important; color: #000 !important; box-shadow: none !important; }
+}
+
+
+/**
+ * An's web page - 主要JavaScript功能
+ */
+document.addEventListener('DOMContentLoaded', () => {
+    setupMobileMenu();
+    setupSmoothScrolling();
+    setupImageLoading();
+    setupResponsiveBehavior();
+});
+
+/** 移动端菜单 */
+function setupMobileMenu() {
+    const navToggle = document.querySelector('.nav-toggle');
+    const navMenu = document.querySelector('.nav-menu');
+    
+    if (!navToggle || !navMenu) return;
+    
+    // 切换菜单
+    navToggle.addEventListener('click', () => {
+        const isExpanded = navMenu.classList.toggle('active');
+        navToggle.setAttribute('aria-expanded', String(isExpanded));
+        navToggle.textContent = isExpanded ? '✕' : '☰';
+    });
+    
+    // 点击外部关闭
+    document.addEventListener('click', (event) => {
+        const isMobile = window.innerWidth <= 767;
+        if (!isMobile) return;
+        if (!navMenu.contains(event.target) && !navToggle.contains(event.target)) {
+            navMenu.classList.remove('active');
+            navToggle.setAttribute('aria-expanded', 'false');
+            navToggle.textContent = '☰';
+        }
+    });
+    
+    // 点击菜单项（移动端）自动收起
+    navMenu.querySelectorAll('a[href^="#"]').forEach(link => {
+        link.addEventListener('click', () => {
+            if (window.innerWidth <= 767) {
+                navMenu.classList.remove('active');
+                navToggle.setAttribute('aria-expanded', 'false');
+                navToggle.textContent = '☰';
+            }
+        });
+    });
+}
+
+/** 平滑滚动并考虑固定头部高度 */
+function setupSmoothScrolling() {
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', (e) => {
+            const href = anchor.getAttribute('href');
+            if (!href || href === '#' || href === '#!') return;
+            
+            const target = document.querySelector(href);
+            if (!target) return;
+            
+            e.preventDefault();
+            const headerHeight = document.querySelector('.header')?.offsetHeight || 80;
+            const top = Math.max(0, target.getBoundingClientRect().top + window.pageYOffset - headerHeight);
+            
+            window.scrollTo({ top, behavior: 'smooth' });
+            // 更新哈希（避免 pushState 异常返回行为）
+            setTimeout(() => { location.hash = href; }, 200);
+        });
+    });
+}
+
+/** 图片加载优化 */
+function setupImageLoading() {
+    const images = document.querySelectorAll('img');
+    
+    images.forEach(img => {
+        // 原生懒加载回退：若未设置则补上
+        if (!img.hasAttribute('loading')) img.setAttribute('loading', 'lazy');
+        
+        if (img.complete) {
+            img.classList.add('loaded');
+        } else {
+            img.addEventListener('load', function() {
+                this.classList.add('loaded');
+            });
+            img.addEventListener('error', function() {
+                console.warn('图片加载失败:', this.src);
+                this.style.opacity = '0.5';
+            });
+        }
+    });
+}
+
+/** 响应式行为：窗口变化时重置菜单状态 */
+function setupResponsiveBehavior() {
+    const resetOnDesktop = debounce(() => {
+        const navMenu = document.querySelector('.nav-menu');
+        const navToggle = document.querySelector('.nav-toggle');
+        if (!navMenu || !navToggle) return;
+        
+        if (window.innerWidth > 767) {
+            navMenu.classList.remove('active');
+            navToggle.setAttribute('aria-expanded', 'false');
+            navToggle.textContent = '☰';
+        }
+    }, 200);
+    
+    window.addEventListener('resize', resetOnDesktop);
+    resetOnDesktop();
+}
+
+/** 防抖 */
+function debounce(fn, wait = 200) {
+    let t;
+    return (...args) => {
+        clearTimeout(t);
+        t = setTimeout(() => fn(...args), wait);
+    };
+}
+
+代码中不用写上以上部分,可以直接引用!!!
+
+-->
+  
+</body>
+</html>

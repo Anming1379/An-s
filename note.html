@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+  <meta name="description" content="桉的笔记本">
+  <meta name="keywords" content="笔记">
+  <title>桉的笔记 </title>
+
+  <link rel="stylesheet" href="style.css" />
+  
+  <script src="assets/marked.min.js"></script>
+  
+  <script src="assets/purify.min.js"></script>
+  
+  <link rel="stylesheet" href="assets/github.min.css">
+  
+  <script src="assets/highlight.min.js"></script>  
+  <style>
+    /* 文件树样式 */
+    .file-tree {
+      font-size: var(--font-size-sm);
+      line-height: 3;
+      margin-bottom: var(--spacing-lg);
+    }
+    
+    .folder, .file {
+      cursor: pointer;
+      user-select: none;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      transition: background var(--transition-fast), color var(--transition-fast);
+      margin-bottom: 4px;
+    }
+    
+    .folder:hover, .file:hover {
+      background: rgba(62, 80, 182, 0.08);
+    }
+    
+    .folder .title {
+      font-weight: 500;
+      color: var(--color-accent);
+    }
+    
+    .file.selected {
+      background: rgba(62, 80, 182, 0.08);
+      font-weight: 500;
+    }
+    
+    .children {
+      padding-left: 16px;
+      margin-top: 4px;
+      border-left: 1px dashed var(--color-border);
+      max-height: 500px;
+      overflow-y: hidden;
+      transition: max-height var(--transition-normal);
+    }
+    
+    .children.collapsed {
+      max-height: 0;
+    }
+
+    /* 【新的修复 1】: 导航栏改为正常滚动 (不再固定) */
+    .header {
+      /* 移除 position: fixed; top/left/right，使其随页面滚动 */
+      z-index: 1001; /* 保持层级，防止与其他元素意外重叠 */
+      background: var(--color-base); 
+      border-bottom: 1px solid var(--color-border);
+    }
+    
+    /* 【新的修复 2】: 移除 Main 内容的顶部内边距，让内容紧跟 Header 后自然流动 */
+    .main {
+      padding-top: 0; 
+    }
+
+    /* 工具栏 */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: var(--spacing-md);
+      flex-wrap: wrap;
+    }
+    
+    .mobile-toggle {
+      display: none;
+      border: 1px solid var(--color-border);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      background: var(--color-base);
+      color: var(--color-text);
+      cursor: pointer;
+      font-size: var(--font-size-sm);
+    }
+    
+    .search {
+      flex: 1;
+      min-width: 200px;
+      padding: 10px 12px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background: var(--color-base);
+      color: var(--color-text);
+      outline: none;
+      font-size: var(--font-size-sm);
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .meta {
+      min-width: 160px;
+      color: var(--color-text-light);
+      font-size: var(--font-size-xs);
+    }
+
+    /* 加载状态 */
+    .loading-indicator {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(62, 80, 182, 0.2);
+      border-radius: 50%;
+      border-top-color: var(--color-accent);
+      animation: spin 1s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Markdown 内容区域 - 居中且无边框 */
+    .md-content {
+      padding: 0;
+      box-sizing: border-box;
+      width: 100%;
+      max-width: 800px; /* 限制最大宽度，防止行过长 */
+      margin: 0 auto; /* 居中显示 */
+      border: none;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    /* 标题样式 - 保持h1居中，其他左对齐 */
+    .md-content h1 {
+      text-align: center;
+      font-size: var(--font-size-xl);
+      margin: 0.6em 0 0.4em 0;
+      color: var(--color-contrast);
+      line-height: 6;
+    }
+    
+    .md-content h2 {
+      text-align: left;
+      font-size: var(--font-size-lg);
+      margin: 0.9em 0 0.35em 0;
+      color: var(--color-contrast);
+      line-height: 5;
+    }
+    
+    .md-content h3 {
+      text-align: left;
+      font-size: 1.1rem;
+      margin: 0.8em 0 0.35em 0;
+      color: var(--color-contrast);
+      line-height: 4;
+    }
+    
+    .md-content h4 {
+      text-align: left;
+      font-size: 1rem;
+      margin: 0.7em 0 0.3em 0;
+      color: var(--color-contrast);
+      line-height: 4;
+    }
+    
+    .md-content h5 {
+      text-align: left;
+      font-size: 0.95rem;
+      margin: 0.6em 0 0.25em 0;
+      color: var(--color-contrast);
+      line-height: 4;
+    }
+    
+    .md-content h6 {
+      text-align: left;
+      font-size: 0.9rem;
+      margin: 0.5em 0 0.2em 0;
+      color: var(--color-contrast);
+      line-height: 4;
+    }
+
+    /* 正文段落与列表 - 左对齐 */
+    .md-content p, .md-content li {
+      text-align: left;
+      color: var(--color-text);
+      line-height: 2;
+    }
+
+    .md-content a {
+      color: var(--color-accent);
+      text-decoration: none;
+      transition: color var(--transition-fast);
+    }
+    
+    .md-content a:hover {
+      text-decoration: underline;
+    }
+    
+    .md-content img {
+      max-width: 100%;
+      border-radius: var(--radius-sm);
+    }
+
+    .md-content blockquote {
+      margin: 1em 0;
+      padding: 12px 16px;
+      border-left: 3px solid var(--color-accent);
+      background: rgba(62, 80, 182, 0.08);
+      color: var(--color-text);
+      border-radius: var(--radius-sm);
+    }
+    
+    .md-content hr {
+      border: none;
+      border-top: 1px solid var(--color-border);
+      margin: 22px 0;
+    }
+    
+    .md-content ul, .md-content ol {
+      padding-left: 1.3em;
+    }
+    
+    .md-content li {
+      margin: 0.35em 0;
+    }
+    
+    .md-content table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    
+    .md-content th, .md-content td {
+      border: 1px solid var(--color-border);
+      padding: 10px;
+      text-align: left;
+    }
+    
+    .md-content thead th {
+      background: rgba(62, 80, 182, 0.08);
+      font-weight: 500;
+    }
+    
+    .md-content pre {
+      background: #f6f8fa;
+      color: var(--color-text);
+      padding: 14px;
+      border-radius: var(--radius-sm);
+      overflow: auto;
+      font-size: 0.9rem;
+    }
+    
+    .md-content code {
+      background: rgba(62, 80, 182, 0.08);
+      color: var(--color-text);
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+    }
+    
+    .md-content pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+      border-radius: 0;
+    }
+
+    /* 链接卡片样式 */
+    .md-content a.md-link-card {
+      display: inline-block;
+      padding: 10px 14px;
+      margin: 6px 6px 6px 0;
+      background: rgba(62, 80, 182, 0.08);
+      color: var(--color-accent);
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(62, 80, 182, 0.2);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      text-decoration: none;
+      transition: all var(--transition-fast);
+      font-weight: 500;
+      width: 100%;
+    }
+    
+    .md-content a.md-link-card:hover, .md-content a.md-link-card:focus {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      text-decoration: none;
+    }
+
+    /* 目录样式（在侧边栏中） */
+    .toc-section {
+      margin-top: var(--spacing-lg);
+      border-top: 1px solid var(--color-border);
+      padding-top: var(--spacing-md);
+    }
+    
+    .toc-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    
+    .toc-title {
+      font-weight: 500;
+      font-size: var(--font-size-sm);
+      color: var(--color-contrast);
+    }
+    
+    .toc-toggle {
+      border: 1px solid var(--color-border);
+      background: var(--color-base);
+      color: var(--color-text-light);
+      border-radius: var(--radius-sm);
+      padding: 4px 8px;
+      cursor: pointer;
+      font-size: var(--font-size-xs);
+      transition: all var(--transition-fast);
+    }
+    
+    .toc-toggle:hover {
+      border-color: var(--color-accent);
+    }
+    
+    .toc {
+      overflow: auto;
+      max-height: 300px;
+      transition: max-height var(--transition-normal);
+    }
+    
+    .toc.collapsed {
+      max-height: 0;
+      overflow: hidden;
+    }
+
+    .toc a {
+      display: block;
+      text-decoration: none;
+      padding: 6px 8px;
+      border-radius: var(--radius-sm);
+      position: relative;
+      color: var(--color-text-light);
+      font-size: var(--font-size-sm);
+      transition: all var(--transition-fast);
+      margin-bottom: 2px;
+    }
+    
+    .toc .level-1 {
+      padding-left: 8px;
+      color: var(--color-contrast);
+      font-weight: 500;
+    }
+    
+    .toc .level-2 {
+      padding-left: 16px;
+      color: var(--color-text);
+    }
+    
+    .toc .level-3 {
+      padding-left: 24px;
+      color: var(--color-text-light);
+    }
+    
+    .toc .level-4 {
+      padding-left: 32px;
+      color: var(--color-text-light);
+    }
+    
+    .toc a:hover {
+      background: rgba(62, 80, 182, 0.08);
+      color: var(--color-text);
+    }
+    
+    .toc a.active {
+      background: rgba(62, 80, 182, 0.08);
+      color: var(--color-accent);
+      font-weight: 500;
+    }
+
+    /* 【修复 3-基础】: 侧边栏改为全屏高度的 Overlay 模式 */
+    .sidebar {
+      position: fixed;
+      left: -550px; /* 使用一个安全值，确保在 PC 端也被隐藏 */
+      top: 0;
+      bottom: 0;
+      z-index: 1002; /* 确保高于 Header (1001) */
+      width: 280px; /* 默认移动端宽度 */
+      background: var(--color-base);
+      border-right: 1px solid var(--color-border);
+      padding: var(--spacing-md);
+      box-sizing: border-box;
+      overflow-y: auto;
+      transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+      max-height: 100vh;
+    }
+    
+    .sidebar.open {
+      left: 0;
+      box-shadow: 4px 0 12px rgba(0, 0, 0, 0.25);
+    }
+    
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    
+    .close-btn {
+      border: 0;
+      background: transparent;
+      color: var(--color-text-light);
+      font-size: 24px;
+      cursor: pointer;
+      padding: 4px;
+      line-height: 2;
+    }
+    
+    .close-btn:hover {
+      color: var(--color-text);
+    }
+
+    /* 移动端侧边栏按钮 */
+    .toc-fab {
+      display: none;
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 1003; /* 确保在侧边栏之上 */
+      border: 1px solid var(--color-border);
+      background: var(--color-base);
+      color: var(--color-text);
+      border-radius: 50%;
+      padding: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      width: 48px;
+      height: 48px;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--transition-fast);
+    }
+    
+    .toc-fab:hover {
+      background: var(--color-accent);
+      color: white;
+      transform: scale(1.1);
+    }
+    
+    .toc-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.25);
+      z-index: 1001; /* 在 Header (1001) 和 Sidebar (1002) 之间 */
+      backdrop-filter: blur(2px);
+    }
+    
+    .toc-backdrop.open {
+      display: block;
+    }
+
+    /* 布局 - 现在主内容不再需要为侧边栏留白，始终占满可用空间 */
+    .md-layout {
+      display: flex;
+      gap: var(--spacing-xl);
+      align-items: flex-start;
+      width: 100%; /* 确保布局容器占满 */
+    }
+    
+    .md-main {
+      flex: 1;
+      min-width: 0;
+      width: 100%; 
+    }
+    
+    /* 主容器调整，确保内容居中 */
+    .main .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center; 
+    }
+
+    /* 空状态提示 */
+    .empty-state {
+      text-align: center;
+      padding: var(--spacing-xl);
+      color: var(--color-text-light);
+    }
+    
+    .empty-state-icon {
+      font-size: 48px;
+      margin-bottom: var(--spacing-md);
+      opacity: 0.3;
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 980px) {
+      .toc-fab {
+        display: flex;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .mobile-toggle {
+        display: inline-block;
+      }
+      
+      .search {
+        min-width: 100%;
+        order: 3;
+      }
+      
+      .toolbar {
+        gap: 8px;
+      }
+      
+      .md-content {
+        max-width: 100%; 
+        padding: 0 var(--spacing-sm);
+      }
+      
+      .sidebar {
+        width: 85%;
+        max-width: 300px;
+      }
+    }
+
+    @media (min-width: 981px) {
+      /* 【修复 3-PC】: PC端改为 Overlay 模式，占满左半屏 */
+      .sidebar {
+        width: 50%; /* 占满左半屏 */
+        max-width: 500px; /* 限制最大宽度 */
+        /* left: -550px; 已经由基础样式定义 */
+      }
+      
+      /* PC端主内容区域布局调整：移除所有 margin/width 偏移 */
+      .md-main {
+        margin-left: 0; 
+        width: 100%; 
+      }
+      
+      .md-content {
+        max-width: 800px; 
+        margin: 0 auto; 
+      }
+      
+      /* TOC 按钮在 PC 端也显示 */
+      .toc-fab {
+        display: flex;
+      }
+    }
+    
+    /* 当目录为空时的处理 */
+    .toc:empty::before {
+      content: "当前未加载";
+      color: var(--color-text-light);
+      font-style: italic;
+      font-size: var(--font-size-sm);
+      display: block;
+      padding: 12px;
+    }
+    
+    /* 空目录样式 */
+    .toc.empty-toc::before {
+      content: "本文无标题";
+      color: var(--color-text-light);
+      font-style: italic;
+      font-size: var(--font-size-sm);
+      display: block;
+      padding: 12px;
+    }
+    
+    .sidebar-intro {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-light);
+      margin-top: 6px;
+      margin-bottom: var(--spacing-sm);
+    }
+    
+    /* 文件统计信息 */
+    .file-stats {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-light);
+      padding: 8px 12px;
+      background: rgba(0, 0, 0, 0.02);
+      border-radius: var(--radius-sm);
+      margin-top: var(--spacing-sm);
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <nav class="nav" aria-label="主导航">
+        <div class="brand">
+          <div class="brand-text">
+            <h1><a href="index.html">An's web page</a></h1>
+            <p class="tagline">桉的笔记本</p>
+          </div>
+        </div>
+
+        <button
+          class="nav-toggle"
+          aria-label="切换导航菜单"
+          aria-controls="primary-menu"
+          aria-expanded="false"
+          type="button"
+        >
+          <span class="material-icons">menu</span>
+        </button>
+
+
+        <ul id="primary-menu" class="nav-menu" role="menu">
+          <li role="none"><a role="menuitem" href="index.html"> 首页 </a></li>
+          <li role="none"><a role="menuitem" href="note.html" class="active"> 笔记 </a></li>
+          <li role="none"><a role="menuitem" href="alambda.html" > ALambda </a></li>
+          <li role="none"><a role="menuitem" href="contact.html" > 联系 </a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo" style="font-weight: 500; font-size: var(--font-size-sm);">桉的笔记本</div>
+      <button id="closeSidebar" class="close-btn" title="关闭侧边栏">×</button>
+    </div>
+
+    <input id="search" class="search" placeholder="搜索笔记..." />
+    
+    <div class="file-tree" id="fileTree">
+      <div class="loading-indicator"></div> 正在加载笔记...
+    </div>
+    
+    <div class="toc-section">
+      <div class="toc-header">
+        <div class="toc-title">目录</div>
+        <button id="tocToggle" class="toc-toggle" aria-controls="toc" aria-label="收起目录">收起</button>
+      </div>
+      <nav id="toc" class="toc">当前未加载</nav>
+    </div>
+    
+    <div class="file-stats" id="fileStats">
+      共加载 <span id="fileCount">0</span> 篇笔记
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="container">
+      <div class="md-layout">
+        <div class="md-main">
+          <section class="md-content" id="content">
+            <h1>Markdown 阅读器</h1>
+            <p>从左侧文件列表中选择一个 Markdown 文件开始阅读。</p>
+            <p>此阅读器支持代码高亮、目录导航、全文搜索等功能。</p>
+            <div class="empty-state">
+              <div class="empty-state-icon">📚</div>
+              <p>选择一个笔记开始阅读吧</p>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <button id="tocFab" class="toc-fab" aria-label="打开侧边栏">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+  <div id="tocBackdrop" class="toc-backdrop" aria-hidden="true"></div>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>An's web page</h3>
+          <p>桉的个人网页，分享艺术作品、技术笔记和生活点滴。</p>
+        </div>
+
+        <div class="footer-section">
+          <h4>快速链接</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="note.html">笔记</a></li>
+            <li><a href="alambda.html">ALambda</a></li>
+            <li><a href="contact.html">联系</a></li>
+          </ul>
+        </div>
+        
+        <div class="copyright">
+          <p>© 2025 AnmingCat</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+
+  <script src="./manifest.js"></script>
+
+  <script type="application/json" id="embedded-manifest">
+  {
+    "README.md": "# Markdown 阅读器\n\n欢迎使用 Markdown 阅读器！\n\n这是一个简单的 Markdown 阅读器，支持：\n\n- **代码高亮** - 使用 Highlight.js\n- **目录导航** - 自动生成文档目录\n- **文件浏览** - 从文件树中选择文档\n- **响应式设计** - 适配各种设备屏幕\n\n## 功能示例\n\n### 代码块\n\n```javascript\n// 这是一个 JavaScript 示例\nfunction helloWorld() {\n  console.log('Hello, Markdown!');\n  return true;\n}\n```\n\n### 表格\n\n| 功能 | 状态 | 说明 |\n|------|------|------|\n| 代码高亮 | ✅ 已支持 | 使用 Highlight.js |\n| 目录导航 | ✅ 已支持 | 自动生成文档目录 |\n| 文件搜索 | ✅ 已支持 | 按文件名或内容搜索 |\n\n### 引用\n\n> Markdown 是一种轻量级标记语言，允许人们使用易读易写的纯文本格式编写文档。\n\n### 列表\n\n- 项目 1\n- 项目 2\n  - 子项目 2.1\n  - 子项目 2.2\n- 项目 3\n\n### 链接\n\n[访问 GitHub](https://github.com)\n\n### 图片\n\n![示例图片](https://via.placeholder.com/400x200.png?text=Markdown+Image)\n\n## 开始使用\n\n1. 从左侧文件树中选择一个文档\n2. 使用目录快速导航\n3. 在移动设备上使用右下角按钮打开目录\n"
+  }
+  </script>
+
+  <script>
+  (function(){
+    const fileTreeEl = document.getElementById('fileTree');
+    const contentEl = document.getElementById('content');
+    const tocEl = document.getElementById('toc');
+    const searchEl = document.getElementById('search');
+    const sidebar = document.getElementById('sidebar');
+    const closeSidebar = document.getElementById('closeSidebar');
+    const tocToggle = document.getElementById('tocToggle');
+    const tocFab = document.getElementById('tocFab');
+    const tocBackdrop = document.getElementById('tocBackdrop');
+    const fileStats = document.getElementById('fileStats');
+    const fileCount = document.getElementById('fileCount');
+
+    // 设置 header 高度变量
+    function updateHeaderHeight() {
+      // 由于导航栏不再固定，并且侧边栏采用全屏 Overlay 模式，
+      // 不需要计算 Header 高度来调整其他元素的定位或边距。
+      // 此函数现在是一个空操作。
+    }
+    
+    updateHeaderHeight();
+
+    // 侧边栏开关
+    function openSidebar() {
+      sidebar.classList.add('open');
+      tocBackdrop.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeSidebarFn() {
+      sidebar.classList.remove('open');
+      tocBackdrop.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    if (closeSidebar) closeSidebar.addEventListener('click', closeSidebarFn);
+    
+    // 移动端/PC端 侧边栏按钮
+    if (tocFab) {
+      tocFab.addEventListener('click', openSidebar);
+    }
+    
+    if (tocBackdrop) tocBackdrop.addEventListener('click', closeSidebarFn);
+
+    // 目录开关
+    if (localStorage.getItem('mdviewer-toc-collapsed') === 'true') {
+      tocEl.classList.add('collapsed');
+      if (tocToggle) tocToggle.textContent = '展开';
+    }
+    
+    if (tocToggle) {
+      tocToggle.addEventListener('click', () => {
+        const collapsed = tocEl.classList.toggle('collapsed');
+        tocToggle.textContent = collapsed ? '展开' : '收起';
+        localStorage.setItem('mdviewer-toc-collapsed', String(collapsed));
+      });
+    }
+
+    // 窗口大小变化时只更新 Header 高度 (移除关闭侧边栏的逻辑)
+    window.addEventListener('resize', () => {
+      updateHeaderHeight();
+    });
+
+    const files = new Map();
+    let selectedFileEl = null;
+    let currentObserver = null;
+    let searchTimeout = null;
+
+    // 更新文件统计
+    function updateFileStats() {
+      if (fileCount) {
+        fileCount.textContent = files.size;
+      }
+    }
+
+    // 显示加载状态
+    function showLoading() {
+      if (fileTreeEl) {
+        fileTreeEl.innerHTML = '<div class="loading-indicator"></div> 正在加载笔记...';
+      }
+      if (contentEl) {
+        contentEl.innerHTML = `
+          <h1>加载中...</h1>
+          <div class="empty-state">
+            <div class="loading-indicator" style="width: 24px; height: 24px;"></div>
+            <p>正在加载笔记内容</p>
+          </div>
+        `;
+      }
+    }
+
+    // 加载文件清单
+    function loadManifest() {
+      showLoading();
+      
+      let manifest = null;
+      if (window.filesManifest && typeof window.filesManifest === 'object') {
+        manifest = window.filesManifest;
+      } else {
+        try {
+          const embedded = document.getElementById('embedded-manifest');
+          manifest = JSON.parse(embedded.textContent.trim());
+        } catch (e) {
+          manifest = {};
+        }
+      }
+
+      const names = Object.keys(manifest);
+      if (names.length === 0) {
+        if (fileTreeEl) fileTreeEl.textContent = '未找到任何笔记';
+        if (contentEl) contentEl.innerHTML = `
+          <h1>没有找到笔记</h1>
+          <div class="empty-state">
+            <div class="empty-state-icon">📝</div>
+            <p>请检查 manifest.js 文件或添加笔记内容</p>
+          </div>
+        `;
+        if (tocEl) {
+          tocEl.innerHTML = '';
+          tocEl.classList.add('empty-toc');
+        }
+        updateFileStats();
+        return;
+      }
+
+      for (const name of names) {
+        const raw = String(manifest[name] || '');
+        files.set(name, { name, path: name, text: raw });
+      }
+
+      updateFileStats();
+      buildTreeAndRender();
+
+      // 检查URL中是否有指定的文件
+      const urlParams = new URLSearchParams(window.location.search);
+      const fileParam = urlParams.get('file');
+      const hashParam = window.location.hash.slice(1);
+      
+      let firstFile = names[0];
+      if (fileParam && files.has(fileParam)) {
+        firstFile = fileParam;
+      }
+
+      requestAnimationFrame(() => {
+        const nodeEl = document.querySelector(`.file[data-path="${CSS.escape(firstFile)}"]`);
+        if (nodeEl) {
+          nodeEl.click();
+          // 如果有hash，滚动到对应位置
+          if (hashParam && !fileParam) {
+            setTimeout(() => {
+              const target = document.getElementById(hashParam);
+              if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            }, 100);
+          }
+        }
+      });
+    }
+
+    // 构建文件树模型
+    function buildTreeModel() {
+      const root = {};
+      for (const [p, meta] of files) {
+        const parts = p.split('/').filter(Boolean);
+        let node = root;
+        for (let i = 0; i < parts.length; i++) {
+          const part = parts[i];
+          if (!node.children) node.children = {};
+          if (!node.children[part]) node.children[part] = { 
+            name: part, 
+            path: parts.slice(0, i + 1).join('/'), 
+            children: null 
+          };
+          node = node.children[part];
+        }
+        node.type = 'file';
+        node.text = meta.text;
+      }
+      
+      function convert(mapNode) {
+        if (!mapNode || !mapNode.children) return [];
+        return Object.values(mapNode.children).map(n => {
+          if (n.children && Object.keys(n.children).length > 0) {
+            return { 
+              name: n.name, 
+              path: n.path, 
+              type: 'dir', 
+              children: convert(n),
+              collapsed: localStorage.getItem(`folder-${n.path}`) === 'true'
+            };
+          } else {
+            return { 
+              name: n.name, 
+              path: n.path, 
+              type: n.type === 'file' ? 'file' : 'dir', 
+              text: n.text || '' 
+            };
+          }
+        }).sort((a, b) => {
+          if (a.type === b.type) return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
+          return a.type === 'dir' ? -1 : 1;
+        });
+      }
+      
+      return convert({ children: root.children || {} });
+    }
+
+    // 渲染文件树
+    function renderTree(tree, container = fileTreeEl) {
+      if (!container) return;
+      container.innerHTML = '';
+      if (!tree || tree.length === 0) {
+        container.textContent = '未找到文件';
+        return;
+      }
+      
+      tree.forEach(node => {
+        const el = document.createElement('div');
+        if (node.type === 'dir') {
+          const folder = document.createElement('div');
+          folder.className = 'folder';
+          folder.innerHTML = `<div class="title">⁋ ${node.name}</div>`;
+          folder.addEventListener('click', (ev) => {
+            ev.stopPropagation();
+            const ch = el.querySelector('.children');
+            if (ch) {
+              const isCollapsed = ch.style.display === 'none';
+              ch.style.display = isCollapsed ? 'block' : 'none';
+              ch.classList.toggle('collapsed', !isCollapsed);
+              localStorage.setItem(`folder-${node.path}`, !isCollapsed);
+            }
+          });
+          el.appendChild(folder);
+          const children = document.createElement('div');
+          children.className = 'children';
+          if (node.collapsed) {
+            children.style.display = 'none';
+            children.classList.add('collapsed');
+          }
+          renderTree(node.children || [], children);
+          el.appendChild(children);
+        } else {
+          const file = document.createElement('div');
+          file.className = 'file';
+          file.innerHTML = `- ${node.name}`;
+          file.dataset.path = node.path;
+          file.tabIndex = 0;
+          file.setAttribute('role', 'treeitem');
+          file.addEventListener('click', () => selectFile(node.path, file));
+          file.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              selectFile(node.path, file);
+            }
+          });
+          el.appendChild(file);
+        }
+        container.appendChild(el);
+      });
+    }
+
+    // 选择文件
+    function selectFile(relPath, el) {
+      if (selectedFileEl) selectedFileEl.classList.remove('selected');
+      selectedFileEl = el;
+      el.classList.add('selected');
+
+      const entry = files.get(relPath);
+      if (!entry) {
+        contentEl.innerHTML = `
+          <h1>文件不存在</h1>
+          <div class="empty-state">
+            <div class="empty-state-icon">×</div>
+            <p>无法找到文件: ${relPath}</p>
+          </div>
+        `;
+        return;
+      }
+      
+      // 更新URL但不刷新页面
+      const url = new URL(window.location);
+      url.searchParams.set('file', relPath);
+      history.replaceState(null, '', url);
+      
+      renderMarkdown(entry.text);
+      
+      // 选择文件后自动关闭侧边栏（无论PC还是移动端）
+      closeSidebarFn();
+    }
+
+    // 渲染 Markdown
+    function renderMarkdown(md) {
+      if (!contentEl) return;
+      
+      // 显示加载状态
+      contentEl.innerHTML = `
+        <div style="text-align: center; padding: 40px;">
+          <div class="loading-indicator" style="width: 24px; height: 24px; margin: 0 auto 20px;"></div>
+          <p>正在渲染内容...</p>
+        </div>
+      `;
+      
+      setTimeout(() => {
+        marked.setOptions({ 
+          gfm: true, 
+          breaks: false, 
+          smartLists: true, 
+          headerIds: true,
+          highlight: function(code, lang) {
+            if (window.hljs && lang && hljs.getLanguage(lang)) {
+              try {
+                return hljs.highlight(code, { language: lang }).value;
+              } catch (e) {}
+            }
+            return code;
+          }
+        });
+        
+        try {
+          const html = marked.parse(md);
+          const safe = DOMPurify.sanitize(html, { 
+            ADD_ATTR: ['id', 'target', 'rel'],
+            ADD_TAGS: ['iframe'],
+            ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling']
+          });
+          contentEl.innerHTML = safe;
+
+          // 为标题生成唯一 ID
+          const headings = Array.from(contentEl.querySelectorAll('h1, h2, h3, h4, h5, h6'));
+          headings.forEach(h => {
+            const text = (h.textContent || '').trim();
+            const base = text.slice(0, 40);
+            const encoded = encodeURIComponent(base).replace(/%/g, '-').toLowerCase();
+            const slug = encoded || ('section-' + h.tagName.toLowerCase());
+            let id = slug;
+            let i = 1;
+            while (contentEl.querySelector('#' + CSS.escape(id))) {
+              id = `${slug}-${i}`;
+              i++;
+            }
+            h.id = id;
+          });
+
+          // 生成目录
+          let tocList = headings.filter(h => ['H2', 'H3', 'H4'].includes(h.tagName))
+            .map(h => ({ text: h.textContent.trim(), level: parseInt(h.tagName.substring(1), 10), id: h.id }));
+          if (tocList.length === 0) {
+            tocList = headings.filter(h => h.tagName === 'H1').map(h => ({ text: h.textContent.trim(), level: 1, id: h.id }));
+          }
+          
+          if (tocEl) {
+            tocEl.innerHTML = '';
+            tocEl.classList.remove('empty-toc');
+            
+            if (tocList.length === 0) {
+              tocEl.classList.add('empty-toc');
+            } else {
+              tocList.forEach(item => {
+                const a = document.createElement('a');
+                a.href = '#' + item.id;
+                a.textContent = item.text;
+                a.className = 'level-' + item.level;
+                a.addEventListener('click', (e) => {
+                  e.preventDefault();
+                  const target = document.getElementById(item.id);
+                  if (!target) return;
+                  target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  history.replaceState(null, '', `#${item.id}`);
+                  
+                  // 点击目录后自动关闭侧边栏
+                  closeSidebarFn();
+                });
+                tocEl.appendChild(a);
+              });
+            }
+          }
+
+          // 代码高亮
+          if (window.hljs) {
+            const blocks = contentEl.querySelectorAll('pre code');
+            if (blocks.length) {
+              blocks.forEach(block => {
+                hljs.highlightElement(block);
+                // 添加复制按钮
+                const pre = block.parentElement;
+                if (pre && !pre.querySelector('.copy-btn')) {
+                  const copyBtn = document.createElement('button');
+                  copyBtn.className = 'copy-btn';
+                  copyBtn.innerHTML = '复制';
+                  copyBtn.style.cssText = `
+                    position: absolute;
+                    top: 8px;
+                    right: 8px;
+                    padding: 4px 8px;
+                    background: rgba(0,0,0,0.1);
+                    border: none;
+                    border-radius: 4px;
+                    font-size: 12px;
+                    cursor: pointer;
+                    color: #666;
+                  `;
+                  copyBtn.addEventListener('click', async () => {
+                    try {
+                      await navigator.clipboard.writeText(block.textContent);
+                      copyBtn.textContent = '已复制';
+                      setTimeout(() => copyBtn.textContent = '复制', 2000);
+                    } catch (err) {
+                      console.error('复制失败:', err);
+                    }
+                  });
+                  pre.style.position = 'relative';
+                  pre.appendChild(copyBtn);
+                }
+              });
+            }
+          }
+
+          // 目录激活观察器
+          const observeTags = tocList.some(i => i.level >= 2) ? ['H2', 'H3', 'H4'] : ['H1'];
+          const observeHeadings = headings.filter(h => observeTags.includes(h.tagName));
+          const tocMap = new Map();
+          if (tocEl) {
+            tocEl.querySelectorAll('a').forEach(a => tocMap.set(a.getAttribute('href').slice(1), a));
+          }
+          
+          if (currentObserver) {
+            try {
+              currentObserver.disconnect();
+            } catch (e) {}
+            currentObserver = null;
+          }
+          
+          if (observeHeadings.length > 0) {
+            currentObserver = new IntersectionObserver((entries) => {
+              const visible = entries.filter(e => e.isIntersecting).sort((a, b) => a.target.getBoundingClientRect().top - b.target.getBoundingClientRect().top);
+              const current = (visible[0] && visible[0].target.id) || null;
+              if (!current) return;
+              if (tocEl) tocEl.querySelectorAll('a.active').forEach(a => a.classList.remove('active'));
+              const link = tocMap.get(current);
+              if (link) link.classList.add('active');
+            }, { rootMargin: '0px 0px -70% 0px', threshold: 0.1 });
+            
+            observeHeadings.forEach(h => currentObserver.observe(h));
+          }
+
+          // 链接卡片样式处理
+          renderPostProcessLinks();
+
+          // 初始 hash 处理
+          const initialHash = location.hash && location.hash.slice(1);
+          if (initialHash) {
+            const tgt = document.getElementById(initialHash);
+            if (tgt) tgt.scrollIntoView({ behavior: 'auto', block: 'start' });
+          }
+        } catch (error) {
+          console.error('渲染Markdown时出错:', error);
+          contentEl.innerHTML = `
+            <h1>渲染错误</h1>
+            <div class="empty-state">
+              <div class="empty-state-icon">⚠️</div>
+              <p>无法渲染Markdown内容</p>
+              <pre style="text-align: left; background: #f8f8f8; padding: 10px; border-radius: 5px; margin-top: 10px;">${error.message}</pre>
+            </div>
+          `;
+        }
+      }, 50); // 添加微小延迟确保UI响应
+    }
+
+    // 链接卡片处理
+    function renderPostProcessLinks() {
+      if (!contentEl) return;
+      const links = Array.from(contentEl.querySelectorAll('a'));
+      links.forEach(a => {
+        a.classList.add('md-link-card');
+        try {
+          const href = a.getAttribute('href') || '';
+          if (/^https?:\/\//i.test(href)) {
+            a.setAttribute('target', '_blank');
+            a.setAttribute('rel', 'noopener noreferrer');
+          }
+        } catch (_) {}
+      });
+    }
+
+    // 搜索功能（防抖处理）
+    if (searchEl) {
+      searchEl.addEventListener('input', () => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          const q = searchEl.value.trim().toLowerCase();
+          if (!q) {
+            renderTree(buildTreeModel());
+            return;
+          }
+          const matches = [];
+          for (const [p, meta] of files) {
+            if (p.toLowerCase().includes(q) || meta.name.toLowerCase().includes(q) || meta.text.toLowerCase().includes(q)) matches.push(p);
+          }
+          const tempFiles = new Map();
+          for (const m of matches) tempFiles.set(m, files.get(m));
+          const old = new Map(files);
+          files.clear();
+          for (const [k, v] of tempFiles) files.set(k, v);
+          renderTree(buildTreeModel());
+          files.clear();
+          for (const [k, v] of old) files.set(k, v);
+        }, 300);
+      });
+    }
+
+    function buildTreeAndRender() {
+      renderTree(buildTreeModel());
+    }
+
+    // 页面加载完成
+    window.addEventListener('load', () => {
+      loadManifest();
+      
+      // 更新 header 高度
+      updateHeaderHeight();
+    });
+    
+    // 监听popstate事件（浏览器前进/后退）
+    window.addEventListener('popstate', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const fileParam = urlParams.get('file');
+      if (fileParam && files.has(fileParam)) {
+        const nodeEl = document.querySelector(`.file[data-path="${CSS.escape(fileParam)}"]`);
+        if (nodeEl) nodeEl.click();
+      }
+    });
+  })();
+  </script>
+</body>
+</html>
