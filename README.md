@@ -2,7 +2,7 @@
 
 啊啊,这个是我的网站哦
 
-[Github pages](https://anmingcat.pages.dev)
+[Cloudflare](https://anmingcat.pages.dev)
 
 [Github pages](https://anming1379.github.io/An-s/)
 
