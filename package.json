@@ -1,0 +1,30 @@
+{
+  "name": "an-s",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@types/dompurify": "^3.0.5",
+    "@types/marked": "^5.0.2",
+    "crypto-js": "^4.2.0",
+    "dompurify": "^3.3.1",
+    "highlight.js": "^11.11.1",
+    "jimp": "^1.6.0",
+    "jsbarcode": "^3.12.1",
+    "marked": "^17.0.1",
+    "pinia": "^3.0.4",
+    "qrcode": "^1.5.4",
+    "qrcodejs-es6": "^1.0.0",
+    "vue": "^3.5.24",
+    "vue-router": "^4.6.4"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.1",
+    "vite": "^7.2.4"
+  }
+}
