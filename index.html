@@ -1,13 +1,103 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-    <title>An's web page</title>
-    <link rel="icon" type="image/jpeg" href="/avatar.jpg" />
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+  <title>An's web page</title>
+
+  <!-- 样式文件 -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- 导航栏 -->
+  <header class="header">
+    <div class="container">
+      <nav class="nav" aria-label="主导航">
+        <!-- 品牌 -->
+        <div class="brand">
+          <div class="brand-text">
+            <h1><a href="index.html">An's web page</a></h1>
+            <p class="tagline">桉的网页!你要陪桉一起玩嘛～</p>
+          </div>
+        </div>
+
+        <button
+          class="nav-toggle"
+          aria-label="切换导航菜单"
+          aria-controls="primary-menu"
+          aria-expanded="false"
+          type="button"
+        >
+          <span class="material-icons">menu</span>
+        </button>
+
+
+        <ul id="primary-menu" class="nav-menu" role="menu">
+          <li role="none"><a role="menuitem" href="index.html" class="active"> 首页 </a></li>
+          <li role="none"><a role="menuitem" href="note.html"> 笔记 </a></li>
+          <li role="none"><a role="menuitem" href="alambda.html" > ALambda </a></li>
+          <li role="none"><a role="menuitem" href="contact.html" > 联系 </a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- 主内容 -->
+  <main class="main">
+    <div class="container">
+      <!-- 头像与标题 -->
+      <div class="profile" id="home">
+        <img
+          src="./image/avatar.jpg"
+          alt="AnmingCat 的头像"
+          class="profile-image"
+          loading="lazy"
+        />
+
+        <div class="profile-content">
+          <h1>AnmingCat</h1>
+          <p class="description">An ordinary Artist.</p>
+
+          
+        <div class="profile-actions">
+          <a href="/note.html" class="btn btn-primary">查看笔记</a>
+          <a href="/contact.html" class="btn btn-secondary">和桉一起玩</a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 内容区域 -->
+      
+    </div>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>An's web page</h3>
+          <p>桉的个人网页, 放些桉的东西</p>
+        </div>
+
+        <div class="footer-section">
+          <h4>快速链接</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="note.html">笔记</a></li>
+            <li><a href="alambda.html">ALambda</a></li>
+            <li><a href="contact.html">联系</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="copyright">
+        <p>© 2025 AnmingCat</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 脚本文件 -->
+  <script src="script.js"></script>
+</body>
 </html>
