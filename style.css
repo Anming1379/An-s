@@ -1,4 +1,6 @@
-/* 变量部分 */
+/* ==========================================================================
+   1. 变量定义 (CSS Variables)
+   ========================================================================== */
 :root {
   --color-base: #FFFFFF;
   --color-contrast: #32354d;
@@ -7,7 +9,8 @@
   --color-text-light: #666666;
   --color-background-light: #f8f9fa;
   --color-border: #e9ecef;
-  --font-main: 'font1', serif;
+  --font-main: 'Noto Sans CJK SC', serif;
+  --font-sans: "Microsoft YaHei", sans-serif;
   --font-size-xs: .75rem;
   --font-size-sm: .875rem;
   --font-size-md: 1rem;
@@ -26,23 +29,24 @@
   --radius-lg: 4px;
   --transition-fast: .2s ease;
   --transition-normal: .3s ease;
-  /* 新增按钮相关变量 */
+  /* 按钮相关变量 */
   --btn-padding-sm: .75rem 1.5rem;
   --btn-padding-lg: 0.5rem 3rem;
   --btn-font-size-sm: var(--font-size-sm);
   --btn-font-size-lg: var(--font-size-md);
 }
 
-/* Material Icons 字体定义 - 使用正确的编码 */
+/* ==========================================================================
+   2. 字体与图标 (Fonts & Icons)
+   ========================================================================== */
 @font-face {
   font-family: 'Material Icons';
   font-style: normal;
   font-weight: 400;
   src: url('./fonts/MaterialIcons-Regular.woff2') format('woff2'),
-    url('./fonts/MaterialIcons-Regular.ttf') format('truetype');
+       url('./fonts/MaterialIcons-Regular.ttf') format('truetype');
 }
 
-/* Material Icons 基础样式 */
 .material-icons {
   font-family: 'Material Icons';
   font-weight: normal;
@@ -61,20 +65,26 @@
   font-feature-settings: 'liga';
 }
 
-/* 不同尺寸的图标类 */
+/* 图标尺寸 */
 .material-icons.md-18 { font-size: 18px; }
 .material-icons.md-24 { font-size: 24px; }
 .material-icons.md-36 { font-size: 36px; }
 .material-icons.md-48 { font-size: 48px; }
 
-/* 不同颜色的图标类 */
+/* 图标颜色 */
 .material-icons.md-dark { color: rgba(0, 0, 0, 0.54); }
 .material-icons.md-dark.md-inactive { color: rgba(0, 0, 0, 0.26); }
 .material-icons.md-light { color: rgba(255, 255, 255, 1); }
 .material-icons.md-light.md-inactive { color: rgba(255, 255, 255, 0.3); }
 
-/* reset部分 */
-* { margin: 0; padding: 0; box-sizing: border-box; }
+/* ==========================================================================
+   3. 基础重置与通用样式 (Reset & Base)
+   ========================================================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 body {
   font-family: var(--font-main);
@@ -85,9 +95,9 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  text-rendering: optimizeLegibility;
 }
 
-/* 容器部分 */
 .container {
   width: var(--container-md);
   max-width: 100%;
@@ -95,7 +105,15 @@ body {
   padding: 0 var(--spacing-md);
 }
 
-/* 标题与文字部分 */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ==========================================================================
+   4. 文本排版 (Typography)
+   ========================================================================== */
 h1, h2, h3, h4, h5, h6 {
   font-weight: 400;
   line-height: 1.2;
@@ -106,21 +124,41 @@ h1, h2, h3, h4, h5, h6 {
 h1 { font-size: var(--font-size-xxl); }
 h2 { font-size: var(--font-size-xl); }
 h3 { font-size: var(--font-size-lg); }
-p { margin-bottom: var(--spacing-sm); }
-.tagline { font-size: var(--font-size-xs); color: var(--color-text-light); font-weight: 300; }
-.description { font-size: var(--font-size-md); max-width: 400px; margin-bottom: var(--spacing-md); font-weight: 300; }
 
-/* 链接部分 */
+p { margin-bottom: var(--spacing-sm); }
+
+.tagline {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-light);
+  font-weight: 400;
+}
+
+.description {
+  font-size: var(--font-size-md);
+  max-width: 400px;
+  margin-bottom: var(--spacing-md);
+  font-weight: 300;
+}
+
 a {
   color: var(--color-contrast);
   text-decoration: none;
   transition: color var(--transition-fast);
 }
 
-a:hover { color: var(--color-accent); text-decoration: underline; }
-a:focus { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+a:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
 
-/* 按钮优化 */
+a:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   5. 按钮组件 (Buttons)
+   ========================================================================== */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -173,10 +211,9 @@ a:focus { outline: 2px solid var(--color-accent); outline-offset: 2px; }
   transform: translateY(0);
 }
 
-/* 图片部分 */
-img { max-width: 100%; height: auto; display: block; }
-
-/* 导航部分 - 基础样式 */
+/* ==========================================================================
+   6. 导航栏 (Header & Navigation)
+   ========================================================================== */
 .header {
   padding: var(--spacing-md) 0;
   border-bottom: 1px solid var(--color-border);
@@ -189,11 +226,23 @@ img { max-width: 100%; height: auto; display: block; }
   justify-content: space-between;
 }
 
-.brand { margin-top: 1.2rem; display: flex; align-items: center; gap: var(--spacing-sm); }
-.brand-text h1 { font-size: var(--font-size-lg); margin-bottom: .25rem; }
-.brand-text h1 a:hover { text-decoration: none; }
+.brand {
+  margin-top: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
 
-/* 导航切换按钮 - 默认隐藏（电脑版） */
+.brand-text h1 {
+  font-size: var(--font-size-lg);
+  margin-bottom: .25rem;
+}
+
+.brand-text h1 a:hover {
+  text-decoration: none;
+}
+
+/* 导航切换按钮 - 默认隐藏 */
 .nav-toggle {
   display: none;
   background: none;
@@ -205,9 +254,12 @@ img { max-width: 100%; height: auto; display: block; }
   border-radius: var(--radius-sm);
 }
 
-.nav-toggle:focus { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.nav-toggle:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
 
-/* 导航菜单 - 电脑版默认横向显示 */
+/* 导航菜单 - 默认横向 */
 .nav-menu {
   display: flex;
   list-style: none;
@@ -217,9 +269,9 @@ img { max-width: 100%; height: auto; display: block; }
   padding: 0;
 }
 
-.nav-menu li a { 
-  padding: .5rem .75rem; 
-  font-weight: 500; 
+.nav-menu li a {
+  padding: .5rem .75rem;
+  font-weight: 500;
   display: block;
 }
 
@@ -228,8 +280,13 @@ img { max-width: 100%; height: auto; display: block; }
   font-weight: 600;
 }
 
-/* 主内容部分 */
-.main { padding: var(--spacing-xl) 0; min-height: 60vh; }
+/* ==========================================================================
+   7. 主要内容区 (Main Content)
+   ========================================================================== */
+.main {
+  padding: var(--spacing-xl) 0;
+  min-height: 60vh;
+}
 
 .profile {
   display: flex;
@@ -251,11 +308,22 @@ img { max-width: 100%; height: auto; display: block; }
   margin-top: var(--spacing-md);
 }
 
-/* 内容区部分 */
-.content { display: flex; flex-direction: column; gap: var(--spacing-lg); }
-.content-section { padding: var(--spacing-md); background: var(--color-base); border-radius: var(--radius-md); border: 1px solid var(--color-border); }
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
 
-/* 页脚部分 */
+.content-section {
+  padding: var(--spacing-md);
+  background: var(--color-base);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+/* ==========================================================================
+   8. 页脚 (Footer)
+   ========================================================================== */
 .footer {
   background: var(--color-background-light);
   border-top: 1px solid var(--color-border);
@@ -269,16 +337,32 @@ img { max-width: 100%; height: auto; display: block; }
   margin-bottom: var(--spacing-xl);
 }
 
-.footer-links { list-style: none; }
-.footer-links li { margin-bottom: var(--spacing-xs); }
-.footer-links a { color: var(--color-text-light); }
-.footer-links a:hover { color: var(--color-contrast); }
-.copyright { border-top: 1px solid var(--color-border); padding-top: var(--spacing-md); font-size: var(--font-size-xs); color: var(--color-text-light); }
+.footer-links {
+  list-style: none;
+}
 
-/* ==================== */
-/* 联系页面特定样式 */
-/* ==================== */
+.footer-links li {
+  margin-bottom: var(--spacing-xs);
+}
 
+.footer-links a {
+  color: var(--color-text-light);
+}
+
+.footer-links a:hover {
+  color: var(--color-contrast);
+}
+
+.copyright {
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--spacing-md);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-light);
+}
+
+/* ==========================================================================
+   9. 联系页面特定样式 (Contact Page)
+   ========================================================================== */
 .page-header {
   margin-bottom: var(--spacing-xl);
   text-align: center;
@@ -334,9 +418,9 @@ img { max-width: 100%; height: auto; display: block; }
   margin-top: var(--spacing-xs);
 }
 
-/* ==================== */
-/* 响应式设计 */
-/* ==================== */
+/* ==========================================================================
+   10. 响应式设计 (Responsive Design)
+   ========================================================================== */
 
 /* 电脑版样式 (768px及以上) */
 @media (min-width: 768px) {
@@ -345,70 +429,65 @@ img { max-width: 100%; height: auto; display: block; }
     align-items: center;
     gap: var(--spacing-xl);
   }
-  
+
   .profile-image {
     width: 150px;
     height: 150px;
   }
-  
-  /* PC端按钮优化 */
+
   .btn {
     padding: var(--btn-padding-lg);
     font-size: var(--btn-font-size-lg);
     min-height: 3rem;
   }
-  
+
   .profile-actions {
     gap: var(--spacing-md);
     flex-wrap: wrap;
   }
-  
-  /* 内容区域布局 */
+
   .content {
     flex-direction: row;
     flex-wrap: wrap;
     gap: var(--spacing-xl);
   }
-  
+
   .content-section {
     flex: 1;
     min-width: 300px;
   }
-  
-  /* 页脚布局 */
+
   .footer-content {
     flex-direction: row;
     justify-content: space-between;
     gap: var(--spacing-xl);
   }
-  
+
   .footer-section {
     flex: 1;
     min-width: 200px;
   }
-  
-  /* 联系页面响应式 */
+
   .contact-details,
   .social-media-links {
     flex-direction: row;
     flex-wrap: wrap;
   }
-  
+
   .contact-item,
   .social-item {
     flex: 1;
     min-width: 250px;
   }
-  
+
   .tips-item {
     margin-bottom: var(--spacing-md);
   }
-  
-  /* 确保电脑版菜单横向显示 */
+
   .nav-toggle {
     display: none !important;
   }
-  
+
   .nav-menu {
     display: flex !important;
     flex-direction: row;
@@ -420,7 +499,7 @@ img { max-width: 100%; height: auto; display: block; }
   }
 }
 
-/* 中等屏幕进一步优化（例如平板横屏） */
+/* 中等屏幕优化 */
 @media (min-width: 1024px) {
   .profile-actions {
     gap: var(--spacing-lg);
@@ -429,16 +508,14 @@ img { max-width: 100%; height: auto; display: block; }
 
 /* 移动端样式 (767px及以下) */
 @media (max-width: 767px) {
-  .container { 
-    padding: 0 var(--spacing-sm); 
+  .container {
+    padding: 0 var(--spacing-sm);
   }
-  
-  /* 导航栏移动端样式 */
-  .nav { 
-    position: relative; 
+
+  .nav {
+    position: relative;
   }
-  
-  /* 汉堡菜单按钮 */
+
   .nav-toggle {
     display: flex;
     align-items: center;
@@ -450,14 +527,13 @@ img { max-width: 100%; height: auto; display: block; }
     background: transparent;
     cursor: pointer;
   }
-  
+
   .nav-toggle .material-icons {
     font-size: 2rem;
     line-height: 1;
     color: #333333;
   }
-  
-  /* 移动端菜单默认隐藏 */
+
   .nav-menu {
     display: none;
     flex-direction: column;
@@ -471,35 +547,32 @@ img { max-width: 100%; height: auto; display: block; }
     z-index: 1000;
     gap: var(--spacing-sm);
   }
-  
-  /* 菜单激活时显示 */
-  .nav-menu.active { 
-    display: flex; 
+
+  .nav-menu.active {
+    display: flex;
   }
-  
+
   .nav-menu li {
     width: 100%;
   }
-  
+
   .nav-menu li a {
     padding: 0.75rem 0;
     display: block;
   }
-  
-  /* 移动端按钮样式 */
+
   .profile-actions {
     flex-direction: column;
     width: 100%;
   }
-  
+
   .btn {
     width: 100%;
     min-height: 2.75rem;
   }
-  
-  /* 内容区域移动端优化 */
-  .content-section { 
-    padding: var(--spacing-sm); 
+
+  .content-section {
+    padding: var(--spacing-sm);
   }
 }
 
