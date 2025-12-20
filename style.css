@@ -1,4 +1,4 @@
-/* 变量部分保持不变 */
+/* 变量部分 */
 :root {
   --color-base: #FFFFFF;
   --color-contrast: #32354d;
@@ -73,7 +73,7 @@
 .material-icons.md-light { color: rgba(255, 255, 255, 1); }
 .material-icons.md-light.md-inactive { color: rgba(255, 255, 255, 0.3); }
 
-/* reset部分保持不变 */
+/* reset部分 */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
@@ -87,7 +87,7 @@ body {
   overflow-x: hidden;
 }
 
-/* 容器部分保持不变 */
+/* 容器部分 */
 .container {
   width: var(--container-md);
   max-width: 100%;
@@ -95,30 +95,7 @@ body {
   padding: 0 var(--spacing-md);
 }
 
-/* 响应式设计 - 这里是重点 */
-@media (max-width: 767px) {
-    /* ...省略其他样式... */
-
-    .nav { 
-        position: relative; 
-        z-index: 1000; /* 提升 nav 容器的层级 */
-    }
-
-    .nav-toggle { 
-        display: block; 
-        z-index: 1001; /* 确保切换按钮在最上层 */
-        /* 如果你的 header 是 fixed/sticky，可能要给 header 也设置 z-index */
-    }
-
-    .nav-menu {
-        /* ...省略其他样式... */
-        z-index: 999; /* 菜单层级要低于按钮，但高于页面其他内容 */
-    }
-    
-    /* ...省略其他样式... */
-}
-
-/* 标题与文字部分保持不变 */
+/* 标题与文字部分 */
 h1, h2, h3, h4, h5, h6 {
   font-weight: 400;
   line-height: 1.2;
@@ -133,7 +110,7 @@ p { margin-bottom: var(--spacing-sm); }
 .tagline { font-size: var(--font-size-xs); color: var(--color-text-light); font-weight: 300; }
 .description { font-size: var(--font-size-md); max-width: 400px; margin-bottom: var(--spacing-md); font-weight: 300; }
 
-/* 链接部分保持不变 */
+/* 链接部分 */
 a {
   color: var(--color-contrast);
   text-decoration: none;
@@ -143,39 +120,39 @@ a {
 a:hover { color: var(--color-accent); text-decoration: underline; }
 a:focus { outline: 2px solid var(--color-accent); outline-offset: 2px; }
 
-/* 按钮优化部分 - 这里是重点 */
+/* 按钮优化 */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: var(--btn-padding-sm);
   font-size: var(--btn-font-size-sm);
-  font-weight: 400; /* 稍微加粗，增加可读性 */
-  border-radius: var(--radius-md); /* 使用稍大的圆角，更现代 */
+  font-weight: 400;
+  border-radius: var(--radius-md);
   border: none;
   cursor: pointer;
   text-align: center;
   text-decoration: none;
-  transition: all var(--transition-normal); /* 使用normal过渡时间，更平滑 */
-  white-space: nowrap; /* 防止按钮文字换行 */
+  transition: all var(--transition-normal);
+  white-space: nowrap;
 }
 
 .btn-primary {
   background: var(--color-contrast);
   color: var(--color-base);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 添加轻微阴影增加层次感 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .btn-primary:hover {
   background: var(--color-accent);
   color: var(--color-base);
-  transform: translateY(-1px); /* 添加悬停微动效果 */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* 悬停时增加阴影 */
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .btn-primary:active {
-  transform: translateY(0); /* 点击时恢复位置 */
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); /* 点击时减少阴影 */
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .btn-secondary {
@@ -196,10 +173,10 @@ a:focus { outline: 2px solid var(--color-accent); outline-offset: 2px; }
   transform: translateY(0);
 }
 
-/* 图片部分保持不变 */
+/* 图片部分 */
 img { max-width: 100%; height: auto; display: block; }
 
-/* 导航部分保持不变 */
+/* 导航部分 - 基础样式 */
 .header {
   padding: var(--spacing-md) 0;
   border-bottom: 1px solid var(--color-border);
@@ -216,6 +193,7 @@ img { max-width: 100%; height: auto; display: block; }
 .brand-text h1 { font-size: var(--font-size-lg); margin-bottom: .25rem; }
 .brand-text h1 a:hover { text-decoration: none; }
 
+/* 导航切换按钮 - 默认隐藏（电脑版） */
 .nav-toggle {
   display: none;
   background: none;
@@ -229,14 +207,26 @@ img { max-width: 100%; height: auto; display: block; }
 
 .nav-toggle:focus { outline: 2px solid var(--color-accent); outline-offset: 2px; }
 
+/* 导航菜单 - 电脑版默认横向显示 */
 .nav-menu {
   display: flex;
   list-style: none;
   gap: var(--spacing-md);
   align-items: center;
+  margin: 0;
+  padding: 0;
 }
 
-.nav-menu li a { padding: .5rem .75rem; font-weight: 500; }
+.nav-menu li a { 
+  padding: .5rem .75rem; 
+  font-weight: 500; 
+  display: block;
+}
+
+.nav-menu a.active {
+  color: var(--color-accent);
+  font-weight: 600;
+}
 
 /* 主内容部分 */
 .main { padding: var(--spacing-xl) 0; min-height: 60vh; }
@@ -261,11 +251,11 @@ img { max-width: 100%; height: auto; display: block; }
   margin-top: var(--spacing-md);
 }
 
-/* 内容区部分保持不变 */
+/* 内容区部分 */
 .content { display: flex; flex-direction: column; gap: var(--spacing-lg); }
 .content-section { padding: var(--spacing-md); background: var(--color-base); border-radius: var(--radius-md); border: 1px solid var(--color-border); }
 
-/* 页脚部分保持不变 */
+/* 页脚部分 */
 .footer {
   background: var(--color-background-light);
   border-top: 1px solid var(--color-border);
@@ -344,12 +334,11 @@ img { max-width: 100%; height: auto; display: block; }
   margin-top: var(--spacing-xs);
 }
 
-.nav-menu a.active {
-  color: var(--color-accent);
-  font-weight: 600;
-}
+/* ==================== */
+/* 响应式设计 */
+/* ==================== */
 
-/* 响应式设计 - 这里是重点 */
+/* 电脑版样式 (768px及以上) */
 @media (min-width: 768px) {
   .profile {
     flex-direction: row;
@@ -364,16 +353,17 @@ img { max-width: 100%; height: auto; display: block; }
   
   /* PC端按钮优化 */
   .btn {
-    padding: var(--btn-padding-lg); /* 使用更大的内边距 */
-    font-size: var(--btn-font-size-lg); /* 使用稍大的字体 */
-    min-height: 3rem; /* 确保按钮有足够的最小高度 */
+    padding: var(--btn-padding-lg);
+    font-size: var(--btn-font-size-lg);
+    min-height: 3rem;
   }
   
   .profile-actions {
-    gap: var(--spacing-md); /* PC端增加按钮间距 */
-    flex-wrap: wrap; /* 允许换行，以防空间不足 */
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
   }
   
+  /* 内容区域布局 */
   .content {
     flex-direction: row;
     flex-wrap: wrap;
@@ -385,6 +375,7 @@ img { max-width: 100%; height: auto; display: block; }
     min-width: 300px;
   }
   
+  /* 页脚布局 */
   .footer-content {
     flex-direction: row;
     justify-content: space-between;
@@ -412,49 +403,61 @@ img { max-width: 100%; height: auto; display: block; }
   .tips-item {
     margin-bottom: var(--spacing-md);
   }
+  
+  /* 确保电脑版菜单横向显示 */
+  .nav-toggle {
+    display: none !important;
+  }
+  
+  .nav-menu {
+    display: flex !important;
+    flex-direction: row;
+    position: static;
+    background: none;
+    box-shadow: none;
+    padding: 0;
+    width: auto;
+  }
 }
 
 /* 中等屏幕进一步优化（例如平板横屏） */
 @media (min-width: 1024px) {
   .profile-actions {
-    gap: var(--spacing-lg); /* 在更大的屏幕上进一步增加按钮间距 */
+    gap: var(--spacing-lg);
   }
 }
 
-/* 移动端样式保持不变 */
+/* 移动端样式 (767px及以下) */
 @media (max-width: 767px) {
-  .container { padding: 0 var(--spacing-sm); }
+  .container { 
+    padding: 0 var(--spacing-sm); 
+  }
   
-.nav-toggle {
-  position: relative;           /* 让子元素绝对定位基于按钮 */
-  width: 48px;                  /* 按钮宽度，可按需求调整 */
-  height: 48px;                 /* 按钮高度，可按需求调整 */
-  display: inline-flex;         /* 保证内部居中 */
-  align-items: center;          /* 垂直居中 */
-  justify-content: center;      /* 水平居中 */
-  padding: 0;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-}
-
-.nav-toggle .material-icons {
-  position: absolute;
-  top: 50%;                     /* 先移动到父元素高度一半 */
-  left: 50%;                    /* 水平中心 */
-  transform: translate(-50%, -50%); /* 精准居中 */
-  font-size: 2rem;              /* 调整大小 */
-  line-height: 1;               /* 避免偏移 */
-  color: #333333;
-}
-
-}
-
-
-
+  /* 导航栏移动端样式 */
+  .nav { 
+    position: relative; 
+  }
   
-  .nav { position: relative; }
+  /* 汉堡菜单按钮 */
+  .nav-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+  }
   
+  .nav-toggle .material-icons {
+    font-size: 2rem;
+    line-height: 1;
+    color: #333333;
+  }
+  
+  /* 移动端菜单默认隐藏 */
   .nav-menu {
     display: none;
     flex-direction: column;
@@ -469,22 +472,38 @@ img { max-width: 100%; height: auto; display: block; }
     gap: var(--spacing-sm);
   }
   
-  .nav-menu.active { display: flex; }
+  /* 菜单激活时显示 */
+  .nav-menu.active { 
+    display: flex; 
+  }
   
+  .nav-menu li {
+    width: 100%;
+  }
+  
+  .nav-menu li a {
+    padding: 0.75rem 0;
+    display: block;
+  }
+  
+  /* 移动端按钮样式 */
   .profile-actions {
     flex-direction: column;
     width: 100%;
   }
   
   .btn {
-    width: 100%; /* 移动端按钮占满宽度 */
-    min-height: 2.75rem; /* 确保触摸友好 */
+    width: 100%;
+    min-height: 2.75rem;
   }
   
-  .content-section { padding: var(--spacing-sm); }
+  /* 内容区域移动端优化 */
+  .content-section { 
+    padding: var(--spacing-sm); 
+  }
 }
 
-/* 打印样式保持不变 */
+/* 打印样式 */
 @media print {
   .header, .footer, .btn { display: none; }
   body { font-size: 12pt; line-height: 1.5; }
