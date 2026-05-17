@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>笔记 · 桉的首页</title>
+    <title>笔记</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.geekzu.org">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -559,6 +559,12 @@
                 else link.classList.remove('active-note');
             });
             if (isMobile() && sidebar.classList.contains('mobile-open')) closeSidebarMobile();
+            // 在 openNoteByPath 函数末尾添加
+const newUrl = `${window.location.pathname}?note=${encodeURIComponent(path)}`;
+window.history.pushState({ path }, '', newUrl);
+            
+            
+            
         }
 
         function renderSidebar(groups, sortedFolders) {
@@ -627,8 +633,25 @@
                 if (!data.files || data.files.length === 0) throw new Error('笔记清单为空');
                 const { groups, sortedFolders } = buildFolderGroups(data.files);
                 renderSidebar(groups, sortedFolders);
-                let firstNote = groups.get('')?.[0] || (sortedFolders.length ? groups.get(sortedFolders.find(f => f !== ''))?.[0] : data.files[0]);
-                if (firstNote) openNoteByPath(firstNote.fullPath);
+// 优先使用 URL 参数指定的笔记
+let targetNotePath = getQueryParam('note');
+let noteToOpen = null;
+
+if (targetNotePath) {
+    // 查找是否匹配 manifest 中的某个文件路径
+    noteToOpen = manifestData.files.find(f => f.path === targetNotePath);
+    if (!noteToOpen) {
+        console.warn(`未找到笔记: ${targetNotePath}`);
+    }
+}
+
+// 若未指定或找不到，则回退到第一篇笔记
+if (!noteToOpen) {
+    noteToOpen = groups.get('')?.[0] ||
+                 (sortedFolders.length ? groups.get(sortedFolders.find(f => f !== ''))?.[0] : manifestData.files[0]);
+}
+
+if (noteToOpen) openNoteByPath(noteToOpen.fullPath);
                 else noteContentArea.innerHTML = '<div class="empty-notes"><p>没有可显示的笔记</p></div>';
             } catch (err) {
                 folderTreeEl.innerHTML = `<div class="empty-notes"><span class="material-icons">error</span><p>${escapeHtml(err.message)}</p><a href="../build.html" style="color:var(--color-accent);margin-top:12px;display:inline-block;">前往构建工具</a></div>`;
@@ -638,6 +661,12 @@
 
         window.addEventListener('DOMContentLoaded', () => { initSidebarState(); initNotes(); });
         document.querySelector('.nav-link[href="note.html"]')?.classList.add('active');
+        
+        function getQueryParam(name) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(name);
+}
+        
     </script>
 </body>
 </html>
