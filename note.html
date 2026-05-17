@@ -536,6 +536,7 @@
         function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
 
         function renderMarkdownToContent(filePath, markdownText) {
+                console.log('🎨 开始渲染:', filePath, '内容长度:', markdownText.length);
             if (!noteContentArea) return;
             try {
                 let htmlContent = marked.parse(markdownText);
@@ -548,24 +549,36 @@
             } catch (err) { noteContentArea.innerHTML = `<div class="empty-notes"><span class="material-icons">bug_report</span><p>渲染失败: ${escapeHtml(err.message)}</p></div>`; }
         }
 
-        function openNoteByPath(path) {
-            if (!manifestData || !manifestData.files) { noteContentArea.innerHTML = '<div class="empty-notes"><p>笔记数据未加载</p></div>'; return; }
-            const noteFile = manifestData.files.find(f => f.path === path);
-            if (!noteFile) { noteContentArea.innerHTML = `<div class="empty-notes"><p>未找到笔记: ${escapeHtml(path)}</p></div>`; return; }
-            currentNotePath = path;
-            renderMarkdownToContent(noteFile.path, noteFile.content);
-            document.querySelectorAll('.note-link').forEach(link => {
-                if (link.getAttribute('data-path') === path) link.classList.add('active-note');
-                else link.classList.remove('active-note');
-            });
-            if (isMobile() && sidebar.classList.contains('mobile-open')) closeSidebarMobile();
-            // 在 openNoteByPath 函数末尾添加
-const newUrl = `${window.location.pathname}?note=${encodeURIComponent(path)}`;
-window.history.pushState({ path }, '', newUrl);
-            
-            
-            
-        }
+function openNoteByPath(path) {
+    console.log('📂 openNoteByPath 被调用, 路径:', path);
+    if (!manifestData || !manifestData.files) {
+        console.error('manifestData 未加载');
+        noteContentArea.innerHTML = '<div class="empty-notes"><p>笔记数据未加载</p></div>';
+        return;
+    }
+    const noteFile = manifestData.files.find(f => f.path === path);
+    if (!noteFile) {
+        console.error('未找到笔记文件:', path);
+        noteContentArea.innerHTML = `<div class="empty-notes"><p>未找到笔记: ${escapeHtml(path)}</p></div>`;
+        return;
+    }
+    console.log('📄 找到笔记文件:', noteFile);
+    currentNotePath = path;
+    try {
+        renderMarkdownToContent(noteFile.path, noteFile.content);
+        console.log('✅ 渲染完成');
+    } catch (err) {
+        console.error('渲染失败:', err);
+        noteContentArea.innerHTML = `<div class="empty-notes"><p>渲染错误: ${escapeHtml(err.message)}</p></div>`;
+    }
+    document.querySelectorAll('.note-link').forEach(link => {
+        if (link.getAttribute('data-path') === path) link.classList.add('active-note');
+        else link.classList.remove('active-note');
+    });
+    if (isMobile() && sidebar.classList.contains('mobile-open')) closeSidebarMobile();
+    const newUrl = `${window.location.pathname}?note=${encodeURIComponent(path)}`;
+    window.history.pushState({ path }, '', newUrl);
+}
 
         function renderSidebar(groups, sortedFolders) {
             if (!folderTreeEl) return;
@@ -625,39 +638,67 @@ window.history.pushState({ path }, '', newUrl);
             });
         }
 
-        async function initNotes() {
-            try {
-                folderTreeEl.innerHTML = '<div class="loading-box"><span class="material-icons">autorenew</span><p>加载笔记库...</p></div>';
-                const data = await loadManifest();
-                manifestData = data;
-                if (!data.files || data.files.length === 0) throw new Error('笔记清单为空');
-                const { groups, sortedFolders } = buildFolderGroups(data.files);
-                renderSidebar(groups, sortedFolders);
-// 优先使用 URL 参数指定的笔记
-let targetNotePath = getQueryParam('note');
-let noteToOpen = null;
+async function initNotes() {
+    try {
+        folderTreeEl.innerHTML = '<div class="loading-box"><span class="material-icons">autorenew</span><p>加载笔记库...</p></div>';
+        const data = await loadManifest();
+        manifestData = data;
+        if (!data.files || data.files.length === 0) throw new Error('笔记清单为空');
+        
+        // 调试：打印所有可用笔记路径
+        console.log('📚 所有笔记路径:', manifestData.files.map(f => f.path));
+        
+        const { groups, sortedFolders } = buildFolderGroups(data.files);
+        renderSidebar(groups, sortedFolders);
 
-if (targetNotePath) {
-    // 查找是否匹配 manifest 中的某个文件路径
-    noteToOpen = manifestData.files.find(f => f.path === targetNotePath);
-    if (!noteToOpen) {
-        console.warn(`未找到笔记: ${targetNotePath}`);
-    }
-}
+        // 获取 URL 参数中的笔记路径
+        const targetNotePath = getQueryParam('note');
+        console.log('🔗 URL 参数原始值:', targetNotePath);
+        
+        let noteToOpen = null;
 
-// 若未指定或找不到，则回退到第一篇笔记
-if (!noteToOpen) {
-    noteToOpen = groups.get('')?.[0] ||
-                 (sortedFolders.length ? groups.get(sortedFolders.find(f => f !== ''))?.[0] : manifestData.files[0]);
-}
+        if (targetNotePath) {
+            // 解码 URL 编码的路径
+            const decodedPath = decodeURIComponent(targetNotePath);
+            console.log('🔓 解码后的路径:', decodedPath);
+            
+            noteToOpen = manifestData.files.find(f => f.path === decodedPath);
+            if (noteToOpen) {
+                console.log('✅ 找到匹配笔记:', noteToOpen.path);
+            } else {
+                console.warn('❌ 未找到匹配笔记，请对比上面的路径列表是否完全一致（包括大小写、空格、标点符号）');
+            }
+        } else {
+            console.log('ℹ️ URL 中没有 note 参数');
+        }
 
-if (noteToOpen) openNoteByPath(noteToOpen.fullPath);
-                else noteContentArea.innerHTML = '<div class="empty-notes"><p>没有可显示的笔记</p></div>';
-            } catch (err) {
-                folderTreeEl.innerHTML = `<div class="empty-notes"><span class="material-icons">error</span><p>${escapeHtml(err.message)}</p><a href="../build.html" style="color:var(--color-accent);margin-top:12px;display:inline-block;">前往构建工具</a></div>`;
-                noteContentArea.innerHTML = `<div class="empty-notes"><span class="material-icons">error</span><p>${escapeHtml(err.message)}</p></div>`;
+        // 若未指定或找不到，则回退到第一篇笔记
+        if (!noteToOpen) {
+            noteToOpen = groups.get('')?.[0] ||
+                         (sortedFolders.length ? groups.get(sortedFolders.find(f => f !== ''))?.[0] : manifestData.files[0]);
+            if (noteToOpen) {
+                console.log('回退到第一篇笔记:', noteToOpen.fullPath);
             }
         }
+
+if (noteToOpen) {
+    const notePath = noteToOpen.path || noteToOpen.fullPath;
+    if (notePath) {
+        openNoteByPath(notePath);
+    } else {
+        console.error('noteToOpen 对象没有 path 或 fullPath', noteToOpen);
+        noteContentArea.innerHTML = '<div class="empty-notes"><p>无法打开笔记</p></div>';
+    }
+} else {
+    noteContentArea.innerHTML = '<div class="empty-notes"><p>没有可显示的笔记</p></div>';
+}
+        
+    } catch (err) {
+        console.error('初始化笔记失败:', err);
+        folderTreeEl.innerHTML = `<div class="empty-notes"><span class="material-icons">error</span><p>${escapeHtml(err.message)}</p><a href="../build.html" style="color:var(--color-accent);margin-top:12px;display:inline-block;">前往构建工具</a></div>`;
+        noteContentArea.innerHTML = `<div class="empty-notes"><span class="material-icons">error</span><p>${escapeHtml(err.message)}</p></div>`;
+    }
+}
 
         window.addEventListener('DOMContentLoaded', () => { initSidebarState(); initNotes(); });
         document.querySelector('.nav-link[href="note.html"]')?.classList.add('active');

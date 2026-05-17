@@ -79,6 +79,7 @@ body {
     overflow-y: auto;          /* 保证滚动效果 */
     scrollbar-width: none;    /* Firefox 隐藏滚动条 */
     -ms-overflow-style: none; /* IE/Edge 隐藏滚动条 */
+    padding-top: 60px;  
 }
 
 body::-webkit-scrollbar {
@@ -98,12 +99,12 @@ img {
 
 /* 全局文字选中效果：改用主题紫色背景与白色文字 */ ::selection { background-color: var(--color-accent); /* 这里直接使用了你定义的紫色变量 #3E3393 */ color: var(--color-white); /* 文字颜色为白色 #ffffff */ } /* 兼容火狐浏览器的写法 */ ::-moz-selection { background-color: var(--color-accent); color: var(--color-white); }
 
-/* ========== 导航栏 ========== */
 .navbar {
-    position: sticky;
+    position: fixed;     /* 原为 sticky */
     top: 0;
-    z-index: 100;
+    left: 0;
     width: 100%;
+    z-index: 100;
     background-color: rgba(255, 255, 255, 0.75);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
@@ -686,6 +687,9 @@ img {
 
     .bg-orb { width: 320px; height: 320px; top: -100px; right: -90px; }
     .bg-orb-secondary { width: 240px; height: 240px; bottom: -60px; left: -60px; }
+        body {
+        padding-top: 54px;   /* 对应 .navbar-inner 高度 54px */
+    }
 }
 
 /* ========== 响应式：手机 ========== */
@@ -725,6 +729,9 @@ img {
 
     .bg-orb { width: 200px; height: 200px; top: -60px; right: -50px; }
     .bg-orb-secondary { width: 150px; height: 150px; bottom: -40px; left: -40px; }
+    body {
+        padding-top: 50px;   /* 对应 .navbar-inner 高度 50px */
+    }
 }
 
 /* ========== 超小屏幕 ========== */
@@ -742,5 +749,8 @@ img {
     .tagline { font-size: 0.82rem; }
     .btn { padding: 9px 15px; font-size: 0.8rem; gap: 5px; }
     .btn .material-icons { font-size: 15px; }
+    body {
+        padding-top: 46px;   /* 对应 .navbar-inner 高度 46px */
+    }
 }
 
