@@ -1,0 +1,206 @@
+# 整理的网站
+
+由桉整理的一些网站（AI协助了整理和介绍）
+
+---
+
+## 工具与效率
+
+- **路过图床**  
+  https://imgse.com  
+  —— 免费好用的图床，专门用来托管图片并生成外链，是博客和 Markdown 文档的好搭档
+
+- **wormhole**  
+  https://wormhole.app/  
+  —— 简洁高效的临时文件分享工具，支持端到端加密，传大文件又快又安全呢
+
+- **cratex**  
+  https://cratex.app/zh-CN  
+  —— 一个充满惊喜的工具合集站，有很多有趣且实用的小功能等你挖掘
+
+- **提高图片分辨率 (iLoveIMG)**  
+  https://www.iloveimg.com/zh-cn  
+  —— 强大的在线图像处理工具，可以轻松放大并修复模糊的图片哦
+
+- **文件格式转换 (FreeConvert)**  
+  https://www.freeconvert.com/  
+  —— 支持超多格式的万能转换器，视频、音频、图像都能一键搞定
+
+- **视频/音频提取 (SnapAny)**  
+  https://snapany.com  
+  —— 轻松提取各大主流平台的视频和音频资源，保存素材必备呀
+
+- **YouTube 下载器 (DLBunny)**  
+  https://www.dlbunny.com/zh-CN/youtube  
+  —— 专门提取 YouTube 视频和音频的便捷工具，又快又稳
+
+- **资源bot**  
+  https://link3.cc/ziyuanbot  
+  —— 也许这里会有你想要的
+
+---
+
+## 文字与设计
+
+- **字体转换器 (Font Changer)**  
+  https://charactercalculator.com/zh-cn/font-changer  
+  —— 在线生成个性的花样字体，让你的文字在不同的场合里与众不同
+
+- **WantWords 反向词典**  
+  http://wantwords.net  
+  —— 根据意思帮你反向查找词语，写作和起名时的灵感好帮手
+
+- **DaFont**  
+  https://www.dafont.com  
+  —— 海量风格的免费英文字体站，无论做什么风格的设计都能找到灵感
+
+- **1001 Fonts**  
+  https://www.1001fonts.com  
+  —— 又一个高质量英文字体库，免费可商用字体特别多
+
+- **Fontesk**  
+  https://fontesk.com/  
+  —— 精选高品质英文字体与设计灵感，每一款都很有质感
+
+- **Google Fonts**  
+  https://fonts.google.com/  
+  —— 谷歌官方提供的开源字体和系统图标库，简洁又实用
+
+- **me83 设计资源**  
+  https://www.me83.com  
+  —— 提供 Adobe 全系列软件资源的设计宝藏站，设计师常来看一看
+
+- **Namechef 取名工具**  
+  https://www.namechef.co/cn/  
+  —— 专治取名纠结症的趣味工具，起名、选词都变得好简单
+
+---
+
+## 音乐与声音
+
+- **Ableton 学习音乐**  
+  https://learningmusic.ableton.com/zh-Hans  
+  —— 零基础也能轻松上手的互动式音乐制作教程，带你走进编曲的大门
+
+- **乐理小站**  
+  https://music-theory.aizcutei.com/  
+  —— 把枯燥的乐理知识变得通俗易懂，自学音乐的贴心小伙伴
+
+- **Ableton 官方帮助**  
+  https://www.ableton.com/zh-cn/help  
+  —— 深入探索 Ableton Live 使用技巧的官方帮助与手册
+
+- **DTM 百科**  
+  https://dtmwiki.cn/  
+  —— 专注桌面音乐制作（DTM）的专业知识库，进阶学习的好地方
+
+- **Polyphone 音色编辑**  
+  https://www.polyphone.io  
+  —— 免费的 sf2 音色编辑与管理工具，编辑音色简单又直观
+
+- **Plugins4free**  
+  https://plugins4free.com/  
+  —— 不断更新的免费 VST 插件资源库，给创作加点新声音
+
+- **音源下载站**  
+  https://www.yyddxzz.cn/  
+  —— 丰富的音源与音频素材下载地，总能淘到喜欢的音色
+
+- **AI MIDI**  
+  https://ai-midi.com/  
+  —— 利用 AI 将音频转成 MIDI 的小工具，采样与改编的好助手
+
+- **MIDI 可视化 (MVMNT)**  
+  https://maok.us/playbox/projects/mvmnt/workspace  
+  —— 把 MIDI 音符用图形漂亮地展示出来，边看边找灵感
+
+- **Beatarray 母带分析**  
+  https://www.beatarray.cn/  
+  —— 专业的在线母带分析与音频处理服务，帮你打磨出更精致的声音
+
+- **K2-FSA 文本转语音**  
+  https://huggingface.co/spaces/k2-fsa/text-to-speech  
+  —— 基于 AI 的高品质文本朗读工具，生成语音非常真实自然
+
+- **Kokoro-TTS**  
+  https://huggingface.co/spaces/hexgrad/Kokoro-TTS  
+  —— Kokoro 神经语音合成，念出来的声音柔和又生动
+
+- **月盒**  
+  https://two-moons.site/  
+  —— 充满艺术感的音乐资源分享角落，很独特很小众，像挖到宝
+
+- **signalmidi**  
+https://signalmidi.app/  
+ —— 在线编曲网站
+
+---
+
+## 建站与托管
+
+- **Cloudflare Dash**  
+  https://dash.cloudflare.com  
+  —— 全球领先的网络基础设施管理面板，域名解析、安全防御和网页托管一站搞定
+
+- **Zeabur**  
+  https://zeabur.com/  
+  —— 特别好用的部署平台，一键上线你的各种服务与网站，对开发者超级友好呢
+
+- **runoob**  
+https://www.runoob.com/  
+  —— 想学程序？
+
+---
+
+## 娱乐与休闲
+
+- **优试心理测试**  
+  https://iyoushi.cn/survey  
+  —— 涵盖各种趣味心理测试的合集，无聊时测一测，图个开心呀
+
+- **Arealme 心理测试**  
+  https://www.arealme.com/cn  
+  —— 又一套好玩的在线心理测试与知识小测验，探索自己没想过的一面
+
+- **TheCatAPI**  
+  https://thecatapi.com  
+  —— 每天随机给你看一只可爱猫猫，看一眼心情就软软的，嘿嘿
+
+- **ZType 打字游戏**  
+  https://zty.pe  
+  —— 在射击游戏里练习打字，紧张又好玩，手速不知不觉就变快了，哼哼
+
+- **QQ 空间好感度查询**  
+  https://h5.qzone.qq.com/close/rank  
+  —— 可以查看 QQ 好友间的亲密度排行，建议在手机 QQ 环境下打开访问哦
+
+- **Aternos（我的世界开服）**  
+  https://aternos.org  
+  —— 完全免费的《我的世界》开服工具，轻松拥有属于你自己的小世界
+
+- **Chunkbase（我的世界地图查询）**  
+  https://www.chunkbase.com  
+  —— 输入种子就能查询地形、生物群系和结构位置，MC 玩家实用小助手
+
+- **MCAPKs（我的世界移动版资源）**  
+  https://mcapks.net  
+  —— 提供《我的世界》移动版的安装包与相关资源，手机游玩也方便
+
+- **steamsunlocked**    
+https://steamsunlocked.com/  
+—— 下游戏的
+
+- **Microsoft Store**  
+https://store.rg-adguard.net/
+—— 用来下Microsoft store里的东西
+---
+
+## 个人名片
+
+- **我的个人网页**  
+  https://anmingcat.pages.dev  
+  —— 桉的专属个人主页，存放梦想与记录生活的小天地，欢迎来逛逛
+
+- **我的 Gravatar**  
+  https://gravatar.com/anming1379  
+  —— 桉的全球通用头像配置页，关联社交名片，一眼就能认出是我

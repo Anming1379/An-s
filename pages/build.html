@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>笔记构建工具</title>
+    <!-- Google Material Icons & 字体 -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.geekzu.org">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.geekzu.org/css2?family=Urbanist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- JSZip 用于解析 ZIP 文件 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        /* 额外直角风格工具样式，完全继承原设计语言 */
+        .build-tool {
+            max-width: 1024px;
+            margin: 0 auto;
+            padding: 48px 28px 60px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .tool-header {
+            margin-bottom: 32px;
+            text-align: left;
+            border-left: 4px solid var(--color-accent);
+            padding-left: 20px;
+        }
+
+        .tool-header h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            color: var(--color-dark);
+            margin-bottom: 8px;
+        }
+
+        .tool-header p {
+            color: var(--color-dark-60);
+            font-size: 0.95rem;
+        }
+
+        /* 上传卡片 (直角) */
+        .upload-area {
+            background-color: var(--color-white);
+            border: 1.5px dashed var(--color-dark-20);
+            padding: 36px 24px;
+            text-align: center;
+            transition: all var(--transition-smooth);
+            cursor: pointer;
+            margin-bottom: 32px;
+        }
+
+        .upload-area:hover {
+            border-color: var(--color-accent);
+            background-color: var(--color-accent-04);
+        }
+
+        .upload-icon .material-icons {
+            font-size: 48px;
+            color: var(--color-accent-30);
+            margin-bottom: 12px;
+        }
+
+        .upload-area p {
+            font-size: 0.9rem;
+            color: var(--color-dark-60);
+            margin-bottom: 16px;
+        }
+
+        .upload-hint {
+            font-size: 0.8rem;
+            color: var(--color-dark-40);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--color-dark-06);
+            padding: 6px 12px;
+        }
+
+        .file-input-hidden {
+            display: none;
+        }
+
+        /* 操作栏 */
+        .action-bar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            gap: 12px;
+            border-bottom: 1px solid var(--color-dark-08);
+            padding-bottom: 16px;
+        }
+
+        .stats {
+            font-size: 0.85rem;
+            font-weight: 500;
+            background: var(--color-dark-06);
+            padding: 4px 12px;
+            letter-spacing: 0.02em;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-small {
+            padding: 6px 18px;
+            font-size: 0.85rem;
+            width: auto;
+            background-color: transparent;
+            border: 1px solid var(--color-dark-20);
+            box-shadow: none;
+        }
+
+        .btn-small:hover {
+            background-color: var(--color-dark-06);
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            border-color: rgba(255, 80, 80, 0.3);
+            color: #c23d3d;
+        }
+
+        .btn-danger:hover {
+            background-color: rgba(255, 80, 80, 0.08);
+            border-color: #c23d3d;
+        }
+
+        /* 文件列表 (直角卡片堆叠) */
+        .files-list-container {
+            background: var(--color-white);
+            border: 1px solid var(--color-dark-08);
+            overflow-x: auto;
+        }
+
+        .files-list {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .files-list th {
+            text-align: left;
+            padding: 14px 16px;
+            background-color: var(--color-dark-04);
+            font-weight: 600;
+            color: var(--color-dark);
+            border-bottom: 1px solid var(--color-dark-08);
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+        }
+
+        .files-list td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--color-dark-06);
+            vertical-align: middle;
+            word-break: break-word;
+        }
+
+        .file-path {
+            font-family: 'Urbanist', monospace;
+            font-weight: 500;
+            color: var(--color-accent);
+            font-size: 0.8rem;
+        }
+
+        .file-size {
+            color: var(--color-dark-40);
+            font-size: 0.7rem;
+            white-space: nowrap;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--color-dark-40);
+            display: inline-flex;
+            align-items: center;
+            padding: 4px;
+            border-radius: 0;
+            transition: all var(--transition-fast);
+        }
+
+        .delete-btn:hover {
+            color: #d14545;
+            background-color: rgba(209, 69, 69, 0.1);
+        }
+
+        .empty-row td {
+            text-align: center;
+            padding: 48px 16px;
+            color: var(--color-dark-40);
+        }
+
+        /* 生成区块 */
+        .generate-section {
+            margin-top: 36px;
+            display: flex;
+            justify-content: center;
+            border-top: 1px solid var(--color-dark-08);
+            padding-top: 36px;
+        }
+
+        .btn-generate {
+            background-color: var(--color-dark);
+            color: white;
+            border: none;
+            width: 280px;
+            padding: 12px 0;
+            font-weight: 700;
+            gap: 8px;
+        }
+
+        .btn-generate:hover {
+            background-color: var(--color-accent);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .toast-msg {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--color-dark-90);
+            backdrop-filter: blur(12px);
+            color: white;
+            padding: 10px 20px;
+            font-size: 0.85rem;
+            z-index: 200;
+            border-radius: 0;
+            letter-spacing: 0.02em;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 700px) {
+            .build-tool {
+                padding: 32px 16px 48px;
+            }
+            .files-list th, .files-list td {
+                padding: 10px 12px;
+            }
+            .file-path {
+                font-size: 0.75rem;
+            }
+            .btn-small {
+                padding: 5px 12px;
+            }
+            .action-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .btn-group {
+                justify-content: flex-start;
+            }
+            .toast-msg {
+                white-space: normal;
+                text-align: center;
+                max-width: 85vw;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .files-list th:nth-child(3),
+            .files-list td:nth-child(3) {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 (与 index 完全一致，直角风格) -->
+    <header class="navbar" id="navbar">
+        <div class="navbar-inner">
+            <a href="#" class="navbar-brand brand-top-arrow" title="回到顶部">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor" class="custom-arrow-svg">
+                    <path d="M704-240 320-624v344h-80v-480h480v80H376l384 384-56 56Z" />
+                </svg>
+            </a>
+            <nav class="navbar-links">
+                <a href="index.html" class="nav-link">首页</a>
+                <a href="alambda.html" class="nav-link">ALambda</a>
+                <a href="note.html" class="nav-link">笔记</a>
+                <a href="contact.html" class="nav-link">联系</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="build-tool">
+            <div class="tool-header">
+                <h1>笔记构建器</h1>
+                <p>上传 <strong>.md / .txt</strong> 或 <strong>.zip</strong> 文件，自动提取所有 Markdown 笔记。<br>
+                保留文件夹层级，生成 <code style="background:var(--color-dark-06); padding:2px 6px;">manifest.js</code> 供 <strong>笔记页面</strong> 渲染。</p>
+            </div>
+
+            <!-- 上传区域 -->
+            <div class="upload-area" id="uploadTrigger">
+                <div class="upload-icon">
+                    <span class="material-icons">cloud_upload</span>
+                </div>
+                <p>拖放或点击选择文件</p>
+                <div class="upload-hint">
+                    <span class="material-icons" style="font-size: 14px;">description</span> 支持 .md / .txt
+                    <span style="margin:0 8px">|</span>
+                    <span class="material-icons" style="font-size: 14px;">folder_zip</span> .zip (自动解析目录结构)
+                </div>
+                <input type="file" id="fileInput" multiple accept=".txt,.md,.zip,application/zip" class="file-input-hidden">
+            </div>
+
+            <!-- 条目统计与操作栏 -->
+            <div class="action-bar">
+                <div class="stats" id="statsCount"> 0 篇笔记</div>
+                <div class="btn-group">
+                    <button id="clearAllBtn" class="btn btn-small btn-danger">清空全部</button>
+                    <button id="refreshListBtn" class="btn btn-small" style="border-color: var(--color-accent);">⟳ 刷新列表</button>
+                </div>
+            </div>
+
+            <!-- 文件列表表格 (直角风格) -->
+            <div class="files-list-container">
+                <table class="files-list" id="filesTable">
+                    <thead>
+                        <tr>
+                            <th>路径 / 文件名</th>
+                            <th>大小</th>
+                            <th style="width: 60px">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fileListBody">
+                        <tr class="empty-row">
+                            <td colspan="3">尚未添加任何笔记，请上传 .md / .txt 或包含笔记的 .zip 文件</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 生成 manifest.js 区块 -->
+            <div class="generate-section">
+                <button id="generateBtn" class="btn btn-generate">
+                    <span class="material-icons">output</span>
+                    生成并下载 manifest.js
+                </button>
+            </div>
+            <p style="text-align: center; font-size: 0.7rem; margin-top: 24px; color: var(--color-dark-40);">
+                将下载的 <strong>manifest.js</strong> 放置到网站 <strong>/note/</strong> 目录下，笔记页面即可自动分类展示。
+            </p>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>© 2026 Anming_cat</p>
+    </footer>
+
+    <!-- 全局消息浮层 -->
+    <div id="toastMsg" class="toast-msg" style="opacity:0; visibility: hidden;"></div>
+
+    <script src="../script.js"></script>
+    <script>
+        // ---------- 笔记条目存储 ----------
+        // 每个条目: { path: "相对路径/文件名.md", content: "markdown原文", size: bytes }
+        let notesEntries = [];
+
+        // DOM 元素
+        const fileInput = document.getElementById('fileInput');
+        const uploadTrigger = document.getElementById('uploadTrigger');
+        const fileListBody = document.getElementById('fileListBody');
+        const statsSpan = document.getElementById('statsCount');
+        const clearAllBtn = document.getElementById('clearAllBtn');
+        const refreshListBtn = document.getElementById('refreshListBtn');
+        const generateBtn = document.getElementById('generateBtn');
+
+        // 辅助: 展示短暂消息
+        let toastTimeout = null;
+        function showMessage(msg, isError = false) {
+            const toast = document.getElementById('toastMsg');
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toast.textContent = msg;
+            toast.style.backgroundColor = isError ? 'rgba(200, 60, 60, 0.92)' : 'var(--color-dark-90)';
+            toast.style.visibility = 'visible';
+            toast.style.opacity = '1';
+            toastTimeout = setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => { toast.style.visibility = 'hidden'; }, 300);
+            }, 2800);
+        }
+
+        // 更新统计和列表UI
+        function renderFileList() {
+            if (!fileListBody) return;
+            if (notesEntries.length === 0) {
+                fileListBody.innerHTML = `<tr class="empty-row"><td colspan="3"> 尚未添加任何笔记，请上传 .md / .txt 或包含笔记的 .zip 文件</td></tr>`;
+                statsSpan.innerText = ` 0 篇笔记`;
+                return;
+            }
+            statsSpan.innerText = ` ${notesEntries.length} 篇笔记`;
+            let html = '';
+            notesEntries.forEach((entry, idx) => {
+                const pathDisplay = entry.path;
+                const sizeText = entry.size < 1024 ? `${entry.size} B` : `${(entry.size / 1024).toFixed(1)} KB`;
+                html += `<tr>
+                    <td><span class="file-path">${escapeHtml(pathDisplay)}</span></td>
+                    <td class="file-size">${sizeText}</td>
+                    <td><button class="delete-btn" data-index="${idx}" title="移除笔记"><span class="material-icons">delete_outline</span></button></td>
+                </tr>`;
+            });
+            fileListBody.innerHTML = html;
+            // 绑定删除事件
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const idx = parseInt(btn.getAttribute('data-index'), 10);
+                    if (!isNaN(idx) && idx >= 0 && idx < notesEntries.length) {
+                        notesEntries.splice(idx, 1);
+                        renderFileList();
+                        showMessage(`已移除一篇笔记`, false);
+                    }
+                });
+            });
+        }
+
+        // 简单防XSS
+        function escapeHtml(str) {
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+                return c;
+            });
+        }
+
+        // 检查路径是否已经存在 (去重)
+        function isPathDuplicate(path) {
+            return notesEntries.some(entry => entry.path === path);
+        }
+
+        // 添加单个笔记条目 (文本内容)
+        function addNoteEntry(filePath, content) {
+            if (!content || content.trim().length === 0) {
+                showMessage(` 跳过空文件: ${filePath}`, false);
+                return false;
+            }
+            if (isPathDuplicate(filePath)) {
+                showMessage(` 路径已存在，跳过重复: ${filePath}`, false);
+                return false;
+            }
+            const size = new Blob([content]).size;
+            notesEntries.push({
+                path: filePath,
+                content: content,
+                size: size
+            });
+            return true;
+        }
+
+        // 处理普通文件 (.txt / .md)
+        async function handleRegularFile(file) {
+            const fileName = file.name;
+            const ext = fileName.substring(fileName.lastIndexOf('.')).toLowerCase();
+            if (ext !== '.md' && ext !== '.txt') {
+                showMessage(` 不支持的文件类型: ${fileName}`, true);
+                return;
+            }
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const content = e.target.result;
+                    // 路径直接使用文件名 (根目录)
+                    const filePath = fileName;
+                    const added = addNoteEntry(filePath, content);
+                    if (added) showMessage(` 已添加: ${fileName}`, false);
+                    resolve();
+                };
+                reader.onerror = () => {
+                    showMessage(` 读取失败: ${fileName}`, true);
+                    resolve();
+                };
+                reader.readAsText(file, 'UTF-8');
+            });
+        }
+
+        // 处理 ZIP 文件，递归解析内部所有 .md/.txt，保留完整文件夹路径
+        async function handleZipFile(zipFile) {
+            const zipName = zipFile.name;
+            showMessage(` 正在解析 ${zipName} ...`, false);
+            try {
+                const arrayBuffer = await zipFile.arrayBuffer();
+                const zip = await JSZip.loadAsync(arrayBuffer);
+                let addedCount = 0;
+                const promises = [];
+                // 遍历所有zip条目
+                for (const [relativePath, zipEntry] of Object.entries(zip.files)) {
+                    if (zipEntry.dir) continue; // 跳过文件夹本身
+                    const lowerName = zipEntry.name.toLowerCase();
+                    if (!lowerName.endsWith('.md') && !lowerName.endsWith('.txt')) continue;
+                    // 读取内容
+                    const promise = zipEntry.async('string').then(content => {
+                        // 路径统一使用 zip 内的相对路径 (例如 "docs/readme.md")
+                        let finalPath = relativePath;
+                        // 清理首尾斜杠，确保格式干净
+                        finalPath = finalPath.replace(/\\/g, '/');
+                        if (!isPathDuplicate(finalPath) && content && content.trim().length > 0) {
+                            const size = new Blob([content]).size;
+                            notesEntries.push({
+                                path: finalPath,
+                                content: content,
+                                size: size
+                            });
+                            addedCount++;
+                        } else if (isPathDuplicate(finalPath)) {
+                            // 重复跳过但静默
+                        } else if (!content || content.trim().length === 0) {
+                            // 空文件跳过
+                        }
+                    }).catch(err => {
+                        console.warn(`读取zip内文件失败: ${relativePath}`, err);
+                    });
+                    promises.push(promise);
+                }
+                await Promise.all(promises);
+                if (addedCount > 0) {
+                    showMessage(` 从 ${zipName} 中添加了 ${addedCount} 篇笔记`, false);
+                } else {
+                    showMessage(` ZIP 中没有有效的 .md/.txt 文件或全部重复: ${zipName}`, false);
+                }
+                renderFileList();
+            } catch (err) {
+                console.error(err);
+                showMessage(` ZIP 解析失败: ${zipName}`, true);
+            }
+        }
+
+        // 批量处理 input.files
+        async function processFiles(files) {
+            if (!files || files.length === 0) return;
+            // 先把界面冻结感降一点，分批处理但不阻塞渲染
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const ext = file.name.split('.').pop().toLowerCase();
+                if (file.type === 'application/zip' || ext === 'zip') {
+                    await handleZipFile(file);
+                } else if (ext === 'md' || ext === 'txt') {
+                    await handleRegularFile(file);
+                } else {
+                    showMessage(` 跳过不支持文件: ${file.name}`, false);
+                }
+                renderFileList(); // 每添加一个就刷新列表
+            }
+            renderFileList();
+        }
+
+        // 清空全部
+        function clearAllEntries() {
+            if (notesEntries.length === 0) return;
+            notesEntries = [];
+            renderFileList();
+            showMessage(` 已清空所有笔记条目`, false);
+        }
+
+        // ---------- 生成 manifest.js ----------
+        function generateManifestJS() {
+            if (notesEntries.length === 0) {
+                showMessage(` 没有笔记条目，请先上传 Markdown 文件`, true);
+                return;
+            }
+
+            // 构建 manifest 数据结构: 包含 files 数组，保留路径、内容
+            const manifestData = {
+                version: "1.0",
+                generated: new Date().toISOString(),
+                files: notesEntries.map(entry => ({
+                    path: entry.path,
+                    content: entry.content
+                }))
+            };
+
+            // 生成 JS 代码: 全局变量 __NOTE_MANIFEST__  (为了note.html方便)
+            const manifestJsContent = `// 自动生成的笔记清单 - 直角笔记工具
+window.__NOTE_MANIFEST__ = ${JSON.stringify(manifestData, null, 2)};
+`;
+
+            // 创建 Blob 并下载
+            const blob = new Blob([manifestJsContent], { type: 'application/javascript' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'manifest.js';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showMessage(` 成功生成 manifest.js，共 ${notesEntries.length} 篇笔记，已开始下载`, false);
+        }
+
+        // ----- 上传区域交互 -----
+        uploadTrigger.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', async (e) => {
+            const files = Array.from(e.target.files);
+            if (files.length) {
+                await processFiles(files);
+                // 清空 input 值，允许重复上传同一个文件
+                fileInput.value = '';
+            }
+        });
+
+        // 拖拽上传
+        uploadTrigger.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadTrigger.style.borderColor = 'var(--color-accent)';
+            uploadTrigger.style.backgroundColor = 'var(--color-accent-04)';
+        });
+        uploadTrigger.addEventListener('dragleave', () => {
+            uploadTrigger.style.borderColor = 'var(--color-dark-20)';
+            uploadTrigger.style.backgroundColor = '';
+        });
+        uploadTrigger.addEventListener('drop', async (e) => {
+            e.preventDefault();
+            uploadTrigger.style.borderColor = 'var(--color-dark-20)';
+            uploadTrigger.style.backgroundColor = '';
+            const items = e.dataTransfer.items;
+            const files = [];
+            for (let i = 0; i < items.length; i++) {
+                const entry = items[i].webkitGetAsEntry();
+                if (entry && entry.isDirectory) {
+                    showMessage(` 不支持直接拖拽文件夹，请打包为 ZIP 上传`, true);
+                    continue;
+                }
+                const file = items[i].getAsFile();
+                if (file) files.push(file);
+            }
+            if (files.length) await processFiles(files);
+        });
+
+        clearAllBtn.addEventListener('click', clearAllEntries);
+        refreshListBtn.addEventListener('click', () => {
+            renderFileList();
+            showMessage(`列表已刷新`, false);
+        });
+        generateBtn.addEventListener('click', generateManifestJS);
+
+        // 可选：导航栏回到顶部功能（与 index 保持一致）
+        const backArrow = document.querySelector('.brand-top-arrow');
+        if (backArrow) {
+            backArrow.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
+
+        // 初始渲染空状态
+        renderFileList();
+
+        // 额外确保动态下载时没有任何遗漏，且 manifest 中内容为原始markdown（完美保留）
+        console.log('笔记构建工具已启动 — 直角风格，支持 ZIP 文件夹分类');
+    </script>
+</body>
+</html>

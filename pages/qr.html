@@ -3,118 +3,162 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0"/>
-    <title>QR & Barcode Generator</title>
-    <!-- 引入样式文件 -->
+    <title>二维码与条形码生成器 - An's web page</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.geekzu.org">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.geekzu.org/css2?family=Urbanist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.0/JsBarcode.all.min.js"></script>
     <style>
-        /* 工具页面特有样式 */
-        .tool-container {
+        /* ========== 页面标题区 ========== */
+        .page-hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 100px 24px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-title {
+            position: relative;
+            z-index: 1;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--color-dark);
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .page-desc {
+            position: relative;
+            z-index: 1;
+            font-size: 1.1rem;
+            color: var(--color-dark-60);
+            max-width: 600px;
+            line-height: 1.5;
+        }
+
+        /* ========== 工具区 ========== */
+        .tools-section {
             max-width: 800px;
             margin: 0 auto;
+            padding: 20px 28px 100px;
+            position: relative;
+            z-index: 1;
         }
-        
-        .tool-header {
-            text-align: center;
-            margin-bottom: var(--spacing-xl);
-            padding-bottom: var(--spacing-md);
-            border-bottom: 1px solid var(--color-border);
+
+        .tool-container {
+            background: var(--color-white);
+            border: 1px solid var(--color-dark-08);
+            box-shadow: var(--shadow-sm);
+            padding: 2rem;
+            transition: all var(--transition-smooth);
         }
-        
-        .tool-header h1 {
-            font-size: var(--font-size-xl);
-            margin-bottom: var(--spacing-xs);
-        }
-        
-        .tool-header .tagline {
-            font-size: var(--font-size-sm);
-            color: var(--color-text-light);
-            font-weight: 300;
-        }
-        
+
+        /* 输入区 */
         .input-section {
-            margin-bottom: var(--spacing-xl);
-            padding: var(--spacing-lg);
-            background: var(--color-base);
-            border: 1px solid var(--color-border);
-            border-radius: var(--radius-md);
-            transition: box-shadow var(--transition-normal);
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: var(--color-white);
+            border: 1px solid var(--color-dark-08);
+            transition: all var(--transition-smooth);
         }
-        
+
         .input-section:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            box-shadow: var(--shadow-md);
+            border-color: var(--color-accent-10);
+            background-color: var(--color-accent-04);
         }
-        
+
         .input-section h2 {
-            font-size: var(--font-size-lg);
+            font-size: 1.2rem;
+            font-weight: 600;
             color: var(--color-accent);
-            margin-bottom: var(--spacing-md);
+            margin-bottom: 1rem;
             text-align: center;
-            font-weight: 500;
+            letter-spacing: 0.02em;
         }
-        
+
         .input-group {
             display: flex;
             flex-direction: column;
-            gap: var(--spacing-sm);
-            margin-bottom: var(--spacing-md);
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
         }
-        
+
         .input-group input {
+            width: 100%;
             padding: 0.75rem 1rem;
-            font-size: var(--font-size-md);
-            font-family: var(--font-main);
-            border: 1px solid var(--color-border);
-            border-radius: var(--radius-md);
-            background: var(--color-base);
-            color: var(--color-text);
-            transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+            font-size: 0.95rem;
+            font-family: 'Urbanist', sans-serif;
+            border: 1.5px solid var(--color-dark-12);
+            border-radius: 0;
+            background: var(--color-white);
+            color: var(--color-dark);
+            transition: all var(--transition-fast);
         }
-        
+
         .input-group input:focus {
             outline: none;
             border-color: var(--color-accent);
-            box-shadow: 0 0 0 3px rgba(62, 80, 182, 0.1);
+            box-shadow: 0 0 0 3px var(--color-accent-08);
         }
-        
-        /* 修改：始终垂直排列 */
+
+        .input-hint {
+            font-size: 0.85rem;
+            color: var(--color-dark-60);
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        /* 结果区 */
         .codes-container {
             display: flex;
             flex-direction: column;
-            gap: var(--spacing-xl);
-            margin-top: var(--spacing-lg);
+            gap: 2rem;
         }
-        
+
         .code-section {
-            padding: var(--spacing-lg);
-            background: var(--color-base);
-            border: 1px solid var(--color-border);
-            border-radius: var(--radius-md);
-            text-align: center;
+            padding: 1.5rem;
+            background: var(--color-white);
+            border: 1px solid var(--color-dark-08);
+            transition: all var(--transition-smooth);
         }
-        
+
+        .code-section:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--color-accent-10);
+            background-color: var(--color-accent-04);
+        }
+
         .code-section h3 {
-            font-size: var(--font-size-lg);
+            font-size: 1.2rem;
+            font-weight: 600;
             color: var(--color-accent);
-            margin-bottom: var(--spacing-md);
-            font-weight: 500;
+            margin-bottom: 1rem;
+            text-align: center;
+            letter-spacing: 0.02em;
         }
-        
+
         .generator-container {
-            margin-top: var(--spacing-md);
-            padding: var(--spacing-md);
-            background: white;
-            border: 1px solid var(--color-border-light);
-            border-radius: var(--radius-md);
+            margin-top: 1rem;
+            padding: 1.5rem;
+            background: var(--color-white);
+            border: 2px dashed var(--color-dark-12);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             min-height: 320px;
             position: relative;
+            overflow: hidden;
         }
-        
+
         #qrcode, #barcode {
             display: flex;
             flex-direction: column;
@@ -123,114 +167,142 @@
             width: 100%;
             flex: 1;
         }
-        
+
         #qrcode canvas, #barcode canvas {
             display: block;
             margin: 0 auto;
+            max-width: 100%;
+            height: auto !important;
         }
-        
+
         .download-btn {
-            margin-top: var(--spacing-md);
-            display: inline-block;
+            margin-top: 1.5rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 10px 36px;
+            background-color: var(--color-accent);
+            color: var(--color-white);
+            border: none;
+            border-radius: 0;
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: 'Urbanist', sans-serif;
+            cursor: pointer;
+            transition: all var(--transition-smooth);
+            box-shadow: var(--shadow-btn), 0 4px 12px var(--color-accent-15);
+            text-decoration: none;
         }
-        
+
+        .download-btn:hover {
+            box-shadow: 0 3px 0 rgba(62, 63, 79, 0.15), 0 6px 20px rgba(97, 91, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .download-btn:active {
+            transform: translateY(0);
+            box-shadow: var(--shadow-sharp), 0 2px 8px var(--color-accent-15);
+        }
+
         .placeholder-text, .error {
             text-align: center;
-            color: var(--color-text-light);
+            color: var(--color-dark-40);
             font-style: italic;
             width: 100%;
             margin: auto;
+            font-size: 0.95rem;
         }
-        
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: var(--spacing-lg);
-            color: var(--color-text-light);
-            font-size: var(--font-size-sm);
-            transition: color var(--transition-fast);
+
+        .error {
+            color: #c0392b;
+            font-style: normal;
+            font-weight: 500;
         }
-        
-        .back-btn:hover {
-            color: var(--color-accent);
-            text-decoration: none;
+
+        /* 入场动画 */
+        .page-title,
+        .page-desc,
+        .tool-container {
+            opacity: 0;
+            transform: translateY(24px);
+            animation: fadeInUp 0.6s ease forwards;
         }
-        
-        .back-btn::before {
-            content: "←";
-            font-size: var(--font-size-md);
+
+        .page-title { animation-delay: 0.15s; }
+        .page-desc { animation-delay: 0.25s; }
+        .tool-container { animation-delay: 0.35s; }
+
+        /* ========== 响应式：平板及以下 ========== */
+        @media (max-width: 768px) {
+            .page-hero { padding: 80px 20px 30px; }
+            .page-title { font-size: 1.8rem; }
+            .page-desc { font-size: 1rem; }
+            .tools-section { padding: 20px 20px 60px; }
+            .tool-container { padding: 1.5rem; }
+            .input-section { padding: 1.25rem; }
+            .code-section { padding: 1.25rem; }
+            .generator-container { min-height: 280px; padding: 1rem; }
+            .download-btn { padding: 10px 28px; font-size: 0.9rem; }
         }
-        
-        .input-hint {
-            font-size: var(--font-size-sm);
-            color: var(--color-text-light);
-            text-align: center;
-            margin-top: var(--spacing-xs);
-            font-weight: 300;
-        }
-        
-        /* 响应式设计 */
-        @media (min-width: 768px) {
-            .input-group {
-                flex-direction: row;
-                align-items: center;
-            }
-            
-            .input-group input {
-                flex: 1;
-                min-width: 300px;
-            }
-            
-            .generator-container {
-                min-height: 280px;
-            }
-        }
-        
-        @media (max-width: 767px) {
-            .input-section,
-            .code-section {
-                padding: var(--spacing-md);
-            }
-            
-            .generator-container {
-                min-height: 280px;
-            }
-            
-            #qrcode, #barcode {
-                max-width: 90%;
-            }
-            
-            canvas {
-                max-width: 100%;
-                height: auto !important;
-            }
+
+        /* ========== 响应式：手机 ========== */
+        @media (max-width: 480px) {
+            .page-hero { padding: 70px 16px 20px; }
+            .page-title { font-size: 1.5rem; margin-bottom: 8px; }
+            .page-desc { font-size: 0.9rem; }
+            .tools-section { padding: 16px 16px 40px; }
+            .tool-container { padding: 1rem; }
+            .input-section { padding: 1rem; margin-bottom: 1.5rem; }
+            .input-section h2 { font-size: 1.1rem; }
+            .input-group input { padding: 0.625rem 0.875rem; font-size: 0.9rem; }
+            .input-hint { font-size: 0.8rem; }
+            .codes-container { gap: 1.5rem; }
+            .code-section { padding: 1rem; }
+            .code-section h3 { font-size: 1.1rem; }
+            .generator-container { min-height: 260px; padding: 0.75rem; }
+            .download-btn { padding: 10px 24px; font-size: 0.85rem; margin-top: 1rem; }
+            #qrcode, #barcode { max-width: 90%; }
         }
     </style>
 </head>
 <body>
-    <!-- 主内容 -->
-    <main class="main">
-        <div class="container">
+    <!-- 导航栏 -->
+    <header class="navbar" id="navbar">
+        <div class="navbar-inner">
+            <a href="#" class="navbar-brand brand-top-arrow" title="回到顶部">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor" class="custom-arrow-svg">
+                    <path d="M704-240 320-624v344h-80v-480h480v80H376l384 384-56 56Z" />
+                </svg>
+            </a>
+            <nav class="navbar-links">
+                <a href="../index.html" class="nav-link">首页</a>
+                <a href="../alambda.html" class="nav-link">ALambda</a>
+                <a href="../note.html" class="nav-link">笔记</a>
+                <a href="../contact.html" class="nav-link">联系</a>
+            </nav>
+        </div>
+    </header>
+    <main class="main-content">
+        <!-- 页面标题区 -->
+        <section class="page-hero">
+            <div class="bg-orb"></div>
+            <div class="bg-orb-secondary"></div>
+            <h1 class="page-title">二维码与条形码生成器</h1>
+            <p class="page-desc">输入内容同时生成二维码和条形码，支持 PNG 下载</p>
+        </section>
+
+        <!-- 工具区 -->
+        <section class="tools-section">
             <div class="tool-container">
-                <!-- 返回首页按钮 -->
-                <a href="../alambda.html" class="back-btn">返回首页</a>
-                
-                <!-- 工具标题 -->
-                <div class="tool-header">
-                    <h1>二维码与条形码生成器</h1>
-                    <p class="tagline">输入内容同时生成二维码和条形码，支持PNG下载</p>
-                </div>
-                
                 <!-- 输入区域 -->
                 <div class="input-section">
                     <h2>输入内容</h2>
                     <div class="input-group">
                         <input type="text" id="inputContent" placeholder="请输入文本、网址、数字等内容" aria-label="编码内容输入框">
                     </div>
-                    <p class="input-hint">输入的内容将同时生成二维码和条形码，支持URL、文本、联系方式、数字等</p>
+                    <p class="input-hint">输入的内容将同时生成二维码和条形码，支持 URL、文本、联系方式、数字等</p>
                 </div>
-                
+
                 <!-- 生成结果区域 -->
                 <div class="codes-container">
                     <!-- QR Code 部分 -->
@@ -250,9 +322,15 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
     </main>
 
+    <!-- 页脚 -->
+    <footer class="footer">
+        <p>© 2026 Anming_cat</p>
+    </footer>
+
+    <script src="../script.js"></script>
     <script>
         // 获取输入框
         const inputContent = document.getElementById('inputContent');
@@ -301,7 +379,7 @@
 
             // 添加下载按钮
             const downloadBtn = document.createElement('a');
-            downloadBtn.className = 'btn btn-primary download-btn';
+            downloadBtn.className = 'download-btn';
             downloadBtn.innerHTML = '下载二维码';
             downloadBtn.onclick = function() {
                 saveQRAsPNG();
@@ -344,7 +422,7 @@
 
                 // 添加下载按钮
                 const downloadBtn = document.createElement('a');
-                downloadBtn.className = 'btn btn-primary download-btn';
+                downloadBtn.className = 'download-btn';
                 downloadBtn.innerHTML = '下载条形码';
                 downloadBtn.onclick = function() {
                     saveBarcodeAsPNG();

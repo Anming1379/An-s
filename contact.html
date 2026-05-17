@@ -1,252 +1,459 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-  <title>联系 - An's web page</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>联系桉</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ========== 联系页面专属高透气风格 ========== */
+        .contact-section {
+            max-width: 900px;
+            margin: 0 auto;
+            /* 保持极简高级留白 */
+            padding: 60px 32px 120px; 
+        }
 
-  <!-- 样式文件 -->
-  <link rel="stylesheet" href="style.css" />
-  <link rel="icon" href="image/avatar_c.png">
+        .contact-list {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            /* 保持透气行距 */
+            gap: 16px; 
+        }
 
-  <!-- 联系页面特定样式 -->
-  <style>
-    /* 联系页面特定样式 */
-    .page-header {
-      margin-bottom: var(--spacing-xl);
-      text-align: center;
-    }
-    
-    .page-header h1 {
-      margin-bottom: var(--spacing-sm);
-    }
-    
-     .page-header .description {
-      text-align: center;      /* 文本居中 */
-      max-width: 600px;        /* 限制宽度，让它不要太宽 */
-      margin: 0 auto;          /* 水平居中块 */
-    }
+        /* 无边界扁平线性卡片 */
+        .contact-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 36px 20px; 
+            border-bottom: 1px solid var(--color-dark-12);
+            transition: all var(--transition-smooth);
+            position: relative;
+            text-decoration: none;
+        }
 
-    
-    .contact-details,
-    .social-media-links {
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-lg);
-      margin-top: var(--spacing-md);
-    }
-    
-    .contact-item,
-    .social-item,
-    .tips-item {
-      padding: var(--spacing-md);
-      background: var(--color-background-light);
-      border-radius: var(--radius-md);
-      border-left: 3px solid var(--color-accent);
-    }
-    
-    .contact-item h3,
-    .social-item h3,
-    .tips-item h3 {
-      font-size: var(--font-size-md);
-      margin-bottom: var(--spacing-xs);
-      color: var(--color-accent);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    
-    .contact-value {
-      font-weight: 500;
-      padding: 0.25rem 0.5rem;
-      background: rgba(62, 80, 182, 0.1);
-      border-radius: var(--radius-sm);
-      transition: background-color var(--transition-fast);
-    }
-    
-    .contact-value:hover {
-      background: rgba(62, 80, 182, 0.2);
-    }
-    
-    .social-description {
-      font-size: var(--font-size-sm);
-      color: var(--color-text-light);
-      margin-top: var(--spacing-xs);
-    }
-    
-    .nav-menu a.active {
-      color: var(--color-accent);
-      font-weight: 600;
-    }
-    
-    @media (min-width: 768px) {
-      .contact-details,
-      .social-media-links {
-        flex-direction: row;
-        flex-wrap: wrap;
-      }
-      
-      .contact-item,
-      .social-item {
-        flex: 1;
-        min-width: 250px;
-      }
-      
-      .tips-item {
-        margin-bottom: var(--spacing-md);
-      }
-    }
-  </style>
+        .contact-row:first-child {
+            border-top: 1px solid var(--color-dark-12);
+        }
+
+        /* 左侧区域组合 */
+        .contact-left {
+            display: flex;
+            align-items: center;
+            gap: 32px; 
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* 图标框尺寸强行固定，防止变形 */
+        .contact-meta-icon {
+            width: 36px;
+            height: 36px;
+            font-size: 32px;
+            color: var(--color-dark-40);
+            transition: color var(--transition-fast), transform var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        /* GitHub 精密内联 SVG */
+        .contact-meta-icon svg {
+            width: 32px;
+            height: 32px;
+            fill: var(--color-dark-40);
+            transition: fill var(--transition-fast);
+            display: block;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .contact-type {
+            /* 完美复制并继承你 style.css 里的全局字体族声明序列，确保完全同步 */
+            font-family: 'Urbanist' , -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+            font-size: 0.85rem;
+            color: var(--color-dark-40);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 500;
+        }
+
+        .contact-value {
+            /* 完美复制并继承你 style.css 里的全局字体族声明序列，确保完全同步 */
+            font-family: 'Urbanist' , -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+            font-size: 1.35rem;
+            font-weight: 600;
+            color: var(--color-dark);
+            letter-spacing: 0.01em;
+            transition: color var(--transition-fast);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* 右侧利落直角动作块 */
+        .contact-action-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 52px;
+            height: 52px;
+            border: 1px solid var(--color-dark-20);
+            background-color: transparent;
+            color: var(--color-dark);
+            transition: all var(--transition-smooth);
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-left: 24px;
+        }
+
+        .contact-action-btn .material-icons {
+            font-size: 22px;
+            transition: transform var(--transition-smooth), color var(--transition-fast);
+        }
+
+        /* ========== 基础悬浮交互框架 ========== */
+        .contact-row:hover {
+            background-color: var(--color-dark-04);
+        }
+
+        .contact-row:hover .contact-meta-icon {
+            transform: scale(1.05);
+        }
+
+        .contact-row:hover .contact-action-btn {
+            color: var(--color-white) !important;
+            transform: translate(-3px, -3px);
+            box-shadow: 3px 3px 0 var(--color-dark);
+        }
+
+        .contact-row:hover .contact-action-btn .material-icons {
+            transform: rotate(-45deg);
+        }
+
+        /* ========== 专属软件色彩定制方案 ========== */
+
+        /* 1. 邮箱：保留品牌主题色 */
+        .contact-email:hover {
+            border-bottom-color: var(--color-accent);
+        }
+        .contact-email:hover .contact-meta-icon,
+        .contact-email:hover .contact-value {
+            color: var(--color-accent);
+        }
+        .contact-email:hover .contact-action-btn {
+            background-color: var(--color-accent);
+            border-color: var(--color-accent);
+        }
+
+        /* 2. QQ：经典蓝 */
+        .contact-qq:hover {
+            border-bottom-color: #0F98F0;
+        }
+        .contact-qq:hover .contact-meta-icon,
+        .contact-qq:hover .contact-value {
+            color: #0F98F0;
+        }
+        .contact-qq:hover .contact-action-btn {
+            background-color: #0F98F0;
+            border-color: #0F98F0;
+        }
+
+        /* 3. 微信：活力绿 */
+        .contact-wechat:hover {
+            border-bottom-color: #07C160;
+        }
+        .contact-wechat:hover .contact-meta-icon,
+        .contact-wechat:hover .contact-value {
+            color: #07C160;
+        }
+        .contact-wechat:hover .contact-action-btn {
+            background-color: #07C160;
+            border-color: #07C160;
+        }
+
+        /* 4. GitHub：深邃黑 */
+        .contact-github:hover {
+            border-bottom-color: #24292e;
+        }
+        .contact-github:hover .contact-meta-icon svg {
+            fill: #24292e;
+        }
+        .contact-github:hover .contact-value {
+            color: #24292e;
+        }
+        .contact-github:hover .contact-action-btn {
+            background-color: #24292e;
+            border-color: #24292e;
+        }
+
+        /* 5. Bilibili：小粉红 */
+        .contact-bilibili:hover {
+            border-bottom-color: #FF5F9B;
+        }
+        .contact-bilibili:hover .contact-meta-icon,
+        .contact-bilibili:hover .contact-value {
+            color: #FF5F9B;
+        }
+        .contact-bilibili:hover .contact-action-btn {
+            background-color: #FF5F9B;
+            border-color: #FF5F9B;
+        }
+
+        /* ========== 完美响应式大间距适配 ========== */
+        @media (max-width: 768px) {
+            .contact-section { padding: 50px 20px 100px; }
+            .contact-row { padding: 32px 16px; }
+            .contact-left { gap: 24px; }
+        }
+
+        @media (max-width: 480px) {
+            .contact-section { 
+                padding: 40px 16px 80px; 
+            }
+            .contact-list {
+                gap: 12px;
+            }
+            .contact-row { 
+                padding: 28px 12px; 
+            }
+            .contact-left { 
+                gap: 20px; 
+            }
+            .contact-meta-icon { 
+                width: 28px;
+                height: 28px;
+                font-size: 26px; 
+            }
+            .contact-meta-icon svg { 
+                width: 26px; 
+                height: 26px; 
+            }
+            .contact-value { 
+                font-size: 1.15rem; 
+            }
+            .contact-type { 
+                font-size: 0.75rem; 
+            }
+            .contact-action-btn { 
+                width: 44px; 
+                height: 44px; 
+                margin-left: 16px;
+            }
+            .contact-action-btn .material-icons { 
+                font-size: 18px; 
+            }
+        }
+
+        @media (max-width: 360px) {
+            .contact-section { 
+                padding: 30px 12px 60px; 
+            }
+            .contact-row { 
+                padding: 24px 8px; 
+            }
+            .contact-left { 
+                gap: 16px; 
+            }
+            .contact-value { 
+                font-size: 1.05rem; 
+            }
+        }
+
+        /* 微信复制成功的独立绿态样式反馈 */
+       /* 微信复制成功的独立绿态样式反馈 - 增强版 */
+        .contact-row.copied-state {
+            border-bottom-color: #2e7d32 !important;
+            background-color: rgba(46, 125, 50, 0.05) !important;
+        }
+        .contact-row.copied-state .contact-meta-icon {
+            color: #2e7d32 !important;
+            transform: scale(1.05);
+        }
+        .contact-row.copied-state .contact-value {
+            color: #2e7d32 !important;
+        }
+        .contact-row.copied-state .contact-type {
+            color: #2e7d32 !important;
+        }
+        .contact-row.copied-state .contact-action-btn {
+            background-color: #2e7d32 !important;
+            border-color: #2e7d32 !important;
+            color: var(--color-white) !important;
+            box-shadow: 3px 3px 0 var(--color-dark) !important;
+            transform: translate(-3px, -3px) !important;
+        }
+        .contact-row.copied-state .contact-action-btn .material-icons {
+            transform: rotate(0deg) !important;
+            color: var(--color-white) !important;
+        }
+    </style>
 </head>
 <body>
-  <!-- 导航栏 -->
-  <header class="header">
-    <div class="container">
-      <nav class="nav" aria-label="主导航">
-        <!-- 品牌 -->
-        <div class="brand">
-          <div class="brand-text">
-            <h1><a href="index.html">An's web page</a></h1>
-            <p class="tagline">找桉一起玩!</p>
-          </div>
+    <header class="navbar" id="navbar">
+        <div class="navbar-inner">
+            <a href="#" class="navbar-brand brand-top-arrow" title="回到顶部">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor" class="custom-arrow-svg">
+                    <path d="M704-240 320-624v344h-80v-480h480v80H376l384 384-56 56Z" />
+                </svg>
+</a>
+<nav class="navbar-links">
+    <a href="index.html" class="nav-link">首页</a>
+    <a href="alambda.html" class="nav-link">ALambda</a>
+    <a href="note.html" class="nav-link">笔记</a>
+    <a href="contact.html" class="nav-link active">联系</a>
+</nav>
         </div>
+    </header>
 
-        <button
-          class="nav-toggle"
-          aria-label="切换导航菜单"
-          aria-controls="primary-menu"
-          aria-expanded="false"
-          type="button"
-        >
-          <span class="material-icons">menu</span>
-        </button>
-
-
-        <ul id="primary-menu" class="nav-menu" role="menu">
-          <li role="none"><a role="menuitem" href="index.html"> 首页 </a></li>
-          <li role="none"><a role="menuitem" href="note.html"> 笔记 </a></li>
-          <li role="none"><a role="menuitem" href="alambda.html" > ALambda </a></li>
-          <li role="none"><a role="menuitem" href="contact.html" class="active"> 联系 </a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
-
-  <!-- 主内容 -->
-  <main class="main">
-    <div class="container">
-      <!-- 页面标题 -->
-      <div class="page-header" id="home">
-        <h1>联系我</h1>
-        <p class="description">如果你想找我问问题, 或者只是找我交友, 我都欢迎!</p>
-      </div>
-
-      <!-- 联系内容区域 -->
-      <div class="content">
-        <!-- 联系信息部分 -->
-        <section class="content-section" id="contact-info">
-          <h2>一起玩</h2>
-          <p>找我玩！耶！交友!</p>
-          
-          <div class="contact-details">
-            <div class="contact-item">
-              <h3>邮箱</h3>
-              <p><a href="mailto:lyric_x@outlook.com">lyric_x@outlook.com</a></p>
-              <h3>QQ</h3>
-              <p><span class="contact-value">3865768909</span></p>
-              <h3>微信</h3>
-              <p><span class="contact-value">Anming1379</span></p>
-            </div>
-          </div>
+    <main class="main-content">
+        <section class="hero" style="min-height: auto; padding-top: 80px; padding-bottom: 20px;">
+            <div class="bg-orb"></div>
+            <div class="bg-orb-secondary"></div>
+            
+            <h1 class="name" style="font-family: 'Urbanist' , -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;">和桉一起玩!</h1>
+            <p class="tagline" style="font-family: 'Urbanist' , -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;">可以来找我问问我们也可以一起玩哦</p>
+            <p class="subtitle" style="font-family: 'Urbanist' , -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;">Connect · Share · Chat</p>
         </section>
 
-        <!-- 社交媒体部分 -->
-        <section class="content-section" id="social-media">
-          <h2>社交媒体</h2>
-          <p>关注我的bb空间！qwq</p>
-          
-          <div class="social-media-links">
-            <div class="social-item">
-              <h3>Bilibili</h3>
-              <p><a href="https://b23.tv/st2JEJA" target="_blank" rel="noopener noreferrer">https://b23.tv/st2JEJA</a></p>
-              <p class="social-description">我的B站主页，发点动画，教程之类的视频</p>
-              <h3>GitHub</h3>
-              <p><a href="https://github.com/Anming1379" target="_blank" rel="noopener noreferrer">https://github.com/Anming1379</a></p>
-              <p class="social-description">我的Github，其实里面没啥东西（</p>
+        <section class="contact-section">
+            <div class="contact-list">
+                
+                <a href="mailto:lyric_x@outlook.com" class="contact-row contact-email">
+                    <div class="contact-left">
+                        <div class="contact-meta-icon">
+                            <span class="material-icons">mail_outline</span>
+                        </div>
+                        <div class="contact-info">
+                            <span class="contact-type">Email</span>
+                            <span class="contact-value">lyric_x@outlook.com</span>
+                        </div>
+                    </div>
+                    <div class="contact-action-btn">
+                        <span class="material-icons">arrow_forward</span>
+                    </div>
+                </a>
+
+                <a href="https://qm.qq.com/q/1QdOqcNXzG" class="contact-row contact-qq">
+                    <div class="contact-left">
+                        <div class="contact-meta-icon">
+                            <span class="material-icons">chat_bubble_outline</span>
+                        </div>
+                        <div class="contact-info">
+                            <span class="contact-type">QQ</span>
+                            <span class="contact-value">3865768909</span>
+                        </div>
+                    </div>
+                    <div class="contact-action-btn">
+                        <span class="material-icons">arrow_forward</span>
+                    </div>
+                </a>
+
+                <a href="#" class="contact-row contact-wechat" id="wechat-row">
+                    <div class="contact-left">
+                        <div class="contact-meta-icon">
+                            <span class="material-icons">alternate_email</span>
+                        </div>
+                        <div class="contact-info">
+                            <span class="contact-type">WeChat</span>
+                            <span class="contact-value" id="wechat-val">Anming1379</span>
+                        </div>
+                    </div>
+                    <div class="contact-action-btn" title="复制微信号">
+                        <span class="material-icons" id="wechat-icon">content_copy</span>
+                    </div>
+                </a>
+
+                <a href="https://github.com/Anming1379" target="_blank" rel="noopener noreferrer" class="contact-row contact-github">
+                    <div class="contact-left">
+                        <div class="contact-meta-icon">
+                            <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8C0 11.54 2.29 14.53 5.47 15.59C5.87 15.66 6.02 15.42 6.02 15.21C6.02 15.02 6.01 14.39 6.01 13.72C4 14.09 3.48 13.23 3.32 12.78C3.23 12.55 2.84 11.84 2.5 11.65C2.22 11.5 1.82 11.13 2.49 11.12C3.12 11.11 3.57 11.7 3.72 11.94C4.44 13.15 5.59 12.81 6.05 12.6C6.12 12.08 6.33 11.73 6.56 11.53C4.78 11.33 2.92 10.64 2.92 7.58C2.92 6.71 3.23 5.99 3.74 5.43C3.66 5.23 3.38 4.41 3.82 3.31C3.82 3.31 4.49 3.1 6.02 4.13C6.66 3.95 7.34 3.86 8 3.86C8.66 3.86 9.34 3.95 9.98 4.13C11.51 3.09 12.18 3.31 12.18 3.31C12.62 4.41 12.34 5.23 12.26 5.43C12.77 5.99 13.08 6.7 13.08 7.58C13.08 10.65 11.21 11.33 9.43 11.53C9.72 11.78 9.97 12.26 9.97 13.01C9.97 14.08 9.96 14.94 9.96 15.21C9.96 15.42 10.11 15.67 10.51 15.59C13.71 14.53 16 11.53 16 8C16 3.58 12.42 0 8 0Z"/>
+                            </svg>
+                        </div>
+                        <div class="contact-info">
+                            <span class="contact-type">GitHub</span>
+                            <span class="contact-value">Anming1379</span>
+                        </div>
+                    </div>
+                    <div class="contact-action-btn">
+                        <span class="material-icons">arrow_forward</span>
+                    </div>
+                </a>
+
+                <a href="https://b23.tv/ufHCAnT" target="_blank" rel="noopener noreferrer" class="contact-row contact-bilibili">
+                    <div class="contact-left">
+                        <div class="contact-meta-icon">
+                            <span class="material-icons">play_circle_outline</span>
+                        </div>
+                        <div class="contact-info">
+                            <span class="contact-type">Bilibili</span>
+                            <span class="contact-value">桉铭_Cat</span>
+                        </div>
+                    </div>
+                    <div class="contact-action-btn">
+                        <span class="material-icons">arrow_forward</span>
+                    </div>
+                </a>
+
             </div>
-          </div>
         </section>
-      </div>
-    </div>
-  </main>
+    </main>
 
-  <!-- 页脚 -->
-  <footer class="footer">
-    <div class="container">
-      <div class="footer-content">
-        <div class="footer-section">
-          <h3>An's web page</h3>
-          <p>你要找桉一起玩嘛?</p>
-        </div>
+    <footer class="footer">
+        <p>© 2026 Anming_cat</p>
+    </footer>
 
-        <div class="footer-section">
-          <h4>快速链接</h4>
-          <ul class="footer-links">
-            <li><a href="index.html">首页</a></li>
-            <li><a href="note.html">笔记</a></li>
-            <li><a href="alambda.html">ALambda</a></li>
-            <li><a href="contact.html">联系</a></li>
-          </ul>
-        </div>
+    <script src="script.js"></script>
+    <script>
+      // 微信复制交互优化版
+const wechatRow = document.getElementById('wechat-row');
+const wechatVal = document.getElementById('wechat-val');
+const wechatIcon = document.getElementById('wechat-icon');
+const wechatType = wechatRow ? wechatRow.querySelector('.contact-type') : null;
+
+if (wechatRow && wechatVal && wechatIcon && wechatType) {
+    wechatRow.addEventListener('click', function(e) {
+        e.preventDefault();
         
-        <div class="copyright">
-          <p>© 2025 AnmingCat</p>
-        </div>
-      </div>
-    </div>
-  </footer>
-
-  <!-- 脚本文件 -->
-  <script src="script.js"></script>
-  
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // 添加当前页面高亮
-      const currentPage = window.location.pathname.split('/').pop();
-      const navLinks = document.querySelectorAll('.nav-menu a');
-      
-      navLinks.forEach(link => {
-        const linkHref = link.getAttribute('href');
-        if (linkHref === currentPage || (currentPage === '' && linkHref === 'index.html')) {
-          link.classList.add('active');
-        }
-      });
-      
-      // QQ和微信复制功能
-      const contactValues = document.querySelectorAll('.contact-value');
-      contactValues.forEach(item => {
-        item.addEventListener('click', function() {
-          const textToCopy = this.textContent;
-          navigator.clipboard.writeText(textToCopy).then(() => {
-            // 显示复制成功提示
-            const originalText = this.textContent;
-            this.textContent = '已复制到剪贴板！';
-            this.style.color = 'var(--color-accent)';
+        // 彻底移除可能导致焦点混淆的干扰
+        wechatRow.blur();
+        
+        navigator.clipboard.writeText('Anming1379').then(() => {
+            const originalType = wechatType.innerText;
+            const originalIcon = wechatIcon.innerText;
+            
+            // 改变上方小字提示和图标，保持下方微信号不动，整体更美观
+            wechatType.innerText = 'Copied!';
+            wechatIcon.innerText = 'done';
+            wechatRow.classList.add('copied-state');
             
             setTimeout(() => {
-              this.textContent = originalText;
-              this.style.color = '';
+                wechatType.innerText = originalType;
+                wechatIcon.innerText = originalIcon;
+                wechatRow.classList.remove('copied-state');
             }, 2000);
-          }).catch(err => {
-            console.error('复制失败: ', err);
-          });
+        }).catch(err => {
+            console.error('复制失败啦:', err);
         });
-        
-        // 添加提示样式
-        item.style.cursor = 'pointer';
-        item.title = '点击复制';
-      });
     });
-  </script>
+}
+    </script>
+        <script src="script.js"></script>
 </body>
 </html>

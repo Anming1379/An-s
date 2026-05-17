@@ -1,180 +1,450 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-  <title>页面未找到 - An's web page</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>啊呀...对...对不起</title>
+    <!-- Google Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.geekzu.org">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.geekzu.org/css2?family=Urbanist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- 复用全局样式，保证导航栏、页脚、配色与直角风格完全一致 -->
+    <link rel="stylesheet" href="style.css">
+    <!-- 内嵌样式：仅针对404定制，尺寸严格对齐 index 英雄区比例，直角克制 -->
+    <style>
+        /* ---------- 404 区域尺寸调优 (与原index英雄区文字/图标比例对齐) ---------- */
+        .error-hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 70px 24px 80px;
+            position: relative;
+            overflow: hidden;
+            min-height: 70vh;
+        }
 
-  <!-- 共享样式文件 -->
-  <link rel="stylesheet" href="style.css" />
-  <link rel="icon" href="image/avatar_c.png">
-  
-  <style>
-    /* 404页面简约样式 */
-    .error-container {
-      min-height: 60vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: var(--spacing-xl) 0;
-    }
-    
-    .error-code {
-      font-size: clamp(4rem, 10vw, 8rem);
-      font-weight: 300;
-      color: var(--color-contrast);
-      line-height: 1;
-      margin-bottom: var(--spacing-sm);
-      font-family: var(--font-main);
-    }
-    
-    .error-title {
-      font-size: var(--font-size-xl);
-      color: var(--color-contrast);
-      margin-bottom: var(--spacing-md);
-      font-weight: 400;
-    }
-    
-    .error-message {
-      max-width: 600px;
-      margin: 0 auto var(--spacing-lg);
-      color: var(--color-text-light);
-      font-size: var(--font-size-md);
-    }
-    
-    .error-actions {
-      margin-top: var(--spacing-md);
-      display: flex;
-      justify-content: center;
-    }
-    
-    /* 响应式调整 - 与主站保持一致 */
-    @media (max-width: 767px) {
-      .error-actions {
-        flex-direction: column;
-        align-items: center;
-        width: 100%;
-      }
-      
-      .error-actions .btn {
-        width: 100%;
-        max-width: 300px;
-        min-height: 2.75rem; /* 触摸友好 */
-        margin-bottom: var(--spacing-sm);
-      }
-    }
-    
-    /* PC端按钮优化 - 与主站保持一致 */
-    @media (min-width: 768px) {
-      .error-actions {
-        gap: var(--spacing-md);
-      }
-      
-      .error-actions .btn {
-        min-height: 3rem; /* 确保按钮有足够的最小高度 */
-      }
-    }
-    
-    /* 中等屏幕进一步优化 */
-    @media (min-width: 1024px) {
-      .error-actions {
-        gap: var(--spacing-lg); /* 在更大的屏幕上进一步增加按钮间距 */
-      }
-    }
-  </style>
+        /* 404 数字 — 比原 name 稍大一点作为视觉焦点，但不过度夸张 */
+        .glitch-number {
+            font-size: 5rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            color: var(--color-dark);
+            line-height: 1;
+            text-shadow: 3px 3px 0 var(--color-accent-20);
+            transition: text-shadow 0.2s ease;
+        }
+        
+        @media (min-width: 768px) {
+            .glitch-number {
+                font-size: 6rem;
+            }
+        }
+
+        .error-message {
+            position: relative;
+            z-index: 2;
+            margin-bottom: 28px;
+        }
+        
+        .error-title {
+            font-size: 1.3rem;      /* 接近原 .section-title 的 1.8rem，但作为副标题更内敛 */
+            font-weight: 600;
+            color: var(--color-dark-90);
+            margin-bottom: 6px;
+            letter-spacing: -0.01em;
+        }
+        
+        .error-desc {
+            font-size: 0.92rem;     /* 与原 .tagline 1.1rem 接近，略小但克制 */
+            color: var(--color-dark-60);
+            max-width: 420px;
+            margin: 0 auto;
+        }
+        
+        /* ========= 创意时钟区：数字尺寸、图标大小与原界面和谐 ========= */
+        .clock-container {
+            position: relative;
+            z-index: 2;
+            margin: 36px auto 40px;
+            width: 100%;
+            max-width: 520px;
+        }
+        
+        .creative-clock {
+            background: var(--color-white);
+            border: 1px solid var(--color-dark-12);
+            box-shadow: var(--shadow-md), 0 8px 20px var(--color-dark-08);
+            padding: 22px 20px 22px;
+            transition: transform var(--transition-smooth), box-shadow var(--transition-smooth);
+        }
+        
+        .creative-clock:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg), 0 12px 28px var(--color-accent-10);
+            border-color: var(--color-accent-20);
+        }
+        
+        /* 时间主体 — 数字大小贴近原 .name 比例，清晰而不突兀 */
+        .time-digits {
+            display: flex;
+            justify-content: center;
+            align-items: baseline;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+            font-family: 'Urbanist', 'Fira Mono', 'SF Mono', monospace;
+            font-weight: 700;
+        }
+        
+        .time-unit {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            min-width: 72px;
+        }
+        
+        .unit-number {
+            font-size: 2.6rem;      /* 原 index 中无巨大数字，此尺寸稳重 */
+            font-weight: 800;
+            background: var(--color-dark-04);
+            padding: 5px 12px;
+            border: 1px solid var(--color-dark-08);
+            color: var(--color-dark);
+            letter-spacing: 2px;
+            transition: all 0.1s ease;
+            font-feature-settings: "tnum";
+            font-variant-numeric: tabular-nums;
+            line-height: 1.2;
+        }
+        
+        .unit-label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            font-weight: 600;
+            color: var(--color-accent);
+            background: var(--color-accent-06);
+            padding: 2px 10px;
+            border: none;
+        }
+        
+        .time-separator {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-accent-40);
+            margin: 0 2px;
+            user-select: none;
+        }
+        
+        /* 秒闪动效果保持 */
+        .seconds-highlight {
+            transition: background 0.08s linear;
+        }
+        
+        .seconds-flash {
+            background: var(--color-accent-15) !important;
+            border-color: var(--color-accent) !important;
+        }
+        
+        /* 日期区域 — 图标与文字大小与原界面辅助信息统一 */
+        .clock-date {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--color-dark-08);
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--color-dark-60);
+            letter-spacing: 0.03em;
+        }
+        
+        .date-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .date-item .material-icons {
+            font-size: 14px;        /* 缩小图标，与原界面 fine-print 风格匹配 */
+            color: var(--color-accent);
+        }
+        
+        /* 直角进度条 — 纤细优雅 */
+        .second-progress {
+            margin-top: 18px;
+            height: 2px;
+            background: var(--color-dark-08);
+            width: 100%;
+            position: relative;
+        }
+        
+        .progress-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0%;
+            background: var(--color-accent);
+            transition: width 0.2s linear;
+        }
+        
+        /* 错误页按钮组 — 保持与原 .btn 一致的尺寸 */
+        .error-actions {
+            position: relative;
+            z-index: 2;
+            margin-top: 20px;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-custom-home {
+            min-width: 180px;
+        }
+        
+        /* 响应式：移动端数字进一步缩小，保持与 index 下 hero 比例协调 */
+        @media (max-width: 640px) {
+            .error-hero {
+                padding: 50px 20px 60px;
+            }
+            .glitch-number {
+                font-size: 3.8rem;
+            }
+            .error-title {
+                font-size: 1.2rem;
+            }
+            .time-digits {
+                gap: 4px;
+            }
+            .time-unit {
+                min-width: 58px;
+            }
+            .unit-number {
+                font-size: 2rem;
+                padding: 3px 8px;
+            }
+            .time-separator {
+                font-size: 1.6rem;
+            }
+            .unit-label {
+                font-size: 0.55rem;
+                padding: 1px 6px;
+            }
+            .clock-date {
+                gap: 16px;
+                font-size: 0.7rem;
+            }
+            .date-item .material-icons {
+                font-size: 12px;
+            }
+            .btn-custom-home {
+                min-width: 150px;
+                padding: 8px 20px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .unit-number {
+                font-size: 1.6rem;
+                padding: 2px 5px;
+            }
+            .time-unit {
+                min-width: 50px;
+            }
+            .time-separator {
+                font-size: 1.3rem;
+            }
+            .creative-clock {
+                padding: 16px 12px;
+            }
+        }
+        
+        /* 柔和入场动画与index一致 */
+        .error-hero .glitch-number,
+        .error-hero .error-message,
+        .clock-container,
+        .error-actions {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.55s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+        }
+        .error-hero .error-message { animation-delay: 0.08s; }
+        .clock-container { animation-delay: 0.2s; }
+        .error-actions { animation-delay: 0.35s; }
+        
+        /* 背景光晕复用主页定义，无需重写 */
+    </style>
 </head>
 <body>
-  <!-- 导航栏 - 与主站保持一致 -->
-  <header class="header">
-    <div class="container">
-      <nav class="nav" aria-label="主导航">
-        <!-- 品牌 -->
-        <div class="brand">
-          <div class="brand-text">
-            <h1><a href="/">An's web page</a></h1>
-            <p class="tagline">桉的网页!你要陪桉一起玩嘛～</p>
-          </div>
-        </div>
-
-        <button
-          class="nav-toggle"
-          aria-label="切换导航菜单"
-          aria-controls="primary-menu"
-          aria-expanded="false"
-          type="button"
-        >
-          <span class="material-icons">menu</span>
-        </button>
-
-
-        <ul id="primary-menu" class="nav-menu" role="menu">
-          <li role="none"><a role="menuitem" href="index.html"> 首页 </a></li>
-          <li role="none"><a role="menuitem" href="note.html"> 笔记 </a></li>
-          <li role="none"><a role="menuitem" href="alambda.html" > ALambda </a></li>
-          <li role="none"><a role="menuitem" href="contact.html" > 联系 </a></li>
-        </ul>
-      </nav>
+    <!-- 导航栏 -->
+<header class="navbar" id="navbar">
+    <div class="navbar-inner">
+<a href="#" class="navbar-brand brand-top-arrow" title="回到顶部">
+    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor" class="custom-arrow-svg">
+        <path d="M704-240 320-624v344h-80v-480h480v80H376l384 384-56 56Z" />
+    </svg>
+</a>
+        <nav class="navbar-links">
+            <a href="index.html" class="nav-link">首页</a>
+            <a href="alambda.html" class="nav-link">ALambda</a>
+            <a href="note.html" class="nav-link">笔记</a>
+            <a href="contact.html" class="nav-link">联系</a>
+        </nav>
     </div>
-  </header>
+</header>
 
-  <!-- 404错误内容 -->
-  <main class="main">
-    <div class="container">
-      <div class="error-container">
-        <div class="error-code">404</div>
-        <h2 class="error-title">Not found</h2>
-        
-        <p class="error-message">
-          哎？好像...迷路了......
-        </p>
-        
-        <!-- 返回按钮 - 与主站按钮保持一致 -->
-        <div class="error-actions">
-          <a href="./index.html" class="btn btn-primary">返回首页</a>
-        </div>
-      </div>
-    </div>
-  </main>
+    <main class="main-content">
+        <section class="error-hero">
+            <!-- 背景装饰光晕 (复用style.css中的.bg-orb等) -->
+            <div class="bg-orb"></div>
+            <div class="bg-orb-secondary"></div>
 
-  <!-- 页脚 - 与主站保持一致 -->
-  <footer class="footer">
-    <div class="container">
-      <div class="footer-content">
-        <div class="footer-section">
-          <h3>An's web page</h3>
-          <p>这里是桉的个人网页哦</p>
-        </div>
+            <div class="error-code">
+                <div class="glitch-number">404</div>
+            </div>
+            <div class="error-message">
+                <h2 class="error-title">好像..迷路了...</h2>
+                <p class="error-desc">地图上没有这个页面哦...</p>
+            </div>
 
-        <div class="footer-section">
-          <h4>快速链接</h4>
-          <ul class="footer-links">
-            <li><a href="index.html">首页</a></li>
-            <li><a href="note.html">笔记</a></li>
-            <li><a href="alambda.html">ALambda</a></li>
-            <li><a href="contact.html">联系</a></li>
-          </ul>
-        </div>
-      </div>
+            <!-- 创意时钟区：直角／动态秒进度／日期 -->
+            <div class="clock-container">
+                <div class="creative-clock">
+                    <div class="time-digits" id="clockFace">
+                        <div class="time-unit">
+                            <span class="unit-number" id="hourDisplay">00</span>
+                            <span class="unit-label">HOURS</span>
+                        </div>
+                        <span class="time-separator">:</span>
+                        <div class="time-unit">
+                            <span class="unit-number" id="minDisplay">00</span>
+                            <span class="unit-label">MINUTES</span>
+                        </div>
+                        <span class="time-separator">:</span>
+                        <div class="time-unit">
+                            <span class="unit-number seconds-highlight" id="secDisplay">00</span>
+                            <span class="unit-label">SECONDS</span>
+                        </div>
+                    </div>
+                    <div class="clock-date" id="dateInfo">
+                        <div class="date-item">
+                            <span class="material-icons">calendar_today</span>
+                            <span id="weekday">--</span>
+                        </div>
+                        <div class="date-item">
+                            <span class="material-icons">schedule</span>
+                            <span id="fullDate">----/--/--</span>
+                        </div>
+                    </div>
+                    <div class="second-progress">
+                        <div class="progress-fill" id="secondProgressFill"></div>
+                    </div>
+                </div>
+            </div>
 
-      <div class="copyright">
-        <p>© 2025 AnmingCat</p>
-      </div>
-    </div>
-  </footer>
+            <div class="error-actions">
+                <a href="index.html" class="btn btn-primary btn-custom-home">返回首页
+                    <span class="material-icons">home</span>
+                </a>
+                <a href="alambda.html" class="btn btn-outline">
+                    <span class="material-icons">near_me</span>
+                    ALambda 工具集
+                </a>
+            </div>
+        </section>
+    </main>
 
-  <!-- 脚本文件 -->
-  <script src="script.js"></script>
-  
-  <script>
-    // 复用主站的脚本功能
-    document.addEventListener('DOMContentLoaded', () => {
-      // 平滑滚动（复用主站的平滑滚动功能）
-      if (typeof setupSmoothScrolling === 'function') {
-        setupSmoothScrolling();
-      }
-    });
-  </script>
+    <footer class="footer">
+        <p>© 2026 Anming_cat</p>
+    </footer>
+
+    <!-- 复用全局 script (导航阴影、键盘ESC、滚动触发等) -->
+    <script src="script.js"></script>
+    
+    <!-- 404 专属创意时钟脚本 (功能完备，尺寸保持统一) -->
+    <script>
+        (function() {
+            const hourSpan = document.getElementById('hourDisplay');
+            const minSpan = document.getElementById('minDisplay');
+            const secSpan = document.getElementById('secDisplay');
+            const weekdaySpan = document.getElementById('weekday');
+            const fullDateSpan = document.getElementById('fullDate');
+            const progressFill = document.getElementById('secondProgressFill');
+            let flashTimeout = null;
+            
+            function formatTwo(num) {
+                return num < 10 ? '0' + num : '' + num;
+            }
+            
+            function getWeekdayCN(index) {
+                return ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'][index];
+            }
+            
+            function updateClock() {
+                const now = new Date();
+                const hours = now.getHours();
+                const minutes = now.getMinutes();
+                const seconds = now.getSeconds();
+                
+                if (hourSpan) hourSpan.textContent = formatTwo(hours);
+                if (minSpan) minSpan.textContent = formatTwo(minutes);
+                if (secSpan) secSpan.textContent = formatTwo(seconds);
+                
+                if (secSpan) {
+                    secSpan.classList.add('seconds-flash');
+                    if (flashTimeout) clearTimeout(flashTimeout);
+                    flashTimeout = setTimeout(() => {
+                        if (secSpan) secSpan.classList.remove('seconds-flash');
+                    }, 120);
+                }
+                
+                if (progressFill) {
+                    progressFill.style.width = (seconds / 60) * 100 + '%';
+                }
+                
+                const year = now.getFullYear();
+                const month = formatTwo(now.getMonth() + 1);
+                const day = formatTwo(now.getDate());
+                if (weekdaySpan) weekdaySpan.textContent = getWeekdayCN(now.getDay());
+                if (fullDateSpan) fullDateSpan.textContent = `${year}.${month}.${day}`;
+            }
+            
+            updateClock();
+            const intervalId = setInterval(updateClock, 1000);
+            
+            window.addEventListener('beforeunload', function() {
+                clearInterval(intervalId);
+                if (flashTimeout) clearTimeout(flashTimeout);
+            });
+            
+            // 极小趣味: 双击时钟卡片瞬间刷新进度 (不影响体验)
+            const clockCard = document.querySelector('.creative-clock');
+            if (clockCard) {
+                clockCard.addEventListener('dblclick', function() {
+                    const allNums = document.querySelectorAll('.unit-number');
+                    allNums.forEach(num => {
+                        num.style.transform = 'scale(0.97)';
+                        setTimeout(() => { num.style.transform = ''; }, 120);
+                    });
+                    if (progressFill) {
+                        progressFill.style.transition = 'none';
+                        progressFill.style.width = '0%';
+                        setTimeout(() => {
+                            if (progressFill) progressFill.style.transition = 'width 0.2s linear';
+                            updateClock();
+                        }, 20);
+                    }
+                });
+            }
+        })();
+    </script>
+    <script src="script.js"></script>
 </body>
 </html>

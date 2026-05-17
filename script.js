@@ -1,117 +1,74 @@
-/**
- * An's web page - 主要JavaScript功能
- */
-document.addEventListener('DOMContentLoaded', () => {
-    setupMobileMenu();
-    setupSmoothScrolling();
-    setupImageLoading();
-    setupResponsiveBehavior();
+// ========== 导航栏滚动阴影 ==========
+const navbar = document.getElementById('navbar');
+
+function updateNavbarShadow() {
+  if (window.scrollY > 8) {
+    navbar.classList.add('scrolled');
+  } else {
+    navbar.classList.remove('scrolled');
+  }
+}
+
+updateNavbarShadow();
+window.addEventListener('scroll', updateNavbarShadow, { passive: true });
+
+// ========== 头像加载失败处理 ==========
+const avatarImg = document.querySelector('.avatar');
+if (avatarImg) {
+  avatarImg.addEventListener('error', function() {
+    this.style.display = 'none';
+    const fallback = this.parentElement.querySelector('.avatar-fallback');
+    if (fallback) {
+      fallback.style.display = 'flex';
+    }
+  });
+}
+
+// ========== 导航链接点击反馈 ==========
+const navLinks = document.querySelectorAll('.nav-link');
+navLinks.forEach(link => {
+  link.addEventListener('click', function(e) {
+    navLinks.forEach(l => l.classList.remove('active'));
+    this.classList.add('active');
+    
+    const href = this.getAttribute('href');
+    if (href === '#' || href === '') {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  });
 });
 
-/** 移动端菜单 */
-function setupMobileMenu() {
-    const navToggle = document.querySelector('.nav-toggle');
-    const navMenu = document.querySelector('.nav-menu');
-    const icon = navToggle?.querySelector('.material-icons'); // 找到图标
+// ========== 作品卡片入场动画（滚动触发） ==========
+const cards = document.querySelectorAll('.work-card');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.2 });
 
-    if (!navToggle || !navMenu || !icon) return;
+cards.forEach(card => {
+  // 初始状态已在CSS动画中设置，这里仅做滚动触发增强
+  observer.observe(card);
+});
 
-    // 切换菜单
-    navToggle.addEventListener('click', () => {
-        const isExpanded = navMenu.classList.toggle('active');
-        navToggle.setAttribute('aria-expanded', String(isExpanded));
-        icon.textContent = isExpanded ? 'close' : 'menu'; // 切换图标
-    });
+// ========== 键盘导航 ==========
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+});
 
-    // 点击外部关闭
-    document.addEventListener('click', (event) => {
-        const isMobile = window.innerWidth <= 767;
-        if (!isMobile) return;
-        if (!navMenu.contains(event.target) && !navToggle.contains(event.target)) {
-            navMenu.classList.remove('active');
-            navToggle.setAttribute('aria-expanded', 'false');
-            icon.textContent = 'menu';
-        }
-    });
+// ========== 页面可见性变化时检查滚动状态 ==========
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) {
+    updateNavbarShadow();
+  }
+});
 
-    // 点击菜单项（移动端）自动收起
-    navMenu.querySelectorAll('a[href^="#"]').forEach(link => {
-        link.addEventListener('click', () => {
-            if (window.innerWidth <= 767) {
-                navMenu.classList.remove('active');
-                navToggle.setAttribute('aria-expanded', 'false');
-                icon.textContent = 'menu';
-            }
-        });
-    });
-}
+console.log('✨ 欢迎来访，保持简单。');
 
-/** 平滑滚动并考虑固定头部高度 */
-function setupSmoothScrolling() {
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', (e) => {
-            const href = anchor.getAttribute('href');
-            if (!href || href === '#' || href === '#!') return;
-
-            const target = document.querySelector(href);
-            if (!target) return;
-
-            e.preventDefault();
-            const headerHeight = document.querySelector('.header')?.offsetHeight || 80;
-            const top = Math.max(0, target.getBoundingClientRect().top + window.pageYOffset - headerHeight);
-
-            window.scrollTo({ top, behavior: 'smooth' });
-            // 更新哈希（避免 pushState 异常返回行为）
-            setTimeout(() => { location.hash = href; }, 200);
-        });
-    });
-}
-
-/** 图片加载优化 */
-function setupImageLoading() {
-    const images = document.querySelectorAll('img');
-
-    images.forEach(img => {
-        if (!img.hasAttribute('loading')) img.setAttribute('loading', 'lazy');
-
-        if (img.complete) {
-            img.classList.add('loaded');
-        } else {
-            img.addEventListener('load', function() {
-                this.classList.add('loaded');
-            });
-            img.addEventListener('error', function() {
-                console.warn('图片加载失败:', this.src);
-                this.style.opacity = '0.5';
-            });
-        }
-    });
-}
-
-/** 响应式行为：窗口变化时重置菜单状态 */
-function setupResponsiveBehavior() {
-    const resetOnDesktop = debounce(() => {
-        const navMenu = document.querySelector('.nav-menu');
-        const navToggle = document.querySelector('.nav-toggle');
-        const icon = navToggle?.querySelector('.material-icons');
-        if (!navMenu || !navToggle || !icon) return;
-
-        if (window.innerWidth > 767) {
-            navMenu.classList.remove('active');
-            navToggle.setAttribute('aria-expanded', 'false');
-            icon.textContent = 'menu';
-        }
-    }, 200);
-
-    window.addEventListener('resize', resetOnDesktop);
-    resetOnDesktop();
-}
-
-/** 防抖 */
-function debounce(fn, wait = 200) {
-    let t;
-    return (...args) => {
-        clearTimeout(t);
-        t = setTimeout(() => fn(...args), wait);
-    };
-}
