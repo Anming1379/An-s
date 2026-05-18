@@ -258,39 +258,52 @@
             color: var(--color-accent);
             font-weight: 700;
         }
-        /* 链接卡片样式 */
-        .markdown-body a {
-            display: inline-block;
-            background-color: var(--color-accent-06);
-            border: 1px solid var(--color-accent-15);
-            padding: 0.4rem 1rem;
-            margin: 0.2rem 0;
-            text-decoration: none;
-            color: var(--color-accent);
-            font-weight: 500;
-            transition: all var(--transition-fast);
-            border-radius: 0;
-            box-shadow: var(--shadow-sm);
-        }
-        .markdown-body a:hover {
-            background-color: var(--color-accent);
-            color: white;
-            border-color: var(--color-accent);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-        /* 图片链接不做卡片样式 */
-        .markdown-body a:has(img) {
-            display: block;
-            background: none;
-            border: none;
-            padding: 0;
-            box-shadow: none;
-        }
-        .markdown-body a:has(img):hover {
-            transform: none;
-            background: none;
-        }
+/* 普通链接：独占一行、宽度撑满、自动换行 */
+.markdown-body a {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: var(--color-accent-06);
+    border: 1px solid var(--color-accent-15);
+    padding: 0.4rem 1rem;
+    margin: 0.4rem 0;
+    text-decoration: none;
+    color: var(--color-accent);
+    font-weight: 500;
+    transition: all var(--transition-fast);
+    border-radius: 0;
+    box-shadow: var(--shadow-sm);
+    white-space: normal;
+    word-break: break-word;
+    text-align: left;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.markdown-body a:hover {
+    background-color: var(--color-accent);
+    color: white;
+    border-color: var(--color-accent);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* 图片链接：保持原有卡片居中样式，不强制占满整行 */
+.markdown-body a:has(img) {
+    display: block;
+    background: none;
+    border: none;
+    padding: 0;
+    box-shadow: none;
+    width: auto;
+    margin: 1.5rem auto;
+    text-align: center;
+}
+
+.markdown-body a:has(img):hover {
+    transform: none;
+    background: none;
+}
         /* 分割线：统一粗细，更长，间距更大，主题色 */
         .markdown-body hr {
             border: none;
@@ -491,7 +504,7 @@
 
     <script src="script.js"></script>
     <script>
-        // 侧边栏交互
+        // 侧边栏交互（与之前完全相同）
         const sidebar = document.getElementById('notesSidebar');
         const toggleBtn = document.getElementById('sidebarToggleBtn');
         const overlay = document.getElementById('sidebarOverlay');
@@ -527,7 +540,7 @@
         const backTop = document.getElementById('backToTop');
         if (backTop) backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
-        // 笔记核心
+        // ---------- 笔记核心（适配新 manifest.js 并按清单顺序排列）----------
         let manifestData = null;
         let currentNotePath = null;
         const folderTreeEl = document.getElementById('folderTree');
@@ -536,7 +549,7 @@
         function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
 
         function renderMarkdownToContent(filePath, markdownText) {
-                console.log('🎨 开始渲染:', filePath, '内容长度:', markdownText.length);
+            console.log('🎨 开始渲染:', filePath, '内容长度:', markdownText.length);
             if (!noteContentArea) return;
             try {
                 let htmlContent = marked.parse(markdownText);
@@ -549,76 +562,120 @@
             } catch (err) { noteContentArea.innerHTML = `<div class="empty-notes"><span class="material-icons">bug_report</span><p>渲染失败: ${escapeHtml(err.message)}</p></div>`; }
         }
 
-function openNoteByPath(path) {
-    console.log('📂 openNoteByPath 被调用, 路径:', path);
-    if (!manifestData || !manifestData.files) {
-        console.error('manifestData 未加载');
-        noteContentArea.innerHTML = '<div class="empty-notes"><p>笔记数据未加载</p></div>';
-        return;
-    }
-    const noteFile = manifestData.files.find(f => f.path === path);
-    if (!noteFile) {
-        console.error('未找到笔记文件:', path);
-        noteContentArea.innerHTML = `<div class="empty-notes"><p>未找到笔记: ${escapeHtml(path)}</p></div>`;
-        return;
-    }
-    console.log('📄 找到笔记文件:', noteFile);
-    currentNotePath = path;
-    try {
-        renderMarkdownToContent(noteFile.path, noteFile.content);
-        console.log('✅ 渲染完成');
-    } catch (err) {
-        console.error('渲染失败:', err);
-        noteContentArea.innerHTML = `<div class="empty-notes"><p>渲染错误: ${escapeHtml(err.message)}</p></div>`;
-    }
-    document.querySelectorAll('.note-link').forEach(link => {
-        if (link.getAttribute('data-path') === path) link.classList.add('active-note');
-        else link.classList.remove('active-note');
-    });
-    if (isMobile() && sidebar.classList.contains('mobile-open')) closeSidebarMobile();
-    const newUrl = `${window.location.pathname}?note=${encodeURIComponent(path)}`;
-    window.history.pushState({ path }, '', newUrl);
-}
-
-        function renderSidebar(groups, sortedFolders) {
-            if (!folderTreeEl) return;
-            if (!sortedFolders.length) { folderTreeEl.innerHTML = '<div class="empty-notes"><p>暂无笔记</p></div>'; return; }
-            let html = '';
-            for (const folderKey of sortedFolders) {
-                const notesList = groups.get(folderKey);
-                if (!notesList.length) continue;
-                let folderDisplay = folderKey === '' ? '全部笔记' : ` ${folderKey.split('/').pop()}`;
-                html += `<div class="folder-group"><div class="folder-title"><span class="material-icons">folder_open</span><span>${escapeHtml(folderDisplay)}</span><span style="margin-left:auto; font-size:0.7rem;">${notesList.length}</span></div><ul class="note-list">`;
-                for (const note of notesList) {
-                    html += `<li class="note-item"><div class="note-link ${currentNotePath === note.fullPath ? 'active-note' : ''}" data-path="${escapeHtml(note.fullPath)}"><span class="material-icons">description</span><span>${escapeHtml(note.displayName)}</span></div></li>`;
-                }
-                html += `</ul></div>`;
+        function openNoteByPath(path) {
+            console.log('📂 openNoteByPath 被调用, 路径:', path);
+            if (!manifestData || !manifestData.files) {
+                console.error('manifestData 未加载');
+                noteContentArea.innerHTML = '<div class="empty-notes"><p>笔记数据未加载</p></div>';
+                return;
             }
-            folderTreeEl.innerHTML = html;
-            document.querySelectorAll('.note-link').forEach(el => {
-                el.addEventListener('click', (e) => { e.stopPropagation(); const path = el.getAttribute('data-path'); if (path) openNoteByPath(path); });
+            const noteFile = manifestData.files.find(f => f.path === path);
+            if (!noteFile) {
+                console.error('未找到笔记文件:', path);
+                noteContentArea.innerHTML = `<div class="empty-notes"><p>未找到笔记: ${escapeHtml(path)}</p></div>`;
+                return;
+            }
+            console.log('📄 找到笔记文件:', noteFile);
+            currentNotePath = path;
+            try {
+                renderMarkdownToContent(noteFile.path, noteFile.content);
+                console.log('✅ 渲染完成');
+            } catch (err) {
+                console.error('渲染失败:', err);
+                noteContentArea.innerHTML = `<div class="empty-notes"><p>渲染错误: ${escapeHtml(err.message)}</p></div>`;
+            }
+            // 高亮当前选中的条目
+            document.querySelectorAll('.note-link').forEach(link => {
+                if (link.getAttribute('data-path') === path) link.classList.add('active-note');
+                else link.classList.remove('active-note');
             });
-            document.querySelectorAll('.folder-title').forEach(title => {
-                const list = title.nextElementSibling;
-                if (list?.classList.contains('note-list')) {
-                    title.addEventListener('click', (e) => { e.stopPropagation(); list.style.display = list.style.display === 'none' ? 'block' : 'none'; });
-                }
-            });
+            if (isMobile() && sidebar.classList.contains('mobile-open')) closeSidebarMobile();
+            const newUrl = `${window.location.pathname}?note=${encodeURIComponent(path)}`;
+            window.history.pushState({ path }, '', newUrl);
         }
 
-        function buildFolderGroups(filesArray) {
+        /**
+         * 构建侧边栏分组 —— 严格按照 manifest 中文件的顺序显示
+         * 不进行任何额外的字母排序，完全尊重构建工具排好的顺序（数字前缀、文件夹顺序等）
+         */
+        function buildOrderedFolderGroups(filesArray) {
+            // 使用 Map 保存每个文件夹对应的文件列表（保持插入顺序）
             const groups = new Map();
+            // 使用数组保存文件夹的出现顺序（第一次出现时记录）
+            const folderOrder = [];
+
             for (const file of filesArray) {
                 let normalized = file.path.replace(/\\/g, '/');
                 let lastSlash = normalized.lastIndexOf('/');
                 let folder = lastSlash !== -1 ? normalized.substring(0, lastSlash) : '';
                 let fileName = lastSlash !== -1 ? normalized.substring(lastSlash + 1) : normalized;
                 let displayName = fileName.replace(/\.(md|txt)$/i, '') || fileName;
-                if (!groups.has(folder)) groups.set(folder, []);
-                groups.get(folder).push({ fullPath: normalized, displayName, content: file.content });
+
+                if (!groups.has(folder)) {
+                    groups.set(folder, []);
+                    // 只有新文件夹才记录顺序（空字符串根目录也会被记录）
+                    folderOrder.push(folder);
+                }
+                groups.get(folder).push({
+                    fullPath: normalized,
+                    displayName,
+                    content: file.content
+                });
             }
-            const sortedFolders = Array.from(groups.keys()).sort((a, b) => a === '' ? -1 : b === '' ? 1 : a.localeCompare(b));
-            return { groups, sortedFolders };
+            // 注意：每个文件夹内的文件列表已经按照 manifest 中的顺序自然排列，无需额外排序
+            return { groups, folderOrder };
+        }
+
+        function renderSidebar(groups, folderOrder) {
+            if (!folderTreeEl) return;
+            if (!folderOrder.length) {
+                folderTreeEl.innerHTML = '<div class="empty-notes"><p>暂无笔记</p></div>';
+                return;
+            }
+            let html = '';
+            for (const folderKey of folderOrder) {
+                const notesList = groups.get(folderKey);
+                if (!notesList || notesList.length === 0) continue;
+                // 文件夹显示名称：根目录显示“全部笔记”，否则显示最后一级文件夹名（干净名称）
+                let folderDisplay = folderKey === '' ? '全部笔记' : folderKey.split('/').pop();
+                html += `<div class="folder-group">
+                            <div class="folder-title">
+                                <span class="material-icons">folder_open</span>
+                                <span>${escapeHtml(folderDisplay)}</span>
+                                <span style="margin-left:auto; font-size:0.7rem;">${notesList.length}</span>
+                            </div>
+                            <ul class="note-list">`;
+                for (const note of notesList) {
+                    const activeClass = (currentNotePath === note.fullPath) ? 'active-note' : '';
+                    html += `<li class="note-item">
+                                <div class="note-link ${activeClass}" data-path="${escapeHtml(note.fullPath)}">
+                                    <span class="material-icons">description</span>
+                                    <span>${escapeHtml(note.displayName)}</span>
+                                </div>
+                             </li>`;
+                }
+                html += `</ul></div>`;
+            }
+            folderTreeEl.innerHTML = html;
+
+            // 绑定笔记点击事件
+            document.querySelectorAll('.note-link').forEach(el => {
+                el.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const path = el.getAttribute('data-path');
+                    if (path) openNoteByPath(path);
+                });
+            });
+            // 绑定文件夹折叠/展开（保持原有体验）
+            document.querySelectorAll('.folder-title').forEach(title => {
+                const list = title.nextElementSibling;
+                if (list && list.classList.contains('note-list')) {
+                    title.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        list.style.display = list.style.display === 'none' ? 'block' : 'none';
+                    });
+                }
+            });
         }
 
         async function loadManifest() {
@@ -631,83 +688,69 @@ function openNoteByPath(path) {
                 script.onload = () => {
                     if (window.__NOTE_MANIFEST__ && Array.isArray(window.__NOTE_MANIFEST__.files)) {
                         resolve(window.__NOTE_MANIFEST__);
-                    } else { reject(new Error('manifest.js 格式无效')); }
+                    } else {
+                        reject(new Error('manifest.js 格式无效，缺少 files 数组'));
+                    }
                 };
-                script.onerror = () => reject(new Error('无法加载 /note/manifest.js'));
+                script.onerror = () => reject(new Error('无法加载 /note/manifest.js，请确保文件存在'));
                 document.head.appendChild(script);
             });
         }
 
-async function initNotes() {
-    try {
-        folderTreeEl.innerHTML = '<div class="loading-box"><span class="material-icons">autorenew</span><p>加载笔记库...</p></div>';
-        const data = await loadManifest();
-        manifestData = data;
-        if (!data.files || data.files.length === 0) throw new Error('笔记清单为空');
-        
-        // 调试：打印所有可用笔记路径
-        console.log('📚 所有笔记路径:', manifestData.files.map(f => f.path));
-        
-        const { groups, sortedFolders } = buildFolderGroups(data.files);
-        renderSidebar(groups, sortedFolders);
-
-        // 获取 URL 参数中的笔记路径
-        const targetNotePath = getQueryParam('note');
-        console.log('🔗 URL 参数原始值:', targetNotePath);
-        
-        let noteToOpen = null;
-
-        if (targetNotePath) {
-            // 解码 URL 编码的路径
-            const decodedPath = decodeURIComponent(targetNotePath);
-            console.log('🔓 解码后的路径:', decodedPath);
-            
-            noteToOpen = manifestData.files.find(f => f.path === decodedPath);
-            if (noteToOpen) {
-                console.log('✅ 找到匹配笔记:', noteToOpen.path);
-            } else {
-                console.warn('❌ 未找到匹配笔记，请对比上面的路径列表是否完全一致（包括大小写、空格、标点符号）');
-            }
-        } else {
-            console.log('ℹ️ URL 中没有 note 参数');
+        function getQueryParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
         }
 
-        // 若未指定或找不到，则回退到第一篇笔记
-        if (!noteToOpen) {
-            noteToOpen = groups.get('')?.[0] ||
-                         (sortedFolders.length ? groups.get(sortedFolders.find(f => f !== ''))?.[0] : manifestData.files[0]);
-            if (noteToOpen) {
-                console.log('回退到第一篇笔记:', noteToOpen.fullPath);
+        async function initNotes() {
+            try {
+                folderTreeEl.innerHTML = '<div class="loading-box"><span class="material-icons">autorenew</span><p>加载笔记库...</p></div>';
+                const data = await loadManifest();
+                manifestData = data;
+                if (!data.files || data.files.length === 0) throw new Error('笔记清单为空');
+
+                console.log('📚 已加载笔记条目数:', data.files.length);
+                // 调试：打印前几个路径以确认顺序
+                console.log('📄 笔记顺序(前5):', data.files.slice(0,5).map(f => f.path));
+
+                // 构建严格按清单顺序的分组
+                const { groups, folderOrder } = buildOrderedFolderGroups(data.files);
+                renderSidebar(groups, folderOrder);
+
+                // 处理 URL 参数：打开指定笔记
+                const targetNotePath = getQueryParam('note');
+                let noteToOpen = null;
+                if (targetNotePath) {
+                    const decodedPath = decodeURIComponent(targetNotePath);
+                    console.log('🔗 尝试打开 URL 指定笔记:', decodedPath);
+                    noteToOpen = manifestData.files.find(f => f.path === decodedPath);
+                    if (!noteToOpen) {
+                        console.warn('❌ 未找到匹配笔记，将回退到第一篇');
+                    } else {
+                        console.log('✅ 找到匹配笔记:', noteToOpen.path);
+                    }
+                }
+
+                // 如果没有指定或找不到，则打开清单中的第一个文件（整个 manifest 的第一个文件）
+                if (!noteToOpen && manifestData.files.length > 0) {
+                    noteToOpen = manifestData.files[0];
+                    console.log('📖 回退打开第一篇笔记:', noteToOpen.path);
+                }
+
+                if (noteToOpen) {
+                    openNoteByPath(noteToOpen.path);
+                } else {
+                    noteContentArea.innerHTML = '<div class="empty-notes"><p>没有可显示的笔记</p></div>';
+                }
+            } catch (err) {
+                console.error('初始化笔记失败:', err);
+                folderTreeEl.innerHTML = `<div class="empty-notes"><span class="material-icons">error</span><p>${escapeHtml(err.message)}</p><a href="../build.html" style="color:var(--color-accent);margin-top:12px;display:inline-block;">前往构建工具</a></div>`;
+                noteContentArea.innerHTML = `<div class="empty-notes"><span class="material-icons">error</span><p>${escapeHtml(err.message)}</p></div>`;
             }
         }
-
-if (noteToOpen) {
-    const notePath = noteToOpen.path || noteToOpen.fullPath;
-    if (notePath) {
-        openNoteByPath(notePath);
-    } else {
-        console.error('noteToOpen 对象没有 path 或 fullPath', noteToOpen);
-        noteContentArea.innerHTML = '<div class="empty-notes"><p>无法打开笔记</p></div>';
-    }
-} else {
-    noteContentArea.innerHTML = '<div class="empty-notes"><p>没有可显示的笔记</p></div>';
-}
-        
-    } catch (err) {
-        console.error('初始化笔记失败:', err);
-        folderTreeEl.innerHTML = `<div class="empty-notes"><span class="material-icons">error</span><p>${escapeHtml(err.message)}</p><a href="../build.html" style="color:var(--color-accent);margin-top:12px;display:inline-block;">前往构建工具</a></div>`;
-        noteContentArea.innerHTML = `<div class="empty-notes"><span class="material-icons">error</span><p>${escapeHtml(err.message)}</p></div>`;
-    }
-}
 
         window.addEventListener('DOMContentLoaded', () => { initSidebarState(); initNotes(); });
         document.querySelector('.nav-link[href="note.html"]')?.classList.add('active');
-        
-        function getQueryParam(name) {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get(name);
-}
-        
     </script>
 </body>
 </html>
