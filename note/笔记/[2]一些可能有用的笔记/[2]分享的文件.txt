@@ -32,7 +32,7 @@
 
 - **An's-mid**  
 ——我从开时写到现在所有的 midi 文件, 仅供学习, 拿去发曲要先过我同意
-[An's-mid 127KB](https://anmingcat.pages.dev/share/An's-mid)  
+[An's-mid 127KB](https://anmingcat.pages.dev/share/An's-mid.zip)  
 
 - **Chordie**  
 ——一个漂亮的实时 midi 可视化软件, 会显示你弹了哪个键以及和弦

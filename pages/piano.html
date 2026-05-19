@@ -1,0 +1,2266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Rectitude 钢琴</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.geekzu.org">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.geekzu.org/css2?family=Urbanist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .piano-hero {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 28px 80px;
+            position: relative;
+            z-index: 2;
+        }
+        .piano-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .piano-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-dark);
+            letter-spacing: -0.01em;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, var(--color-dark) 0%, var(--color-accent) 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        .piano-desc {
+            font-size: 1rem;
+            color: var(--color-dark-60);
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            line-height: 2;
+        }
+        .piano-desc kbd {
+            background: var(--color-dark-08);
+            padding: 4px 8px;
+            font-family: monospace;
+            font-weight: 600;
+            border-radius: 0px;
+            box-shadow: var(--shadow-sharp);
+            color: var(--color-accent);
+            font-size: 0.8rem;
+        }
+        .piano-sub {
+            font-size: 0.85rem;
+            color: var(--color-dark-40);
+            letter-spacing: 0.02em;
+        }
+
+        .piano-stage {
+            background: #e6e6ec;
+            border: 1px solid #d5d5dd;
+            box-shadow: inset 0 2px 12px rgba(0,0,0,0.06), var(--shadow-md);
+            padding: 20px 20px;
+            border-radius: 0px;
+            overflow-x: auto;
+            overflow-y: visible;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .piano-keyboard {
+            display: flex;
+            gap: 0;
+            position: relative;
+            width: 100%;
+            min-width: max-content;
+        }
+
+        .key-group {
+            flex: 1;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-width: 48px;
+            max-width: 54px;
+        }
+
+        .piano-key {
+            flex: 0 0 auto;
+            width: 100%;
+            height: 165px;
+            min-width: auto;
+            background: #ffffff;
+            border: none;
+            border-right: 1px solid #c5c5d0;
+            border-bottom: 3px solid #d8d8e0;
+            box-shadow: none;
+            border-radius: 0px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 0 14px;
+            cursor: pointer;
+            transition: all 0.05s linear;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            position: relative;
+            touch-action: manipulation;
+        }
+
+        .key-group:first-child .piano-key {
+            border-left: 1px solid #c5c5d0;
+        }
+
+        .piano-key.no-mapping {
+            background: #f5f5f9;
+            border-right-color: #d0d0d8;
+        }
+
+        .piano-key.black-key {
+            background: #111118;
+            border: 1px solid #0a0a10;
+            border-bottom: 3px solid #05050a;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05);
+            position: absolute;
+            top: 0;
+            left: 100%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 62%;
+            z-index: 10;
+            padding: 0 0 10px;
+            justify-content: flex-end;
+            min-width: auto;
+        }
+
+        .piano-key.black-key.no-mapping {
+            background: #1e1e28;
+            border-color: #161620;
+        }
+
+        .piano-key.active {
+            background: #eaeaf0;
+            border-bottom-color: var(--color-accent);
+            transform: translateY(1px);
+        }
+        .piano-key.active .key-note,
+        .piano-key.active .key-letter {
+            color: var(--color-accent);
+        }
+
+        .piano-key.black-key.active {
+            background: #635dff;
+            border-bottom-color: #5040cc;
+            transform: translateX(-50%) translateY(1px);
+        }
+        .piano-key.black-key.active .key-note,
+        .piano-key.black-key.active .key-letter {
+            color: #ffffff;
+        }
+
+        .key-note {
+            font-size: 1.1rem;
+            font-weight: 400;
+            margin-bottom: 6px;
+            transition: color 0.05s;
+            line-height: 1;
+            color: var(--color-dark);
+        }
+        .key-letter {
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: transparent;
+            padding: 0;
+            border-radius: 0px;
+            color: var(--color-dark-50);
+            font-family: monospace;
+            letter-spacing: 0.5px;
+            line-height: 1;
+        }
+
+        .piano-key.black-key .key-note {
+            color: #e0e0e8;
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+        .piano-key.black-key .key-letter {
+            background: transparent;
+            color: #808090;
+            font-size: 0.65rem;
+        }
+
+        .piano-key.no-mapping .key-note {
+            color: #b0b0c0;
+        }
+        .piano-key.black-key.no-mapping .key-note {
+            color: #505060;
+        }
+        .piano-key.black-key.no-mapping .key-letter {
+            color: #505060;
+        }
+
+        @media (max-width: 1100px) {
+            .key-group { min-width: 42px; max-width: 50px; }
+            .piano-key { height: 150px; padding-bottom: 12px; }
+            .key-note { font-size: 1rem; }
+            .key-letter { font-size: 0.7rem; }
+            .piano-key.black-key { padding-bottom: 8px; height: 62%; }
+            .piano-key.black-key .key-note { font-size: 0.85rem; }
+            .piano-key.black-key .key-letter { font-size: 0.6rem; }
+        }
+        @media (max-width: 860px) {
+            .key-group { min-width: 38px; max-width: 46px; }
+            .piano-key { height: 140px; padding-bottom: 10px; }
+            .key-note { font-size: 0.9rem; margin-bottom: 4px; }
+            .key-letter { font-size: 0.65rem; }
+            .piano-key.black-key { padding-bottom: 6px; height: 60%; }
+            .piano-key.black-key .key-note { font-size: 0.78rem; }
+            .piano-key.black-key .key-letter { font-size: 0.55rem; }
+        }
+        @media (max-width: 700px) {
+            .key-group { min-width: 34px; max-width: 42px; }
+            .piano-key { height: 130px; padding-bottom: 8px; }
+            .key-note { font-size: 0.82rem; }
+            .key-letter { font-size: 0.6rem; }
+            .piano-key.black-key { padding-bottom: 5px; height: 60%; }
+            .piano-key.black-key .key-note { font-size: 0.7rem; }
+            .piano-key.black-key .key-letter { font-size: 0.5rem; }
+        }
+        @media (max-width: 550px) {
+            .key-group { min-width: 30px; max-width: 38px; }
+            .piano-key { height: 120px; padding-bottom: 6px; }
+            .key-note { font-size: 0.75rem; margin-bottom: 3px; }
+            .key-letter { font-size: 0.55rem; }
+            .piano-stage { padding: 16px 12px; }
+            .piano-key.black-key { padding-bottom: 4px; height: 58%; }
+            .piano-key.black-key .key-note { font-size: 0.65rem; margin-bottom: 2px; }
+            .piano-key.black-key .key-letter { font-size: 0.48rem; }
+        }
+        @media (max-width: 480px) {
+            .key-group { min-width: 26px; max-width: 34px; }
+            .piano-key { height: 110px; padding-bottom: 5px; }
+            .key-note { font-size: 0.68rem; }
+            .piano-key.black-key { width: 62%; height: 58%; }
+        }
+
+        /* ========== MIDI 播放器 ========== */
+        .midi-player {
+            max-width: 700px;
+            margin: 24px auto 0;
+            padding: 20px 28px;
+            background: #f0f0f4;
+            border: 1px solid #d8d8e0;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .midi-player-title {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--color-dark-60);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            text-align: center;
+        }
+        .midi-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .midi-btn {
+            padding: 8px 16px;
+            background: var(--color-dark);
+            color: var(--color-white);
+            border: none;
+            border-radius: 0px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: 'Urbanist', sans-serif;
+            letter-spacing: 0.02em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .midi-btn:hover {
+            background: var(--color-accent);
+        }
+        .midi-btn:disabled {
+            background: #c5c5d0;
+            cursor: not-allowed;
+        }
+        .midi-btn .material-icons {
+            font-size: 1rem;
+        }
+        .midi-file-input {
+            display: none;
+        }
+        .midi-file-label {
+            padding: 8px 16px;
+            background: var(--color-dark-08);
+            color: var(--color-dark);
+            border: 1px solid var(--color-dark-12);
+            border-radius: 0px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: 'Urbanist', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .midi-file-label:hover {
+            border-color: var(--color-accent);
+            color: var(--color-accent);
+        }
+        .midi-file-name {
+            font-size: 0.8rem;
+            color: var(--color-dark-50);
+            font-family: monospace;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .midi-progress-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+        }
+        .midi-progress-bar {
+            flex: 1;
+            height: 6px;
+            background: #d8d8e0;
+            border-radius: 0px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .midi-progress-fill {
+            height: 100%;
+            background: var(--color-accent);
+            width: 0%;
+            transition: width 0.1s;
+            pointer-events: none;
+        }
+        .midi-time {
+            font-size: 0.75rem;
+            color: var(--color-dark-50);
+            font-family: monospace;
+            min-width: 80px;
+            text-align: right;
+        }
+        .midi-transpose {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .midi-transpose-label {
+            font-size: 0.8rem;
+            color: var(--color-dark-60);
+            font-weight: 600;
+        }
+        .midi-transpose-value {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--color-accent);
+            font-family: monospace;
+            min-width: 40px;
+            text-align: center;
+        }
+        .midi-transpose-btn {
+            width: 32px;
+            height: 32px;
+            background: var(--color-dark-08);
+            border: 1px solid var(--color-dark-12);
+            color: var(--color-dark);
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+            border-radius: 0px;
+        }
+        .midi-transpose-btn:hover {
+            background: var(--color-accent);
+            color: var(--color-white);
+            border-color: var(--color-accent);
+        }
+        .midi-status {
+            font-size: 0.8rem;
+            color: var(--color-dark-50);
+            text-align: center;
+            min-height: 20px;
+        }
+
+        /* ========== ADSR 控制面板 ========== */
+        .adsr-panel {
+            max-width: 700px;
+            margin: 24px auto 0;
+            padding: 24px 32px;
+            background: #f0f0f4;
+            border: 1px solid #d8d8e0;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        .adsr-panel-title {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--color-dark-60);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            text-align: center;
+        }
+        .adsr-main {
+            display: flex;
+            gap: 32px;
+            align-items: flex-start;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .adsr-sliders {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+        }
+        .adsr-slider-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            width: 36px;
+        }
+        .adsr-slider-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--color-dark-60);
+            letter-spacing: 0.1em;
+        }
+        .adsr-slider-track {
+            position: relative;
+            width: 32px;
+            height: 160px;
+            background: #d8d8e0;
+            border-radius: 0px;
+            cursor: pointer;
+            overflow: hidden;
+        }
+        .adsr-slider-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--color-accent);
+            border-radius: 0px;
+            pointer-events: none;
+            transition: height 0.05s;
+        }
+        .adsr-slider-thumb {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 24px;
+            background: var(--color-accent);
+            border: 3px solid var(--color-white);
+            border-radius: 50%;
+            cursor: grab;
+            box-shadow: 0 2px 8px rgba(62,63,79,0.25);
+            z-index: 2;
+            transition: transform 0.05s;
+        }
+        .adsr-slider-thumb:active {
+            cursor: grabbing;
+            transform: translateX(-50%) scale(1.15);
+        }
+        .adsr-value {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--color-dark);
+            font-family: monospace;
+            min-width: 48px;
+            text-align: center;
+            background: var(--color-white);
+            padding: 5px 8px;
+            border: 1px solid var(--color-dark-12);
+            letter-spacing: 0.02em;
+        }
+
+        .envelope-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .envelope-preview {
+            width: 180px;
+            height: 160px;
+            background: var(--color-white);
+            border: 1px solid var(--color-dark-12);
+        }
+        .envelope-preview svg {
+            width: 100%;
+            height: 100%;
+        }
+        .envelope-label {
+            font-size: 0.75rem;
+            color: var(--color-dark-50);
+            letter-spacing: 0.03em;
+        }
+
+        .sustain-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            min-width: 60px;
+        }
+        .sustain-pedal {
+            width: 56px;
+            height: 90px;
+            background: #e0e0e8;
+            border: 2px solid #c5c5d0;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            user-select: none;
+            position: relative;
+        }
+        .sustain-pedal:hover {
+            border-color: #a0a0b0;
+        }
+        .sustain-pedal.active {
+            background: var(--color-accent);
+            border-color: var(--color-accent);
+        }
+        .sustain-pedal.active .sustain-label {
+            color: #ffffff;
+        }
+        .sustain-led {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #c5c5d0;
+            transition: all 0.15s;
+        }
+        .sustain-pedal.active .sustain-led {
+            background: #ffffff;
+            box-shadow: 0 0 6px rgba(255,255,255,0.8);
+        }
+        .sustain-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--color-dark-50);
+            letter-spacing: 0.08em;
+        }
+        .sustain-hint {
+            font-size: 0.7rem;
+            color: var(--color-dark-40);
+            letter-spacing: 0.02em;
+        }
+
+        .load-status {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--color-dark-50);
+            margin-bottom: 10px;
+            min-height: 24px;
+        }
+        .load-status.loading {
+            color: var(--color-accent);
+        }
+        .load-status.error {
+            color: #c44;
+        }
+        .load-status.success {
+            color: #4a4;
+        }
+
+        .piano-footer-note {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 32px;
+            padding: 14px;
+            background: var(--color-dark-04);
+            border-left: 4px solid var(--color-accent);
+            color: var(--color-dark-60);
+            font-size: 0.9rem;
+        }
+        .piano-footer-note .material-icons {
+            color: var(--color-accent);
+        }
+        .piano-stage::-webkit-scrollbar {
+            height: 6px;
+            background: var(--color-dark-08);
+        }
+        .piano-stage::-webkit-scrollbar-thumb {
+            background: var(--color-dark-40);
+            border-radius: 0px;
+        }
+    
+        /* ========== 演示 MIDI 列表 ========== */
+        .demo-midi-panel {
+            max-width: 700px;
+            margin: 24px auto 0;
+            padding: 20px 28px;
+            background: #f0f0f4;
+            border: 1px solid #d8d8e0;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .demo-midi-title {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--color-dark-60);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            text-align: center;
+        }
+        .demo-midi-subtitle {
+            font-size: 0.85rem;
+            color: var(--color-dark-50);
+            text-align: center;
+            margin-top: -8px;
+        }
+        .demo-midi-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 220px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .demo-midi-list::-webkit-scrollbar {
+            width: 4px;
+            background: var(--color-dark-08);
+        }
+        .demo-midi-list::-webkit-scrollbar-thumb {
+            background: var(--color-dark-40);
+            border-radius: 0px;
+        }
+        .demo-midi-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            background: var(--color-white);
+            border: 1px solid var(--color-dark-12);
+            cursor: pointer;
+            transition: all 0.15s;
+            font-size: 0.9rem;
+            color: var(--color-dark);
+        }
+        .demo-midi-item:hover {
+            border-color: var(--color-accent);
+            background: #fafaff;
+        }
+        .demo-midi-item.active {
+            border-color: var(--color-accent);
+            background: var(--color-accent);
+            color: var(--color-white);
+        }
+        .demo-midi-item.active .demo-midi-name {
+            color: var(--color-white);
+        }
+        .demo-midi-item.active .demo-midi-duration {
+            color: rgba(255,255,255,0.8);
+        }
+        .demo-midi-name {
+            font-weight: 600;
+            color: var(--color-dark);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+        }
+        .demo-midi-duration {
+            font-size: 0.75rem;
+            color: var(--color-dark-50);
+            font-family: monospace;
+            margin-left: 12px;
+        }
+        .demo-midi-status {
+            font-size: 0.8rem;
+            color: var(--color-dark-50);
+            text-align: center;
+            min-height: 20px;
+        }
+        .demo-midi-status.loading {
+            color: var(--color-accent);
+        }
+        .demo-midi-status.error {
+            color: #c44;
+        }
+
+    </style>
+<base target="_blank">
+<base target="_blank">
+</head>
+<body>
+    <header class="navbar" id="navbar">
+        <div class="navbar-inner">
+            <a href="../index.html" class="navbar-brand brand-top-arrow" title="回到首页">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor" class="custom-arrow-svg">
+                    <path d="M704-240 320-624v344h-80v-480h480v80H376l384 384-56 56Z" />
+                </svg>
+            </a>
+            <nav class="navbar-links">
+                <a href="../index.html" class="nav-link">首页</a>
+                <a href="../alambda.html" class="nav-link">ALambda</a>
+                <a href="../note.html" class="nav-link">笔记</a>
+                <a href="../contact.html" class="nav-link">联系</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="piano-hero">
+            <div class="piano-header">
+                <h1 class="piano-title">Rectitude 直角钢琴</h1>
+                <p class="piano-desc">
+                    <span>试着按下键盘来演奏 Rectitude 钢琴吧~</span><br>
+                </p>
+                <p class="piano-sub">Rectitude 直角钢琴</p>
+            </div>
+
+            <div class="load-status" id="loadStatus">正在加载采样...</div>
+
+            <div class="piano-stage" id="pianoStage">
+                <div class="piano-keyboard" id="pianoKeyboard"></div>
+            </div>
+
+            <!-- MIDI 播放器 -->
+            
+            <!-- Anming_cat 精选集 -->
+            <div class="demo-midi-panel" id="demoMidiPanel">
+                <div class="demo-midi-title">Anming_cat 精选集</div>
+                <div class="demo-midi-subtitle">从 assets/mid.zip 自动加载的演示 MIDI</div>
+                <div class="demo-midi-status" id="demoMidiStatus">正在加载精选集...</div>
+                <div class="demo-midi-list" id="demoMidiList"></div>
+            </div>
+
+            <div class="midi-player" id="midiPlayer">
+                <div class="midi-player-title">MIDI 播放器</div>
+                <div class="midi-controls">
+                    <label class="midi-file-label" for="midiFileInput">
+                        <span class="material-icons">folder_open</span>
+                        选择 MIDI 文件
+                    </label>
+                    <input type="file" id="midiFileInput" class="midi-file-input" accept=".mid,.midi">
+                    <span class="midi-file-name" id="midiFileName">未选择文件</span>
+                    <button class="midi-btn" id="midiPlayBtn" disabled>
+                        <span class="material-icons">play_arrow</span>
+                        播放
+                    </button>
+                    <button class="midi-btn" id="midiPauseBtn" disabled>
+                        <span class="material-icons">pause</span>
+                        暂停
+                    </button>
+                    <button class="midi-btn" id="midiStopBtn" disabled>
+                        <span class="material-icons">stop</span>
+                        停止
+                    </button>
+                    <div class="midi-transpose">
+                        <span class="midi-transpose-label">移调</span>
+                        <button class="midi-transpose-btn" id="transposeDown">-</button>
+                        <span class="midi-transpose-value" id="transposeValue">0</span>
+                        <button class="midi-transpose-btn" id="transposeUp">+</button>
+                    </div>
+                </div>
+                <div class="midi-progress-area">
+                    <div class="midi-progress-bar" id="midiProgressBar">
+                        <div class="midi-progress-fill" id="midiProgressFill"></div>
+                    </div>
+                    <span class="midi-time" id="midiTime">0:00 / 0:00</span>
+                </div>
+                <div class="midi-status" id="midiStatus">请选择 MIDI 文件</div>
+            </div>
+
+            <!-- ADSR 控制面板 -->
+            <div class="adsr-panel" id="adsrPanel">
+                <div class="adsr-panel-title">Envelope</div>
+                <div class="adsr-main">
+                    <div class="adsr-sliders" id="adsrSliders">
+                        <div class="adsr-slider-group" data-param="attack">
+                            <div class="adsr-slider-label">A</div>
+                            <div class="adsr-slider-track" style="height:160px;">
+                                <div class="adsr-slider-fill" style="height:0%;"></div>
+                                <div class="adsr-slider-thumb" style="bottom:0%;"></div>
+                            </div>
+                            <div class="adsr-value" id="val-attack">0.00</div>
+                        </div>
+                        <div class="adsr-slider-group" data-param="decay">
+                            <div class="adsr-slider-label">D</div>
+                            <div class="adsr-slider-track" style="height:160px;">
+                                <div class="adsr-slider-fill" style="height:100%;"></div>
+                                <div class="adsr-slider-thumb" style="bottom:100%;"></div>
+                            </div>
+                            <div class="adsr-value" id="val-decay">1.00</div>
+                        </div>
+                        <div class="adsr-slider-group" data-param="sustain">
+                            <div class="adsr-slider-label">S</div>
+                            <div class="adsr-slider-track" style="height:160px;">
+                                <div class="adsr-slider-fill" style="height:100%;"></div>
+                                <div class="adsr-slider-thumb" style="bottom:100%;"></div>
+                            </div>
+                            <div class="adsr-value" id="val-sustain">1.00</div>
+                        </div>
+                        <div class="adsr-slider-group" data-param="release">
+                            <div class="adsr-slider-label">R</div>
+                            <div class="adsr-slider-track" style="height:160px;">
+                                <div class="adsr-slider-fill" style="height:35%;"></div>
+                                <div class="adsr-slider-thumb" style="bottom:35%;"></div>
+                            </div>
+                            <div class="adsr-value" id="val-release">3.50</div>
+                        </div>
+                    </div>
+                    <div class="envelope-section">
+                        <div class="envelope-preview" id="envelopePreview">
+                            <svg viewBox="0 0 180 160" preserveAspectRatio="none">
+                                <polyline id="envPoly" points="10,150 30,150 50,150 130,150 170,150" fill="none" stroke="var(--color-accent)" stroke-width="2.5" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <div class="envelope-label">包络预览</div>
+                    </div>
+                    <div class="sustain-section">
+                        <div class="sustain-pedal" id="sustainPedal">
+                            <div class="sustain-led" id="sustainLed"></div>
+                            <div class="sustain-label">PEDAL</div>
+                        </div>
+                        <div class="sustain-hint">空格键控制</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="piano-footer-note">
+                <span class="material-icons">graphic_eq</span>
+                <span>Rectitude by Anming_cat</span>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>© 2026 Anming_cat</p>
+    </footer>
+
+    <script src="../script.js"></script>
+
+    <script>
+        (function() {
+            // ========== 音频引擎 ==========
+            function getFreq(midiNote) {
+                return +(440 * Math.pow(2, (midiNote - 69) / 12)).toFixed(2);
+            }
+
+            const keyMapping = {
+                'C3': 'z', 'D3': 'x', 'E3': 'c', 'F3': 'v', 'G3': 'b', 'A3': 'n', 'B3': 'm',
+                'C4': ',', 'D4': '.', 'E4': '/', 'F4': 'q', 'G4': 'w', 'A4': 'e', 'B4': 'r',
+                'C5': 't', 'D5': 'y', 'E5': 'u', 'F5': 'i', 'G5': 'o', 'A5': 'p', 'B5': '[',
+                'C6': ']',
+                'C#3': 's', 'D#3': 'd', 'F#3': 'g', 'G#3': 'h', 'A#3': 'j',
+                'C#4': 'l', 'D#4': ';',
+                'F#4': '2', 'G#4': '3', 'A#4': '4',
+                'C#5': '6', 'D#5': '7',
+                'F#5': '9', 'G#5': '0', 'A#5': '-'
+            };
+
+            function noteToMidi(noteId) {
+                const map = { 'C': 0, 'C#': 1, 'D': 2, 'D#': 3, 'E': 4, 'F': 5, 'F#': 6, 'G': 7, 'G#': 8, 'A': 9, 'A#': 10, 'B': 11 };
+                const m = noteId.match(/^([A-G]#?)(\d)$/);
+                if (!m) return 60;
+                return map[m[1]] + (parseInt(m[2]) + 1) * 12;
+            }
+
+            function midiToNoteId(midi) {
+                const names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+                const octave = Math.floor(midi / 12) - 1;
+                const name = names[midi % 12];
+                return name + octave;
+            }
+
+            // 生成88键
+            const groups = [];
+            let midi = 21;
+            groups.push({
+                white: { noteId: 'A0', midi: 21, display: 'A' },
+                black: { noteId: 'A#0', midi: 22, display: '' }
+            });
+            midi = 23;
+            groups.push({
+                white: { noteId: 'B0', midi: 23, display: 'B' },
+                black: null
+            });
+            midi = 24;
+            const pattern = [
+                { n: 'C', b: true }, { n: 'D', b: true }, { n: 'E', b: false },
+                { n: 'F', b: true }, { n: 'G', b: true }, { n: 'A', b: true }, { n: 'B', b: false }
+            ];
+            for (let o = 1; o <= 7; o++) {
+                pattern.forEach(p => {
+                    const wId = p.n + o;
+                    const wMidi = midi++;
+                    let black = null;
+                    if (p.b) {
+                        const bId = p.n + '#' + o;
+                        const bMidi = midi++;
+                        black = { noteId: bId, midi: bMidi, display: '' };
+                    }
+                    groups.push({
+                        white: { noteId: wId, midi: wMidi, display: p.n === 'C' ? wId : p.n },
+                        black: black
+                    });
+                });
+            }
+            groups.push({
+                white: { noteId: 'C8', midi: 108, display: 'C8' },
+                black: null
+            });
+
+            groups.forEach(g => {
+                g.white.freq = getFreq(g.white.midi);
+                g.white.keyboard = keyMapping[g.white.noteId] || null;
+                if (g.black) {
+                    g.black.freq = getFreq(g.black.midi);
+                    g.black.keyboard = keyMapping[g.black.noteId] || null;
+                }
+            });
+
+            let audioCtx = null;
+            const activeVoices = new Map();
+            const activeElements = new Map();
+
+            const sampleCache = new Map();
+
+            const adsr = {
+                attack: 0.0,
+                decay: 1.0,
+                sustain: 1.0,
+                release: 3.5
+            };
+
+            let sustainPedalOn = false;
+            const sustainedNotes = new Set();
+
+            function getAudioContext() {
+                if (audioCtx && audioCtx.state !== 'closed') return audioCtx;
+                try {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    return audioCtx;
+                } catch(e) {
+                    console.warn("Web Audio不支持", e);
+                    return null;
+                }
+            }
+
+            async function resumeAudioContext() {
+                const ctx = getAudioContext();
+                if (ctx && ctx.state === 'suspended') {
+                    await ctx.resume();
+                }
+                return ctx;
+            }
+
+            // ========== IndexedDB 缓存 ==========
+            const DB_NAME = 'PianoCache_v1';
+            const STORE_NAME = 'zipData';
+            const ZIP_KEY = 'pianoZipBuffer';
+
+            function openCacheDB() {
+                return new Promise((resolve, reject) => {
+                    const req = indexedDB.open(DB_NAME, 1);
+                    req.onerror = () => reject(req.error);
+                    req.onsuccess = () => resolve(req.result);
+                    req.onupgradeneeded = (e) => {
+                        const db = e.target.result;
+                        if (!db.objectStoreNames.contains(STORE_NAME)) {
+                            db.createObjectStore(STORE_NAME);
+                        }
+                    };
+                });
+            }
+
+            async function getCachedZipBuffer() {
+                try {
+                    const db = await openCacheDB();
+                    return new Promise((resolve, reject) => {
+                        const tx = db.transaction(STORE_NAME, 'readonly');
+                        const store = tx.objectStore(STORE_NAME);
+                        const req = store.get(ZIP_KEY);
+                        req.onsuccess = () => resolve(req.result || null);
+                        req.onerror = () => reject(req.error);
+                    });
+                } catch(e) {
+                    return null;
+                }
+            }
+
+            async function saveZipBuffer(arrayBuffer) {
+                try {
+                    const db = await openCacheDB();
+                    return new Promise((resolve, reject) => {
+                        const tx = db.transaction(STORE_NAME, 'readwrite');
+                        const store = tx.objectStore(STORE_NAME);
+                        const req = store.put(arrayBuffer, ZIP_KEY);
+                        req.onsuccess = () => resolve();
+                        req.onerror = () => reject(req.error);
+                    });
+                } catch(e) {
+                    console.warn('缓存失败:', e);
+                }
+            }
+
+            // ========== ZIP 加载与采样解析 ==========
+            async function loadSamples() {
+                const status = document.getElementById('loadStatus');
+                status.className = 'load-status loading';
+                status.textContent = '正在加载采样...';
+
+                try {
+                    if (typeof JSZip === 'undefined') {
+                        await new Promise((resolve, reject) => {
+                            const script = document.createElement('script');
+                            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+                            script.onload = resolve;
+                            script.onerror = () => reject(new Error('无法加载 JSZip'));
+                            document.head.appendChild(script);
+                        });
+                    }
+
+                    let arrayBuffer = await getCachedZipBuffer();
+                    let fromCache = false;
+
+                    if (arrayBuffer) {
+                        fromCache = true;
+                        status.textContent = '正在解析缓存的采样...';
+                    } else {
+                        status.textContent = '正在下载 Piano.zip...';
+                        const response = await fetch('../assets/Piano.zip');
+                        if (!response.ok) {
+                            throw new Error('找不到 Piano.zip (HTTP ' + response.status + ')');
+                        }
+                        arrayBuffer = await response.arrayBuffer();
+                        await saveZipBuffer(arrayBuffer);
+                    }
+
+                    const zip = await JSZip.loadAsync(arrayBuffer);
+
+                    const ctx = getAudioContext();
+                    const loadedSamples = [];
+                    const notePattern = /([A-G]#?)(\d)\.mp3$/i;
+
+                    for (const [filename, file] of Object.entries(zip.files)) {
+                        if (file.dir) continue;
+                        const match = filename.match(notePattern);
+                        if (!match) continue;
+
+                        const noteName = match[1].toUpperCase();
+                        const octave = parseInt(match[2]);
+                        const noteId = noteName + octave;
+                        const sourceMidi = noteToMidi(noteId) + 12; // 修正采样命名八度偏移 (Yamaha/Scientific 标准差异)
+
+                        try {
+                            const mp3Data = await file.async('arraybuffer');
+                            const audioBuffer = await ctx.decodeAudioData(mp3Data);
+
+                            sampleCache.set(noteId, {
+                                buffer: audioBuffer,
+                                sourceMidi: sourceMidi
+                            });
+                            loadedSamples.push(noteId);
+                        } catch(e) {
+                            console.warn('解码失败:', filename, e.message);
+                        }
+                    }
+
+                    assignNearestSamples();
+
+                    if (loadedSamples.length === 0) {
+                        status.className = 'load-status error';
+                        status.textContent = 'Piano.zip 中没有找到有效的 MP3 采样';
+                    } else {
+                        status.className = 'load-status success';
+                        status.textContent = fromCache
+                            ? '已从缓存加载 ' + loadedSamples.length + ' 个采样'
+                            : '已下载并缓存 ' + loadedSamples.length + ' 个采样';
+                    }
+
+                } catch(err) {
+                    status.className = 'load-status error';
+                    status.textContent = '加载失败: ' + err.message;
+                    console.error(err);
+                }
+            }
+
+            function assignNearestSamples() {
+                const allKeys = [];
+                groups.forEach(g => {
+                    allKeys.push({ noteId: g.white.noteId, midi: g.white.midi, element: null });
+                    if (g.black) {
+                        allKeys.push({ noteId: g.black.noteId, midi: g.black.midi, element: null });
+                    }
+                });
+
+                for (const key of allKeys) {
+                    let nearest = null;
+                    let minDistance = Infinity;
+
+                    for (const [sampleNoteId, sample] of sampleCache.entries()) {
+                        const distance = Math.abs(key.midi - sample.sourceMidi);
+                        if (distance < minDistance) {
+                            minDistance = distance;
+                            nearest = sample;
+                        }
+                    }
+
+                    if (nearest) {
+                        key.assignedSample = nearest;
+                        key.pitchShift = key.midi - nearest.sourceMidi;
+                    }
+                }
+
+                window.keyAssignments = allKeys.reduce((acc, k) => {
+                    acc[k.noteId] = k;
+                    return acc;
+                }, {});
+            }
+
+            // ========== 播放引擎 ==========
+            async function noteOn(noteId, freq) {
+                let ctx = getAudioContext();
+                if (!ctx) return false;
+                if (ctx.state !== 'running') {
+                    try { await ctx.resume(); } catch(e) { return false; }
+                    if (ctx.state !== 'running') return false;
+                }
+
+                if (activeVoices.has(noteId)) {
+                    noteOff(noteId, true);
+                }
+
+                const assignment = window.keyAssignments?.[noteId];
+                const hasSample = assignment && assignment.assignedSample;
+
+                if (hasSample) {
+                    return playSample(noteId, assignment, ctx);
+                } else {
+                    return playSine(noteId, freq, ctx);
+                }
+            }
+
+            function playSample(noteId, assignment, ctx) {
+                const sample = assignment.assignedSample;
+                const source = ctx.createBufferSource();
+                source.buffer = sample.buffer;
+
+                const semitones = assignment.pitchShift;
+                source.playbackRate.value = Math.pow(2, semitones / 12);
+
+                const gain = ctx.createGain();
+                const now = ctx.currentTime;
+
+                const att = adsr.attack;
+                const dec = adsr.decay;
+                const sus = adsr.sustain;
+                const rel = adsr.release;
+                const maxGain = 0.4;
+
+                gain.gain.setValueAtTime(0, now);
+
+                if (att > 0.001) {
+                    gain.gain.linearRampToValueAtTime(maxGain, now + att);
+                } else {
+                    gain.gain.setValueAtTime(maxGain, now);
+                }
+
+                if (dec > 0.001) {
+                    gain.gain.linearRampToValueAtTime(maxGain * sus, now + att + dec);
+                } else {
+                    gain.gain.setValueAtTime(maxGain * sus, now + att);
+                }
+
+                source.connect(gain);
+                gain.connect(ctx.destination);
+                source.start();
+
+                activeVoices.set(noteId, {
+                    source: source,
+                    gain: gain,
+                    releaseTime: rel,
+                    isSample: true
+                });
+
+                source.onended = () => {
+                    if (activeVoices.get(noteId)?.source === source) {
+                        activeVoices.delete(noteId);
+                    }
+                };
+                return true;
+            }
+
+            function playSine(noteId, freq, ctx) {
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+
+                const att = adsr.attack;
+                const dec = adsr.decay;
+                const sus = adsr.sustain;
+                const rel = adsr.release;
+                const maxGain = 0.3;
+
+                gain.gain.setValueAtTime(0, now);
+
+                if (att > 0.001) {
+                    gain.gain.linearRampToValueAtTime(maxGain, now + att);
+                } else {
+                    gain.gain.setValueAtTime(maxGain, now);
+                }
+
+                if (dec > 0.001) {
+                    gain.gain.linearRampToValueAtTime(maxGain * sus, now + att + dec);
+                } else {
+                    gain.gain.setValueAtTime(maxGain * sus, now + att);
+                }
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+
+                activeVoices.set(noteId, {
+                    source: osc,
+                    gain: gain,
+                    releaseTime: rel,
+                    isSample: false
+                });
+
+                osc.onended = () => {
+                    if (activeVoices.get(noteId)?.source === osc) {
+                        activeVoices.delete(noteId);
+                    }
+                };
+                return true;
+            }
+
+            function noteOff(noteId, immediate = false) {
+                const voice = activeVoices.get(noteId);
+
+                if (!voice || immediate || !sustainPedalOn) {
+                    const el = activeElements.get(noteId);
+                    if (el) {
+                        el.classList.remove('active');
+                        activeElements.delete(noteId);
+                    }
+                }
+
+                if (!voice) {
+                    sustainedNotes.delete(noteId);
+                    return;
+                }
+
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                const rel = voice.releaseTime || 0.3;
+
+                if (sustainPedalOn && !immediate) {
+                    sustainedNotes.add(noteId);
+                    return;
+                }
+
+                if (immediate) {
+                    try {
+                        voice.gain.gain.cancelScheduledValues(now);
+                        voice.gain.gain.setValueAtTime(voice.gain.gain.value, now);
+                        voice.gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.03);
+                        voice.source.stop(now + 0.04);
+                    } catch(e) {}
+                } else {
+                    try {
+                        voice.gain.gain.cancelScheduledValues(now);
+                        voice.gain.gain.setValueAtTime(voice.gain.gain.value, now);
+                        voice.gain.gain.exponentialRampToValueAtTime(0.0001, now + rel);
+                        voice.source.stop(now + rel + 0.05);
+                    } catch(e) {}
+                }
+                activeVoices.delete(noteId);
+                sustainedNotes.delete(noteId);
+            }
+
+            function allNotesOff() {
+                for (const [id, voice] of activeVoices.entries()) {
+                    try { voice.source.stop(); } catch(e) {}
+                }
+                activeVoices.clear();
+                sustainedNotes.clear();
+                for (const [noteId, el] of activeElements.entries()) {
+                    el.classList.remove('active');
+                }
+                activeElements.clear();
+            }
+
+            function setSustainPedal(on) {
+                sustainPedalOn = on;
+                const pedal = document.getElementById('sustainPedal');
+                if (pedal) {
+                    if (on) {
+                        pedal.classList.add('active');
+                    } else {
+                        pedal.classList.remove('active');
+                        releaseSustainedNotes();
+                    }
+                }
+            }
+
+            function releaseSustainedNotes() {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                for (const noteId of sustainedNotes) {
+                    const voice = activeVoices.get(noteId);
+                    if (voice) {
+                        const rel = voice.releaseTime || 0.3;
+                        try {
+                            voice.gain.gain.cancelScheduledValues(now);
+                            voice.gain.gain.setValueAtTime(voice.gain.gain.value, now);
+                            voice.gain.gain.exponentialRampToValueAtTime(0.0001, now + rel);
+                            voice.source.stop(now + rel + 0.05);
+                        } catch(e) {}
+                        activeVoices.delete(noteId);
+                    }
+                    const el = activeElements.get(noteId);
+                    if (el) {
+                        el.classList.remove('active');
+                        activeElements.delete(noteId);
+                    }
+                }
+                sustainedNotes.clear();
+            }
+
+            // ========== 钢琴 UI ==========
+            const keyboard = document.getElementById('pianoKeyboard');
+            const keyToElementMap = new Map();
+
+            function buildPianoUI() {
+                if (!keyboard) return;
+                keyboard.innerHTML = '';
+                keyToElementMap.clear();
+
+                groups.forEach(group => {
+                    const groupDiv = document.createElement('div');
+                    groupDiv.className = 'key-group';
+
+                    const w = group.white;
+                    const whiteKeyDiv = createKeyElement({
+                        noteId: w.noteId,
+                        freq: w.freq,
+                        keyboard: w.keyboard,
+                        displayNote: w.display
+                    }, false);
+                    groupDiv.appendChild(whiteKeyDiv);
+                    if (w.keyboard) {
+                        keyToElementMap.set(w.keyboard, {
+                            element: whiteKeyDiv,
+                            noteId: w.noteId,
+                            freq: w.freq,
+                            midi: w.midi,
+                            isBlack: false
+                        });
+                    }
+
+                    if (group.black) {
+                        const b = group.black;
+                        const blackKeyDiv = createKeyElement({
+                            noteId: b.noteId,
+                            freq: b.freq,
+                            keyboard: b.keyboard,
+                            displayNote: b.display
+                        }, true);
+                        groupDiv.appendChild(blackKeyDiv);
+                        if (b.keyboard) {
+                            keyToElementMap.set(b.keyboard, {
+                                element: blackKeyDiv,
+                                noteId: b.noteId,
+                                freq: b.freq,
+                                midi: b.midi,
+                                isBlack: true
+                            });
+                        }
+                    }
+
+                    keyboard.appendChild(groupDiv);
+                });
+            }
+
+            function createKeyElement(item, isBlack) {
+                const div = document.createElement('div');
+                const hasMapping = !!item.keyboard;
+                div.className = 'piano-key' + (isBlack ? ' black-key' : '') + (hasMapping ? '' : ' no-mapping');
+                div.setAttribute('data-noteid', item.noteId);
+                div.setAttribute('data-freq', item.freq);
+                if (item.keyboard) {
+                    div.setAttribute('data-keyboard', item.keyboard);
+                }
+
+                if (!isBlack && item.displayNote) {
+                    const noteSpan = document.createElement('div');
+                    noteSpan.className = 'key-note';
+                    noteSpan.textContent = item.displayNote;
+                    noteSpan.style.fontWeight = '400';
+                    if (item.displayNote.startsWith('C')) {
+                        noteSpan.style.color = 'var(--color-accent)';
+                    } else {
+                        noteSpan.style.color = '#b0b0c0';
+                    }
+                    div.appendChild(noteSpan);
+                }
+
+                const startNote = async (e) => {
+                    e.preventDefault();
+                    const freqVal = parseFloat(div.getAttribute('data-freq'));
+                    const noteId = div.getAttribute('data-noteid');
+                    if (!freqVal || isNaN(freqVal)) return;
+                    await noteOn(noteId, freqVal);
+                    div.classList.add('active');
+                    activeElements.set(noteId, div);
+                    div.setPointerCapture(e.pointerId);
+                };
+
+                const stopNote = (e) => {
+                    const noteId = div.getAttribute('data-noteid');
+                    if (noteId) {
+                        noteOff(noteId, false);
+                    }
+                    if (e?.pointerId) div.releasePointerCapture?.(e.pointerId);
+                };
+
+                const handleLeave = (e) => {
+                    const noteId = div.getAttribute('data-noteid');
+                    if (noteId && activeVoices.has(noteId)) {
+                        noteOff(noteId, false);
+                    }
+                };
+
+                div.addEventListener('pointerdown', startNote);
+                div.addEventListener('pointerup', stopNote);
+                div.addEventListener('pointercancel', stopNote);
+                div.addEventListener('pointerleave', handleLeave);
+                div.addEventListener('dragstart', (e) => e.preventDefault());
+                div.addEventListener('contextmenu', (e) => e.preventDefault());
+                return div;
+            }
+
+            // ========== 键盘事件 ==========
+            const keyboardPressedState = new Map();
+            const mappedKeys = ['s','d','g','h','j','l',';','z','x','c','v','b','n','m',',','.','/','q','w','e','r','t','y','u','i','o','p','[',']','2','3','4','6','7','9','0','-'];
+
+            async function onGlobalKeyDown(e) {
+                let rawKey = e.key;
+                if (rawKey === ' ' || rawKey === 'Spacebar') {
+                    e.preventDefault();
+                    setSustainPedal(true);
+                    return;
+                }
+                let lowerKey = rawKey.toLowerCase();
+                if (rawKey === ',' || rawKey === '.' || rawKey === '/' || rawKey === ';' || rawKey === '[' || rawKey === ']' || rawKey === '-') {
+                    lowerKey = rawKey;
+                }
+
+                const mapping = keyToElementMap.get(lowerKey);
+                if (!mapping) return;
+                if (mappedKeys.includes(lowerKey)) {
+                    e.preventDefault();
+                }
+                if (keyboardPressedState.get(lowerKey) === true) return;
+                keyboardPressedState.set(lowerKey, true);
+
+                const { noteId, freq } = mapping;
+                if (!freq) return;
+                await resumeAudioContext();
+                await noteOn(noteId, freq);
+                if (mapping.element) {
+                    mapping.element.classList.add('active');
+                    activeElements.set(noteId, mapping.element);
+                }
+            }
+
+            function onGlobalKeyUp(e) {
+                let rawKey = e.key;
+                if (rawKey === ' ' || rawKey === 'Spacebar') {
+                    e.preventDefault();
+                    setSustainPedal(false);
+                    return;
+                }
+                let lowerKey = rawKey.toLowerCase();
+                if (rawKey === ',' || rawKey === '.' || rawKey === '/' || rawKey === ';' || rawKey === '[' || rawKey === ']' || rawKey === '-') {
+                    lowerKey = rawKey;
+                }
+                const mapping = keyToElementMap.get(lowerKey);
+                if (!mapping) return;
+                e.preventDefault();
+                const { noteId } = mapping;
+                if (noteId) {
+                    noteOff(noteId, false);
+                }
+                keyboardPressedState.delete(lowerKey);
+            }
+
+            window.addEventListener('blur', () => {
+                allNotesOff();
+                setSustainPedal(false);
+                for (let key of keyboardPressedState.keys()) {
+                    const mapping = keyToElementMap.get(key);
+                    if (mapping?.element) mapping.element.classList.remove('active');
+                }
+                keyboardPressedState.clear();
+            });
+
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    allNotesOff();
+                    setSustainPedal(false);
+                    for (let key of keyboardPressedState.keys()) {
+                        const mapping = keyToElementMap.get(key);
+                        if (mapping?.element) mapping.element.classList.remove('active');
+                    }
+                    keyboardPressedState.clear();
+                }
+            });
+
+            // ========== ADSR 竖向滑块 ==========
+            function updateADSRDisplay() {
+                document.getElementById('val-attack').textContent = adsr.attack.toFixed(2);
+                document.getElementById('val-decay').textContent = adsr.decay.toFixed(2);
+                document.getElementById('val-sustain').textContent = adsr.sustain.toFixed(2);
+                document.getElementById('val-release').textContent = adsr.release.toFixed(2);
+                updateEnvelopePreview();
+            }
+
+            function updateEnvelopePreview() {
+                const svg = document.getElementById('envPoly');
+                const w = 180, h = 160;
+                const pad = 15;
+                const graphW = w - pad * 2;
+                const graphH = h - pad * 2;
+
+                // 包络预览中 release 缩放为 0-3 秒范围显示，避免太长压缩前面
+                const previewRelease = Math.min(adsr.release, 3.0);
+                const total = adsr.attack + adsr.decay + 0.5 + previewRelease;
+                const aX = pad + (adsr.attack / total) * graphW;
+                const dX = aX + (adsr.decay / total) * graphW;
+                const sX = dX + (0.5 / total) * graphW;
+                const rX = sX + (previewRelease / total) * graphW;
+
+                const baseY = pad + graphH;
+                const peakY = pad;
+                const susY = pad + graphH * (1 - adsr.sustain);
+
+                const points = [
+                    [pad, baseY],
+                    [aX, peakY],
+                    [dX, susY],
+                    [sX, susY],
+                    [Math.min(rX, w - pad), baseY]
+                ].map(p => p.join(',')).join(' ');
+
+                svg.setAttribute('points', points);
+            }
+
+            function initVerticalSliders() {
+                const sliderGroups = document.querySelectorAll('.adsr-slider-group');
+                sliderGroups.forEach(group => {
+                    const param = group.dataset.param;
+                    const track = group.querySelector('.adsr-slider-track');
+                    const fill = group.querySelector('.adsr-slider-fill');
+                    const thumb = group.querySelector('.adsr-slider-thumb');
+
+                    function setValueFromY(y) {
+                        const rect = track.getBoundingClientRect();
+                        const pct = 1 - Math.max(0, Math.min(1, (y - rect.top) / rect.height));
+                        const maxVal = param === 'release' ? 10.0 : 1.0;
+                        adsr[param] = pct * maxVal;
+                        fill.style.height = (pct * 100) + '%';
+                        thumb.style.bottom = (pct * 100) + '%';
+                        updateADSRDisplay();
+                    }
+
+                    let dragging = false;
+
+                    thumb.addEventListener('pointerdown', (e) => {
+                        dragging = true;
+                        thumb.setPointerCapture(e.pointerId);
+                        e.preventDefault();
+                    });
+
+                    thumb.addEventListener('pointermove', (e) => {
+                        if (!dragging) return;
+                        setValueFromY(e.clientY);
+                    });
+
+                    thumb.addEventListener('pointerup', (e) => {
+                        dragging = false;
+                        thumb.releasePointerCapture(e.pointerId);
+                    });
+
+                    track.addEventListener('pointerdown', (e) => {
+                        if (e.target === thumb) return;
+                        setValueFromY(e.clientY);
+                        dragging = true;
+                        thumb.setPointerCapture(e.pointerId);
+                    });
+                });
+            }
+
+            function initSustainPedal() {
+                const pedal = document.getElementById('sustainPedal');
+                if (pedal) {
+                    pedal.addEventListener('click', () => {
+                        setSustainPedal(!sustainPedalOn);
+                    });
+                }
+            }
+
+            // ========== MIDI 解析与播放 ==========
+            let midiData = null;
+            let midiEvents = [];
+            let midiPlaybackStartTime = 0;
+            let midiPausedAt = 0;
+            let midiIsPlaying = false;
+            let midiIsPaused = false;
+            let midiPlaybackRaf = null;
+            let midiTranspose = 0;
+            let midiDuration = 0;
+            let midiPlayingNotes = new Set();
+            let midiEventIndex = 0;
+
+            function parseMidi(arrayBuffer) {
+                const data = new Uint8Array(arrayBuffer);
+                let pos = 0;
+
+                function readUint8() { return data[pos++]; }
+                function readUint16() { return (data[pos++] << 8) | data[pos++]; }
+                function readUint32() { return (data[pos++] << 24) | (data[pos++] << 16) | (data[pos++] << 8) | data[pos++]; }
+                function readVarLen() {
+                    let value = 0;
+                    let byte;
+                    do {
+                        byte = data[pos++];
+                        value = (value << 7) | (byte & 0x7F);
+                    } while (byte & 0x80);
+                    return value;
+                }
+
+                // MThd
+                if (readUint32() !== 0x4D546864) return null;
+                const headerLen = readUint32();
+                const format = readUint16();
+                const numTracks = readUint16();
+                const division = readUint16();
+                const ticksPerBeat = division & 0x7FFF;
+
+                const tracks = [];
+                const tempoEvents = [];
+
+                for (let t = 0; t < numTracks; t++) {
+                    if (readUint32() !== 0x4D54726B) break;
+                    const trackLen = readUint32();
+                    const trackEnd = pos + trackLen;
+                    let trackTime = 0;
+                    let runningStatus = 0;
+                    const trackEvents = [];
+
+                    while (pos < trackEnd) {
+                        const delta = readVarLen();
+                        trackTime += delta;
+                        let status = readUint8();
+
+                        if (status < 0x80) {
+                            status = runningStatus;
+                            pos--;
+                        } else {
+                            runningStatus = status;
+                        }
+
+                        const type = status & 0xF0;
+                        const channel = status & 0x0F;
+
+                        if (type === 0x80 || type === 0x90) {
+                            const note = readUint8();
+                            const velocity = readUint8();
+                            const isNoteOn = type === 0x90 && velocity > 0;
+                            trackEvents.push({
+                                time: trackTime,
+                                type: isNoteOn ? 'noteOn' : 'noteOff',
+                                note: note,
+                                velocity: velocity,
+                                channel: channel
+                            });
+                        } else if (type === 0xB0) {
+                            const controller = readUint8();
+                            const value = readUint8();
+                            if (controller === 64) {
+                                trackEvents.push({
+                                    time: trackTime,
+                                    type: 'sustain',
+                                    value: value >= 64,
+                                    channel: channel
+                                });
+                            }
+                        } else if (type === 0xC0) {
+                            readUint8();
+                        } else if (type === 0xD0) {
+                            readUint8();
+                        } else if (type === 0xE0) {
+                            readUint8(); readUint8();
+                        } else if (status === 0xFF) {
+                            const metaType = readUint8();
+                            const metaLen = readVarLen();
+                            if (metaType === 0x51 && metaLen === 3) {
+                                const mpb = (readUint8() << 16) | (readUint8() << 8) | readUint8();
+                                tempoEvents.push({ time: trackTime, microsecondsPerBeat: mpb });
+                            } else {
+                                pos += metaLen;
+                            }
+                        } else if (status === 0xF0 || status === 0xF7) {
+                            while (readUint8() !== 0xF7) {}
+                        }
+                    }
+
+                    tracks.push(trackEvents);
+                }
+
+                // 合并所有轨道事件并按时间排序
+                const allEvents = [];
+                for (const track of tracks) {
+                    for (const ev of track) {
+                        allEvents.push(ev);
+                    }
+                }
+                allEvents.sort((a, b) => a.time - b.time);
+
+                // 将 tick 转换为绝对秒数，正确解析 MIDI 文件中的速度变化
+                let currentTempo = 500000; // 默认 120 BPM
+                let lastTick = 0;
+                let lastTime = 0;
+                let tempoIdx = 0;
+                tempoEvents.sort((a, b) => a.time - b.time);
+
+                for (const ev of allEvents) {
+                    while (tempoIdx < tempoEvents.length && tempoEvents[tempoIdx].time <= ev.time) {
+                        const t = tempoEvents[tempoIdx];
+                        lastTime += (t.time - lastTick) * (currentTempo / 1000000) / ticksPerBeat;
+                        currentTempo = t.microsecondsPerBeat;
+                        lastTick = t.time;
+                        tempoIdx++;
+                    }
+                    ev.seconds = lastTime + (ev.time - lastTick) * (currentTempo / 1000000) / ticksPerBeat;
+                }
+
+                const duration = allEvents.length > 0 ? allEvents[allEvents.length - 1].seconds : 0;
+
+                return {
+                    events: allEvents,
+                    duration: duration
+                };
+            }
+
+            function formatTime(seconds) {
+                const m = Math.floor(seconds / 60);
+                const s = Math.floor(seconds % 60);
+                return m + ':' + (s < 10 ? '0' : '') + s;
+            }
+
+async function midiPlay() {
+    if (!midiData) return;
+    if (midiIsPaused) {
+        midiIsPaused = false;
+        midiIsPlaying = true;
+        midiPlaybackStartTime = getAudioContext().currentTime - midiPausedAt;
+        midiScheduleEvents();
+        updateMidiStatus('正在播放');
+        return;
+    }
+
+    await resumeAudioContext();
+    midiIsPlaying = true;
+    midiIsPaused = false;
+    midiPausedAt = 0;
+    midiEventIndex = 0;   // ← 新增：从头开始
+    midiPlaybackStartTime = getAudioContext().currentTime;
+    midiScheduleEvents();
+    updateMidiStatus('正在播放');
+}
+
+            function midiPause() {
+                if (!midiIsPlaying) return;
+                midiIsPaused = true;
+                midiIsPlaying = false;
+                midiPausedAt = getAudioContext().currentTime - midiPlaybackStartTime;
+
+                // 停止所有正在播放的 MIDI 音符
+                for (const noteId of midiPlayingNotes) {
+                    const el = activeElements.get(noteId);
+                    if (el) {
+                        el.classList.remove('active');
+                        activeElements.delete(noteId);
+                    }
+                    const voice = activeVoices.get(noteId);
+                    if (voice) {
+                        try {
+                            voice.gain.gain.cancelScheduledValues(getAudioContext().currentTime);
+                            voice.gain.gain.setValueAtTime(voice.gain.gain.value, getAudioContext().currentTime);
+                            voice.gain.gain.exponentialRampToValueAtTime(0.0001, getAudioContext().currentTime + 0.05);
+                            voice.source.stop(getAudioContext().currentTime + 0.06);
+                        } catch(e) {}
+                        activeVoices.delete(noteId);
+                    }
+                }
+                midiPlayingNotes.clear();
+
+                if (midiPlaybackRaf) {
+                    cancelAnimationFrame(midiPlaybackRaf);
+                    midiPlaybackRaf = null;
+                }
+                updateMidiStatus('已暂停');
+            }
+
+function midiStop() {
+    midiIsPlaying = false;
+    midiIsPaused = false;
+    midiPausedAt = 0;
+    midiEventIndex = 0;   // ← 新增：重置索引
+    // 后面保留原代码不动...
+
+                for (const noteId of midiPlayingNotes) {
+                    const el = activeElements.get(noteId);
+                    if (el) {
+                        el.classList.remove('active');
+                        activeElements.delete(noteId);
+                    }
+                }
+                midiPlayingNotes.clear();
+                allNotesOff();
+
+                if (midiPlaybackRaf) {
+                    cancelAnimationFrame(midiPlaybackRaf);
+                    midiPlaybackRaf = null;
+                }
+
+                document.getElementById('midiProgressFill').style.width = '0%';
+                document.getElementById('midiTime').textContent = formatTime(0) + ' / ' + formatTime(midiDuration);
+                updateMidiStatus('已停止');
+            }
+
+function midiScheduleEvents() {
+    if (!midiIsPlaying) return;
+
+    const ctx = getAudioContext();
+    const currentTime = ctx.currentTime - midiPlaybackStartTime;
+
+    // 顺序处理所有已到时间的事件，每个事件只处理一次
+    while (midiEventIndex < midiData.events.length) {
+        const ev = midiData.events[midiEventIndex];
+        const eventTime = ev.seconds; // 已预计算为绝对秒数
+
+        // 给 50ms 提前量，防止跳帧漏音，但每个事件只进一次
+        if (eventTime > currentTime + 0.05) break;
+
+        if (ev.type === 'noteOn' || ev.type === 'noteOff') {
+            const noteId = midiToNoteId(Math.max(0, Math.min(127, ev.note + midiTranspose)));
+            const freq = getFreq(Math.max(0, Math.min(127, ev.note + midiTranspose)));
+
+            if (ev.type === 'noteOn') {
+                if (!midiPlayingNotes.has(noteId)) {
+                    noteOn(noteId, freq);
+                    const el = findElementByNoteId(noteId);
+                    if (el) {
+                        el.classList.add('active');
+                        activeElements.set(noteId, el);
+                    }
+                    midiPlayingNotes.add(noteId);
+                }
+            } else if (ev.type === 'noteOff') {
+                if (midiPlayingNotes.has(noteId)) {
+                    noteOff(noteId, false);
+                    midiPlayingNotes.delete(noteId);
+                }
+            }
+        } else if (ev.type === 'sustain') {
+            setSustainPedal(ev.value);
+        }
+
+        midiEventIndex++;
+    }
+
+    const progress = Math.min(currentTime / midiDuration, 1);
+    document.getElementById('midiProgressFill').style.width = (progress * 100) + '%';
+    document.getElementById('midiTime').textContent = formatTime(currentTime) + ' / ' + formatTime(midiDuration);
+
+    if (currentTime >= midiDuration) {
+        midiStop();
+        updateMidiStatus('播放完成');
+        return;
+    }
+
+    midiPlaybackRaf = requestAnimationFrame(midiScheduleEvents);
+}
+
+            function findElementByNoteId(noteId) {
+                const allKeys = document.querySelectorAll('.piano-key');
+                for (const key of allKeys) {
+                    if (key.getAttribute('data-noteid') === noteId) {
+                        return key;
+                    }
+                }
+                return null;
+            }
+
+            function updateMidiStatus(text) {
+                document.getElementById('midiStatus').textContent = text;
+            }
+
+            function initMidiPlayer() {
+                const fileInput = document.getElementById('midiFileInput');
+                const playBtn = document.getElementById('midiPlayBtn');
+                const pauseBtn = document.getElementById('midiPauseBtn');
+                const stopBtn = document.getElementById('midiStopBtn');
+                const progressBar = document.getElementById('midiProgressBar');
+                const transposeDown = document.getElementById('transposeDown');
+                const transposeUp = document.getElementById('transposeUp');
+                const transposeValue = document.getElementById('transposeValue');
+
+                fileInput.addEventListener('change', async (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+
+                    document.getElementById('midiFileName').textContent = file.name;
+                    updateMidiStatus('正在解析 MIDI...');
+
+                    const arrayBuffer = await file.arrayBuffer();
+                    midiData = parseMidi(arrayBuffer);
+
+                    if (!midiData) {
+                        updateMidiStatus('MIDI 解析失败');
+                        return;
+                    }
+
+                    midiDuration = midiData.duration;
+                    midiTranspose = 0;
+                    midiEventIndex = 0;   // ← 新增：新文件从头来
+                    transposeValue.textContent = '0';
+                    document.getElementById('midiTime').textContent = '0:00 / ' + formatTime(midiDuration);
+
+                    playBtn.disabled = false;
+                    pauseBtn.disabled = false;
+                    stopBtn.disabled = false;
+                    updateMidiStatus('已加载: ' + midiData.events.length + ' 个事件');
+                });
+
+                playBtn.addEventListener('click', midiPlay);
+                pauseBtn.addEventListener('click', midiPause);
+                stopBtn.addEventListener('click', midiStop);
+
+progressBar.addEventListener('click', (e) => {
+    if (!midiData) return;
+    const rect = progressBar.getBoundingClientRect();
+    const pct = (e.clientX - rect.left) / rect.width;
+    const seekTime = pct * midiDuration;
+
+    if (midiIsPlaying || midiIsPaused) {
+        // 强制释放当前所有 MIDI 音符，避免 seek 后残留
+        for (const noteId of midiPlayingNotes) {
+            const el = activeElements.get(noteId);
+            if (el) {
+                el.classList.remove('active');
+                activeElements.delete(noteId);
+            }
+            const voice = activeVoices.get(noteId);
+            if (voice) {
+                try {
+                    const now = getAudioContext().currentTime;
+                    voice.gain.gain.cancelScheduledValues(now);
+                    voice.gain.gain.setValueAtTime(voice.gain.gain.value, now);
+                    voice.gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
+                    voice.source.stop(now + 0.06);
+                } catch(e) {}
+                activeVoices.delete(noteId);
+            }
+        }
+        midiPlayingNotes.clear();
+
+        midiPausedAt = seekTime;
+        if (midiIsPlaying) {
+            midiPlaybackStartTime = getAudioContext().currentTime - midiPausedAt;
+        }
+
+        // 重新定位事件索引到 seek 位置
+        midiEventIndex = 0;
+        for (let i = 0; i < midiData.events.length; i++) {
+            if (midiData.events[i].seconds > seekTime) {
+                midiEventIndex = i;
+                break;
+            }
+            midiEventIndex = i + 1;
+        }
+
+        document.getElementById('midiProgressFill').style.width = (pct * 100) + '%';
+        document.getElementById('midiTime').textContent = formatTime(seekTime) + ' / ' + formatTime(midiDuration);
+    }
+});
+            }
+
+            transposeDown.addEventListener('click', () => {
+    midiTranspose -= 1;   // ← 原来这里是 12
+    transposeValue.textContent = midiTranspose;
+});
+
+transposeUp.addEventListener('click', () => {
+    midiTranspose += 1;   // ← 原来这里是 12
+    transposeValue.textContent = midiTranspose;
+});
+            
+
+            // ========== Anming_cat 精选集 (mid.zip) ==========
+            let demoMidiFiles = [];
+            let demoMidiZipBuffer = null;
+            const DEMO_ZIP_KEY = 'demoMidiZipBuffer';
+
+            async function loadDemoMidis() {
+                const status = document.getElementById('demoMidiStatus');
+                if (!status) return;
+                status.className = 'demo-midi-status loading';
+                status.textContent = '正在加载精选集...';
+
+                try {
+                    if (typeof JSZip === 'undefined') {
+                        await new Promise((resolve, reject) => {
+                            const script = document.createElement('script');
+                            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+                            script.onload = resolve;
+                            script.onerror = () => reject(new Error('无法加载 JSZip'));
+                            document.head.appendChild(script);
+                        });
+                    }
+
+                    let arrayBuffer = await getCachedZipBufferByKey(DEMO_ZIP_KEY);
+                    let fromCache = false;
+
+                    if (arrayBuffer) {
+                        fromCache = true;
+                        status.textContent = '正在解析缓存的精选集...';
+                    } else {
+                        status.textContent = '正在下载 mid.zip...';
+                        const response = await fetch('../assets/mid.zip');
+                        if (!response.ok) {
+                            throw new Error('找不到 mid.zip (HTTP ' + response.status + ')');
+                        }
+                        arrayBuffer = await response.arrayBuffer();
+                        await saveZipBufferByKey(arrayBuffer, DEMO_ZIP_KEY);
+                    }
+
+                    demoMidiZipBuffer = arrayBuffer;
+                    const zip = await JSZip.loadAsync(arrayBuffer);
+
+                    demoMidiFiles = [];
+                    const midiPattern = /\.mid(i)?$/i;
+
+                    for (const [filename, file] of Object.entries(zip.files)) {
+                        if (file.dir) continue;
+                        if (!midiPattern.test(filename)) continue;
+                        demoMidiFiles.push({
+                            name: filename.replace(/^.*[\\/]/, ''),
+                            path: filename,
+                            file: file
+                        });
+                    }
+
+                    demoMidiFiles.sort((a, b) => a.name.localeCompare(b.name));
+
+                    if (demoMidiFiles.length === 0) {
+                        status.className = 'demo-midi-status error';
+                        status.textContent = 'mid.zip 中未找到 MIDI 文件';
+                        return;
+                    }
+
+                    status.className = 'demo-midi-status';
+                    status.textContent = fromCache
+                        ? '已从缓存加载 ' + demoMidiFiles.length + ' 首曲目'
+                        : '已下载并缓存 ' + demoMidiFiles.length + ' 首曲目';
+
+                    renderDemoList();
+
+                } catch (err) {
+                    status.className = 'demo-midi-status error';
+                    status.textContent = '精选集加载失败: ' + err.message;
+                    console.error('Demo MIDI 加载失败:', err);
+                }
+            }
+
+            async function getCachedZipBufferByKey(key) {
+                try {
+                    const db = await openCacheDB();
+                    return new Promise((resolve, reject) => {
+                        const tx = db.transaction(STORE_NAME, 'readonly');
+                        const store = tx.objectStore(STORE_NAME);
+                        const req = store.get(key);
+                        req.onsuccess = () => resolve(req.result || null);
+                        req.onerror = () => reject(req.error);
+                    });
+                } catch (e) {
+                    return null;
+                }
+            }
+
+            async function saveZipBufferByKey(arrayBuffer, key) {
+                try {
+                    const db = await openCacheDB();
+                    return new Promise((resolve, reject) => {
+                        const tx = db.transaction(STORE_NAME, 'readwrite');
+                        const store = tx.objectStore(STORE_NAME);
+                        const req = store.put(arrayBuffer, key);
+                        req.onsuccess = () => resolve();
+                        req.onerror = () => reject(req.error);
+                    });
+                } catch (e) {
+                    console.warn('精选集缓存失败:', e);
+                }
+            }
+
+            function renderDemoList() {
+                const list = document.getElementById('demoMidiList');
+                if (!list) return;
+                list.innerHTML = '';
+
+                demoMidiFiles.forEach((item, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'demo-midi-item';
+                    div.setAttribute('data-index', index);
+
+                    const nameSpan = document.createElement('span');
+                    nameSpan.className = 'demo-midi-name';
+                    nameSpan.textContent = item.name;
+                    nameSpan.title = item.name;
+
+                    const durSpan = document.createElement('span');
+                    durSpan.className = 'demo-midi-duration';
+                    durSpan.textContent = '点击播放';
+
+                    div.appendChild(nameSpan);
+                    div.appendChild(durSpan);
+
+                    div.addEventListener('click', () => playDemoMidi(index));
+                    list.appendChild(div);
+                });
+            }
+
+            async function playDemoMidi(index) {
+                if (!demoMidiFiles[index]) return;
+                const item = demoMidiFiles[index];
+
+                // 更新列表激活状态
+                document.querySelectorAll('.demo-midi-item').forEach(el => el.classList.remove('active'));
+                const activeItem = document.querySelector('.demo-midi-item[data-index="' + index + '"]');
+                if (activeItem) activeItem.classList.add('active');
+
+                // 先停止当前播放
+                midiStop();
+
+                try {
+                    updateMidiStatus('正在加载: ' + item.name);
+                    const mp3Data = await item.file.async('arraybuffer');
+                    midiData = parseMidi(mp3Data);
+
+                    if (!midiData) {
+                        updateMidiStatus('MIDI 解析失败: ' + item.name);
+                        return;
+                    }
+
+                    midiDuration = midiData.duration;
+                    midiTranspose = 0;
+                    midiEventIndex = 0;
+                    document.getElementById('transposeValue').textContent = '0';
+                    document.getElementById('midiTime').textContent = '0:00 / ' + formatTime(midiDuration);
+                    document.getElementById('midiFileName').textContent = item.name;
+
+                    document.getElementById('midiPlayBtn').disabled = false;
+                    document.getElementById('midiPauseBtn').disabled = false;
+                    document.getElementById('midiStopBtn').disabled = false;
+
+                    // 自动开始播放
+                    await midiPlay();
+                    updateMidiStatus('正在播放: ' + item.name);
+
+                    // 在 midiStop 后清除 active 状态
+                    const originalMidiStop = midiStop;
+                    midiStop = function() {
+                        originalMidiStop();
+                        document.querySelectorAll('.demo-midi-item').forEach(el => el.classList.remove('active'));
+                    };
+
+                } catch (err) {
+                    updateMidiStatus('加载失败: ' + err.message);
+                    console.error('Demo MIDI 播放失败:', err);
+                }
+            }
+
+            // ========== 初始化 ==========
+            buildPianoUI();
+            initVerticalSliders();
+            initSustainPedal();
+            initMidiPlayer();
+            updateADSRDisplay();
+            window.addEventListener('keydown', onGlobalKeyDown);
+            window.addEventListener('keyup', onGlobalKeyUp);
+
+            window.addEventListener('beforeunload', () => {
+                allNotesOff();
+                midiStop();
+            });
+
+            const warmAudio = async () => {
+                await resumeAudioContext();
+                document.body.removeEventListener('touchstart', warmAudio);
+                document.body.removeEventListener('mousedown', warmAudio);
+            };
+            document.body.addEventListener('touchstart', warmAudio, { once: true, passive: false });
+            document.body.addEventListener('mousedown', warmAudio, { once: true });
+
+            window.addEventListener('load', () => {
+                setTimeout(loadSamples, 100);
+                setTimeout(loadDemoMidis, 200);
+            });
+
+            setTimeout(() => {
+                const stage = document.getElementById('pianoStage');
+                if (stage) {
+                    stage.scrollLeft = (stage.scrollWidth - stage.clientWidth) / 2;
+                }
+            }, 50);
+
+            console.log('88键延音直角钢琴已启动 | 缓存采样 | 延音踏板 | MIDI 播放器');
+        })();
+    </script>
+</body>
+</html>
