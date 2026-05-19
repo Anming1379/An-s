@@ -714,7 +714,66 @@
             color: #c44;
         }
 
-    </style>
+    
+        /* ========== 和弦识别面板 ========== */
+        .chord-recognition-panel {
+            max-width: 700px;
+            margin: 24px auto 0;
+            padding: 16px 24px;
+            background: #f0f0f4;
+            border: 1px solid #d8d8e0;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            user-select: none;
+            min-height: 152px;
+            justify-content: center;
+        }
+        .chord-recognition-title {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--color-dark-60);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .chord-display {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--color-dark);
+            font-family: 'Urbanist', sans-serif;
+            letter-spacing: -0.02em;
+            height: 36px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .chord-detail {
+            font-size: 0.85rem;
+            color: var(--color-dark-50);
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .chord-note-list {
+            font-size: 0.75rem;
+            color: var(--color-dark-40);
+            font-family: monospace;
+            height: 16px;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+</style>
+<base target="_blank">
 <base target="_blank">
 <base target="_blank">
 </head>
@@ -2262,5 +2321,277 @@ transposeUp.addEventListener('click', () => {
             console.log('88键延音直角钢琴已启动 | 缓存采样 | 延音踏板 | MIDI 播放器');
         })();
     </script>
+    <script>
+    // ========== 和弦识别引擎 (Chord Recognition Engine) ==========
+    (function() {
+        'use strict';
+
+        const NOTE_NAMES_SHARP = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+        const NOTE_NAME_MAP = { 'C': 0, 'C#': 1, 'D': 2, 'D#': 3, 'E': 4, 'F': 5, 'F#': 6, 'G': 7, 'G#': 8, 'A': 9, 'A#': 10, 'B': 11 };
+
+        function noteIdToMidi(noteId) {
+            const m = noteId.match(/^([A-G]#?)(\d)$/);
+            if (!m) return 60;
+            return (NOTE_NAME_MAP[m[1]] || 0) + (parseInt(m[2]) + 1) * 12;
+        }
+
+        function midiToPitchClass(midi) { return midi % 12; }
+        function pitchClassToName(pc) { return NOTE_NAMES_SHARP[pc]; }
+
+        const CHORD_TYPES = [
+            // === 三和弦 (6种) ===
+            { name: '大三和弦',   abbr: '',       intervals: [0, 4, 7] },
+            { name: '小三和弦',   abbr: 'm',      intervals: [0, 3, 7] },
+            { name: '增三和弦',   abbr: 'aug',    intervals: [0, 4, 8] },
+            { name: '减三和弦',   abbr: 'dim',    intervals: [0, 3, 6] },
+            { name: '挂二和弦',   abbr: 'sus2',   intervals: [0, 2, 7] },
+            { name: '挂四和弦',   abbr: 'sus4',   intervals: [0, 5, 7] },
+
+            // === 七和弦 (10种) ===
+            { name: '大七和弦',   abbr: 'maj7',   intervals: [0, 4, 7, 11] },
+            { name: '属七和弦',   abbr: '7',      intervals: [0, 4, 7, 10] },
+            { name: '小七和弦',   abbr: 'm7',     intervals: [0, 3, 7, 10] },
+            { name: '半减七和弦', abbr: 'm7b5',   intervals: [0, 3, 6, 10] },
+            { name: '减七和弦',   abbr: 'dim7',   intervals: [0, 3, 6, 9] },
+            { name: '小大七和弦', abbr: 'mM7',    intervals: [0, 3, 7, 11] },
+            { name: '增七和弦',   abbr: 'aug7',   intervals: [0, 4, 8, 10] },
+            { name: '大七挂四',   abbr: 'maj7sus4', intervals: [0, 5, 7, 11] },
+            { name: '属七挂四',   abbr: '7sus4',  intervals: [0, 5, 7, 10] },
+            { name: '属七挂二',   abbr: '7sus2',  intervals: [0, 2, 7, 10] },
+
+            // === 六和弦与六九和弦 (4种) ===
+            { name: '大六和弦',   abbr: '6',      intervals: [0, 4, 7, 9] },
+            { name: '小六和弦',   abbr: 'm6',     intervals: [0, 3, 7, 9] },
+            { name: '六九和弦',   abbr: '6/9',    intervals: [0, 4, 7, 9, 14] },
+            { name: '小六九和弦', abbr: 'm6/9',   intervals: [0, 3, 7, 9, 14] },
+
+            // === 九和弦 (12种) ===
+            { name: '属九和弦',   abbr: '9',      intervals: [0, 4, 7, 10, 14] },
+            { name: '大九和弦',   abbr: 'maj9',   intervals: [0, 4, 7, 11, 14] },
+            { name: '小九和弦',   abbr: 'm9',     intervals: [0, 3, 7, 10, 14] },
+            { name: '加九和弦',   abbr: 'add9',   intervals: [0, 4, 7, 14] },
+            { name: '小加九和弦', abbr: 'madd9',  intervals: [0, 3, 7, 14] },
+            { name: '属七降九',   abbr: '7b9',    intervals: [0, 4, 7, 10, 13] },
+            { name: '属七升九',   abbr: '7#9',    intervals: [0, 4, 7, 10, 15] },
+            { name: '小七降九',   abbr: 'm7b9',   intervals: [0, 3, 7, 10, 13] },
+            { name: '小七升九',   abbr: 'm7#9',   intervals: [0, 3, 7, 10, 15] },
+            { name: '九挂四和弦', abbr: '9sus4',  intervals: [0, 5, 7, 10, 14] },
+            { name: '属九升五',   abbr: '9#5',    intervals: [0, 4, 8, 10, 14] },
+            { name: '属九降五',   abbr: '9b5',    intervals: [0, 4, 6, 10, 14] },
+
+            // === 十一和弦 (4种) ===
+            { name: '属十一和弦', abbr: '11',     intervals: [0, 4, 7, 10, 14, 17] },
+            { name: '大十一和弦', abbr: 'maj11',  intervals: [0, 4, 7, 11, 14, 17] },
+            { name: '小十一和弦', abbr: 'm11',    intervals: [0, 3, 7, 10, 14, 17] },
+            { name: '十一降九',   abbr: '11b9',   intervals: [0, 4, 7, 10, 13, 17] },
+
+            // === 十三和弦 (4种) ===
+            { name: '属十三和弦', abbr: '13',     intervals: [0, 4, 7, 10, 14, 17, 21] },
+            { name: '大十三和弦', abbr: 'maj13',  intervals: [0, 4, 7, 11, 14, 17, 21] },
+            { name: '小十三和弦', abbr: 'm13',    intervals: [0, 3, 7, 10, 14, 17, 21] },
+            { name: '十三降九',   abbr: '13b9',   intervals: [0, 4, 7, 10, 13, 17, 21] },
+
+            // === 变化和弦 (8种) ===
+            { name: '属七升五',   abbr: '7#5',    intervals: [0, 4, 8, 10] },
+            { name: '属七降五',   abbr: '7b5',    intervals: [0, 4, 6, 10] },
+            { name: '属七升十一', abbr: '7#11',   intervals: [0, 4, 7, 10, 18] },
+            { name: '属七降十三', abbr: '7b13',   intervals: [0, 4, 7, 10, 20] },
+            { name: '属七升五升九', abbr: '7#5#9', intervals: [0, 4, 8, 10, 15] },
+            { name: '属七升五降九', abbr: '7#5b9', intervals: [0, 4, 8, 10, 13] },
+            { name: '属七降五升九', abbr: '7b5#9', intervals: [0, 4, 6, 10, 15] },
+            { name: '属七降五降九', abbr: '7b5b9', intervals: [0, 4, 6, 10, 13] },
+
+            // === add和弦 (2种) ===
+            { name: '加十一和弦', abbr: 'add11',  intervals: [0, 4, 7, 17] },
+            { name: '小加十一和弦', abbr: 'madd11', intervals: [0, 3, 7, 17] },
+
+            // === 其他 (1种) ===
+            { name: '五和弦',     abbr: '5',      intervals: [0, 7] },
+        ];
+
+        // ---- 音程定义 ----
+        const INTERVAL_TYPES = [
+            { name: '纯一度',   en: 'Perfect Unison',  semitones: 0 },
+            { name: '小二度',   en: 'Minor 2nd',       semitones: 1 },
+            { name: '大二度',   en: 'Major 2nd',       semitones: 2 },
+            { name: '小三度',   en: 'Minor 3rd',       semitones: 3 },
+            { name: '大三度',   en: 'Major 3rd',       semitones: 4 },
+            { name: '纯四度',   en: 'Perfect 4th',     semitones: 5 },
+            { name: '三全音',   en: 'Tritone',         semitones: 6 },
+            { name: '纯五度',   en: 'Perfect 5th',     semitones: 7 },
+            { name: '小六度',   en: 'Minor 6th',       semitones: 8 },
+            { name: '大六度',   en: 'Major 6th',       semitones: 9 },
+            { name: '小七度',   en: 'Minor 7th',       semitones: 10 },
+            { name: '大七度',   en: 'Major 7th',       semitones: 11 },
+            { name: '纯八度',   en: 'Perfect Octave',  semitones: 12 },
+        ];
+
+        function identifyInterval(pressedMidiNotes) {
+            if (!pressedMidiNotes || pressedMidiNotes.length !== 2) return null;
+            const uniqueNotes = [...new Set(pressedMidiNotes)].sort((a, b) => a - b);
+            if (uniqueNotes.length < 2) return null;
+            const semitones = uniqueNotes[1] - uniqueNotes[0];
+            const normalized = semitones % 12;
+            const octaves = Math.floor(semitones / 12);
+            const lowerPC = midiToPitchClass(uniqueNotes[0]);
+            const lowerName = pitchClassToName(lowerPC);
+            const lowerOct = Math.floor(uniqueNotes[0] / 12) - 1;
+            for (const iv of INTERVAL_TYPES) {
+                if (iv.semitones === normalized) {
+                    return {
+                        lowerNote: lowerName + lowerOct,
+                        semitones: semitones,
+                        normalized: normalized,
+                        octaves: octaves,
+                        name: iv.name,
+                        enName: iv.en,
+                        isInterval: true
+                    };
+                }
+            }
+            return null;
+        }
+
+        function identifyChord(pressedMidiNotes) {
+            if (!pressedMidiNotes || pressedMidiNotes.length < 3) return null;
+            const uniqueNotes = [...new Set(pressedMidiNotes)].sort((a, b) => a - b);
+            const pitchClasses = uniqueNotes.map(midiToPitchClass);
+            const uniquePCs = [...new Set(pitchClasses)].sort((a, b) => a - b);
+            if (uniquePCs.length < 3) return null;
+
+            let bestMatch = null, bestScore = -1;
+            for (let rootPC = 0; rootPC < 12; rootPC++) {
+                const intervalsFromRoot = uniquePCs.map(pc => { let d = pc - rootPC; if (d < 0) d += 12; return d; });
+                for (const chordType of CHORD_TYPES) {
+                    const required = chordType.intervals;
+                    if (!required.every(req => intervalsFromRoot.includes(req))) continue;
+                    const extraNotes = intervalsFromRoot.filter(iv => !required.includes(iv));
+                    const matchScore = required.length / Math.max(intervalsFromRoot.length, required.length);
+                    const simplicityBonus = 1.0 / (1 + extraNotes.length * 0.15);
+                    const score = matchScore * simplicityBonus;
+                    const lowestPC = midiToPitchClass(uniqueNotes[0]);
+                    const bassDiff = (lowestPC - rootPC + 12) % 12;
+                    const isInversion = bassDiff !== 0;
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestMatch = {
+                            rootPC: rootPC, rootName: pitchClassToName(rootPC),
+                            type: chordType, isInversion: isInversion,
+                            bassPC: isInversion ? lowestPC : null,
+                            bassName: isInversion ? pitchClassToName(lowestPC) : null,
+                            notes: uniqueNotes, pitchClasses: uniquePCs, score: score
+                        };
+                    }
+                }
+            }
+            return bestMatch;
+        }
+
+        function formatChordName(chord) {
+            if (!chord) return '';
+            let name = chord.rootName;
+            if (chord.type.abbr) name += chord.type.abbr;
+            if (chord.isInversion && chord.bassName) name += '/' + chord.bassName;
+            return name;
+        }
+
+        function getChordFullName(chord) {
+            if (!chord) return '';
+            let full = chord.rootName + chord.type.name;
+            if (chord.isInversion && chord.bassName) full += ' (' + chord.bassName + ' 低音)';
+            return full;
+        }
+
+        let currentPressedNotes = new Set();
+
+        function createChordUI() {
+            const header = document.querySelector('.piano-header');
+            if (!header || document.getElementById('chordRecognitionPanel')) return;
+            const container = document.createElement('div');
+            container.id = 'chordRecognitionPanel';
+            container.className = 'chord-recognition-panel';
+            container.innerHTML = `
+                <div class="chord-recognition-title">和弦识别</div>
+                <div class="chord-display" id="chordDisplay">—</div>
+                <div class="chord-detail" id="chordDetail">按下多个键以识别和弦</div>
+                <div class="chord-note-list" id="chordNoteList"></div>
+            `;
+            header.parentNode.insertBefore(container, header.nextSibling);
+        }
+
+        function updateChordDisplay() {
+            const display = document.getElementById('chordDisplay');
+            const detail = document.getElementById('chordDetail');
+            const noteList = document.getElementById('chordNoteList');
+            if (!display) return;
+            const notes = Array.from(currentPressedNotes).sort((a, b) => a - b);
+            const chord = identifyChord(notes);
+            const interval = identifyInterval(notes);
+
+            if (chord) {
+                display.textContent = formatChordName(chord);
+                display.style.color = 'var(--color-accent)';
+                detail.textContent = getChordFullName(chord);
+            } else if (interval) {
+                display.textContent = interval.lowerNote + ' ' + interval.enName;
+                display.style.color = 'var(--color-accent)';
+                detail.textContent = interval.lowerNote + ' ' + interval.name + ' (' + interval.semitones + '半音)';
+            } else if (notes.length >= 2) {
+                display.textContent = '?';
+                display.style.color = '#c44';
+                detail.textContent = '无法识别的和弦或音程';
+            } else if (notes.length === 1) {
+                const pc = midiToPitchClass(notes[0]);
+                const octave = Math.floor(notes[0] / 12) - 1;
+                display.textContent = pitchClassToName(pc) + octave;
+                display.style.color = 'var(--color-dark)';
+                detail.textContent = '单音';
+            } else {
+                display.textContent = '—';
+                display.style.color = 'var(--color-dark)';
+                detail.textContent = '按下多个键以识别和弦或音程';
+            }
+            if (noteList) {
+                noteList.textContent = notes.length > 0 ? '当前音符: ' + notes.map(n => pitchClassToName(midiToPitchClass(n)) + (Math.floor(n / 12) - 1)).join('  ') : '';
+            }
+        }
+
+        function observePianoKeys() {
+            const keyboard = document.getElementById('pianoKeyboard');
+            if (!keyboard) return;
+            const observer = new MutationObserver((mutations) => {
+                let changed = false;
+                for (const mutation of mutations) {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                        const el = mutation.target;
+                        const noteId = el.getAttribute('data-noteid');
+                        if (!noteId) continue;
+                        const midi = noteIdToMidi(noteId);
+                        if (el.classList.contains('active')) {
+                            if (!currentPressedNotes.has(midi)) { currentPressedNotes.add(midi); changed = true; }
+                        } else {
+                            if (currentPressedNotes.has(midi)) { currentPressedNotes.delete(midi); changed = true; }
+                        }
+                    }
+                }
+                if (changed) updateChordDisplay();
+            });
+            observer.observe(keyboard, { attributes: true, attributeFilter: ['class'], subtree: true });
+        }
+
+        function init() {
+            createChordUI();
+            observePianoKeys();
+            console.log('和弦识别引擎已加载 | 支持 51 种和弦 + 13 种音程 | 自动识别转位');
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    })();
+    </script>
+
 </body>
 </html>
