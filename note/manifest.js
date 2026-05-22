@@ -1,11 +1,11 @@
 // 自动生成的笔记清单 - 智能排序版 (依据[数字]前缀层级排序)
 window.__NOTE_MANIFEST__ = {
   "version": "1.0",
-  "generated": "2026-05-19T15:15:17.066Z",
+  "generated": "2026-05-22T11:19:22.196Z",
   "files": [
     {
       "path": "关于网站/这是什么.txt",
-      "content": "# 这是什么\r\n\r\n这是我的笔记本哦! 我把一些自己写的, 乱七八糟的东西放在这里. 点左上角的菜单就可以开始看啦! 或者, 你也可以点下面的链接\r\n\r\n[Truth World](https://anmingcat.pages.dev/note?note=%E4%B8%96%E7%95%8C%E8%A7%82%26OC%2FTruth%20World.txt)\r\n\r\n(这个网站是 AI 协助我写的, 我只负责设计, 调整和发布)\r\n\r\n---\r\n\r\n# 关于网站\r\n\r\n[404页面](https://anmingcat.pages.dev/404.html)\r\n\r\n[build页面](https://anmingcat.pages.dev/pages/build.html)\r\n"
+      "content": "# 这是什么\r\n\r\n这是我的笔记本哦! 我把一些自己写的, 乱七八糟的东西放在这里. 点左上角的菜单就可以开始看啦! 或者, 你也可以点下面的链接\r\n\r\n{Truth World}(世界观&OC/Truth World.txt)\r\n\r\n(这个网站是 AI 协助我写的, 我只负责设计, 调整和发布)\r\n\r\n---\r\n\r\n# 关于网站\r\n\r\n[404页面](https://anmingcat.pages.dev/404.html)\r\n\r\n[build页面](https://anmingcat.pages.dev/pages/build.html)\r\n"
     },
     {
       "path": "一些可能有用的笔记/整理的网站.txt",

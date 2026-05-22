@@ -272,6 +272,35 @@
             flex-wrap: wrap;
             justify-content: center;
         }
+        @media (max-width: 640px) {
+            .midi-controls {
+                gap: 8px;
+            }
+            .midi-controls .midi-file-label {
+                width: 100%;
+                justify-content: center;
+                padding: 10px 16px;
+            }
+            .midi-controls .midi-file-name {
+                width: 100%;
+                max-width: none;
+                text-align: center;
+                order: -1;
+                font-size: 0.8rem;
+            }
+            .midi-controls .midi-btn {
+                flex: 1;
+                justify-content: center;
+                min-width: 0;
+                padding: 8px 10px;
+                font-size: 0.8rem;
+            }
+            .midi-controls .midi-transpose {
+                width: 100%;
+                justify-content: center;
+                padding-top: 4px;
+            }
+        }
         .midi-btn {
             padding: 8px 16px;
             background: var(--color-dark);
@@ -287,6 +316,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            min-width: 0;
         }
         .midi-btn:hover {
             background: var(--color-accent);
@@ -315,6 +345,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            min-width: 0;
         }
         .midi-file-label:hover {
             border-color: var(--color-accent);
@@ -328,6 +359,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            min-width: 0;
         }
         .midi-progress-area {
             display: flex;
@@ -362,6 +394,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            min-width: 0;
         }
         .midi-transpose-label {
             font-size: 0.8rem;
@@ -772,15 +805,123 @@
             align-items: center;
             justify-content: center;
         }
+
+        /* ========== 音色选择面板 ========== */
+        .soundset-panel {
+            max-width: 700px;
+            margin: 20px auto 0;
+            padding: 20px 28px;
+            background: #f0f0f4;
+            border: 1px solid #d8d8e0;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .soundset-title {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--color-dark-60);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            text-align: center;
+        }
+        .soundset-list {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        @media (max-width: 640px) {
+            .soundset-list {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+        }
+        .soundset-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 14px 18px;
+            min-width: 130px;
+            background: var(--color-white);
+            border: 1px solid var(--color-dark-12);
+            cursor: pointer;
+            transition: all 0.15s;
+            user-select: none;
+            position: relative;
+        }
+        @media (max-width: 640px) {
+            .soundset-card {
+                width: 100%;
+                min-width: 0;
+                padding: 12px 16px;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                gap: 8px;
+            }
+            .soundset-card .soundset-name {
+                font-size: 0.95rem;
+            }
+            .soundset-card .soundset-desc {
+                font-size: 0.75rem;
+                text-align: right;
+            }
+        }
+        .soundset-card:hover {
+            border-color: var(--color-accent);
+        }
+        .soundset-card .soundset-name {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--color-dark);
+            letter-spacing: 0.02em;
+        }
+        .soundset-card .soundset-desc {
+            font-size: 0.75rem;
+            color: var(--color-dark-50);
+        }
+        .soundset-card.active {
+            background: var(--color-accent);
+            border-color: var(--color-accent);
+        }
+        .soundset-card.active .soundset-name,
+        .soundset-card.active .soundset-desc {
+            color: var(--color-white);
+        }
+        .soundset-card.cached {
+            background: var(--color-white);
+            border-color: var(--color-dark-12);
+        }
+        .soundset-card:not(.cached):not(.active) {
+            background: #e8e8ec;
+            border-color: #d8d8e0;
+            cursor: default;
+        }
+        .soundset-card:not(.cached):not(.active) .soundset-name,
+        .soundset-card:not(.cached):not(.active) .soundset-desc {
+            color: #a0a0b0;
+        }
+        .soundset-card.loading {
+            opacity: 0.7;
+            cursor: wait;
+        }
+        .soundset-card.loading::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0.4);
+        }
 </style>
-<base target="_blank">
-<base target="_blank">
-<base target="_blank">
+
 </head>
 <body>
     <header class="navbar" id="navbar">
         <div class="navbar-inner">
-            <a href="../index.html" class="navbar-brand brand-top-arrow" title="回到首页">
+            <a href="#" class="navbar-brand brand-top-arrow" title="回到首页">
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor" class="custom-arrow-svg">
                     <path d="M704-240 320-624v344h-80v-480h480v80H376l384 384-56 56Z" />
                 </svg>
@@ -806,12 +947,16 @@
 
             <div class="load-status" id="loadStatus">正在加载采样...</div>
 
+            <!-- 音色选择面板 -->
+            <div class="soundset-panel" id="soundsetPanel">
+                <div class="soundset-title">音色选择</div>
+                <div class="soundset-list" id="soundsetList"></div>
+            </div>
+
             <div class="piano-stage" id="pianoStage">
                 <div class="piano-keyboard" id="pianoKeyboard"></div>
             </div>
 
-            <!-- MIDI 播放器 -->
-            
             <!-- Anming_cat 精选集 -->
             <div class="demo-midi-panel" id="demoMidiPanel">
                 <div class="demo-midi-title">Anming_cat 精选集</div>
@@ -924,8 +1069,7 @@
         <p>© 2026 Anming_cat</p>
     </footer>
 
-    <script src="../script.js"></script>
-
+    
     <script>
         (function() {
             // ========== 音频引擎 ==========
@@ -947,7 +1091,7 @@
 
             function noteToMidi(noteId) {
                 const map = { 'C': 0, 'C#': 1, 'D': 2, 'D#': 3, 'E': 4, 'F': 5, 'F#': 6, 'G': 7, 'G#': 8, 'A': 9, 'A#': 10, 'B': 11 };
-                const m = noteId.match(/^([A-G]#?)(\d)$/);
+                const m = noteId.match(/^([A-G]#?)(-?\d+)$/);
                 if (!m) return 60;
                 return map[m[1]] + (parseInt(m[2]) + 1) * 12;
             }
@@ -1041,10 +1185,19 @@
                 return ctx;
             }
 
+            // ========== 音色配置 ==========
+            const SOUNDSETS = [
+                { id: 'Splendid', name: 'Splendid', file: '../assets/Splendid.zip', key: 'pianoZipBuffer', desc: 'AKAI Professional' },
+                { id: 'Salamander', name: 'Salamander', file: '../assets/Salamander.zip', key: 'pianoZipBuffer_Salamander', desc: 'Alexander Holm' },
+                { id: 'Headroom', name: 'Headroom', file: '../assets/Headroom.zip', key: 'pianoZipBuffer_Headroom', desc: 'Bengt Nilsson' }
+            ];
+            let currentSoundsetId = 'Splendid';
+            let isSwitchingSoundset = false;
+
             // ========== IndexedDB 缓存 ==========
             const DB_NAME = 'PianoCache_v1';
             const STORE_NAME = 'zipData';
-            const ZIP_KEY = 'pianoZipBuffer';
+            const SELECTED_SOUND_KEY = 'selectedSoundset';
 
             function openCacheDB() {
                 return new Promise((resolve, reject) => {
@@ -1060,13 +1213,13 @@
                 });
             }
 
-            async function getCachedZipBuffer() {
+            async function getCache(key) {
                 try {
                     const db = await openCacheDB();
                     return new Promise((resolve, reject) => {
                         const tx = db.transaction(STORE_NAME, 'readonly');
                         const store = tx.objectStore(STORE_NAME);
-                        const req = store.get(ZIP_KEY);
+                        const req = store.get(key);
                         req.onsuccess = () => resolve(req.result || null);
                         req.onerror = () => reject(req.error);
                     });
@@ -1075,13 +1228,13 @@
                 }
             }
 
-            async function saveZipBuffer(arrayBuffer) {
+            async function saveCache(key, value) {
                 try {
                     const db = await openCacheDB();
                     return new Promise((resolve, reject) => {
                         const tx = db.transaction(STORE_NAME, 'readwrite');
                         const store = tx.objectStore(STORE_NAME);
-                        const req = store.put(arrayBuffer, ZIP_KEY);
+                        const req = store.put(value, key);
                         req.onsuccess = () => resolve();
                         req.onerror = () => reject(req.error);
                     });
@@ -1090,60 +1243,75 @@
                 }
             }
 
+            async function getSelectedSound() {
+                return await getCache(SELECTED_SOUND_KEY);
+            }
+
+            async function saveSelectedSound(id) {
+                await saveCache(SELECTED_SOUND_KEY, id);
+            }
+
             // ========== ZIP 加载与采样解析 ==========
-            async function loadSamples() {
+            async function loadSoundset(soundsetId, useCache = true) {
+                const soundset = SOUNDSETS.find(s => s.id === soundsetId);
+                if (!soundset) return false;
+
                 const status = document.getElementById('loadStatus');
                 status.className = 'load-status loading';
-                status.textContent = '正在加载采样...';
+                status.textContent = '正在加载 ' + soundset.name + '...';
 
                 try {
                     if (typeof JSZip === 'undefined') {
                         await new Promise((resolve, reject) => {
                             const script = document.createElement('script');
-                            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+                            script.src = '../assets/jszip.min.js';
                             script.onload = resolve;
                             script.onerror = () => reject(new Error('无法加载 JSZip'));
                             document.head.appendChild(script);
                         });
                     }
 
-                    let arrayBuffer = await getCachedZipBuffer();
+                    let arrayBuffer = null;
                     let fromCache = false;
+
+                    if (useCache) {
+                        arrayBuffer = await getCache(soundset.key);
+                    }
 
                     if (arrayBuffer) {
                         fromCache = true;
-                        status.textContent = '正在解析缓存的采样...';
+                        status.textContent = '正在解析 ' + soundset.name + '...';
                     } else {
-                        status.textContent = '正在下载 Piano.zip...';
-                        const response = await fetch('../assets/Piano.zip');
+                        status.textContent = '正在下载 ' + soundset.name + '...';
+                        const response = await fetch(soundset.file + '?v=' + Date.now());
                         if (!response.ok) {
-                            throw new Error('找不到 Piano.zip (HTTP ' + response.status + ')');
+                            throw new Error('找不到音色 (HTTP ' + response.status + ')');
                         }
                         arrayBuffer = await response.arrayBuffer();
-                        await saveZipBuffer(arrayBuffer);
+                        await saveCache(soundset.key, arrayBuffer);
                     }
 
                     const zip = await JSZip.loadAsync(arrayBuffer);
-
                     const ctx = getAudioContext();
                     const loadedSamples = [];
-                    const notePattern = /([A-G]#?)(\d)\.mp3$/i;
+                    const newSampleCache = new Map();
+                    const notePattern = /([A-G]#?)(-?\d+)\.(m4a|mp3|wav|ogg|aac)$/i;
 
                     for (const [filename, file] of Object.entries(zip.files)) {
                         if (file.dir) continue;
-                        const match = filename.match(notePattern);
+                        const simpleFileName = filename.split('/').pop();
+                        const match = simpleFileName.match(notePattern);
                         if (!match) continue;
 
                         const noteName = match[1].toUpperCase();
                         const octave = parseInt(match[2]);
                         const noteId = noteName + octave;
-                        const sourceMidi = noteToMidi(noteId) + 12; // 修正采样命名八度偏移 (Yamaha/Scientific 标准差异)
+                        const sourceMidi = noteToMidi(noteId);
 
                         try {
-                            const mp3Data = await file.async('arraybuffer');
-                            const audioBuffer = await ctx.decodeAudioData(mp3Data);
-
-                            sampleCache.set(noteId, {
+                            const audioData = await file.async('arraybuffer');
+                            const audioBuffer = await ctx.decodeAudioData(audioData);
+                            newSampleCache.set(noteId, {
                                 buffer: audioBuffer,
                                 sourceMidi: sourceMidi
                             });
@@ -1153,22 +1321,27 @@
                         }
                     }
 
-                    assignNearestSamples();
-
                     if (loadedSamples.length === 0) {
                         status.className = 'load-status error';
-                        status.textContent = 'Piano.zip 中没有找到有效的 MP3 采样';
-                    } else {
-                        status.className = 'load-status success';
-                        status.textContent = fromCache
-                            ? '已从缓存加载 ' + loadedSamples.length + ' 个采样'
-                            : '已下载并缓存 ' + loadedSamples.length + ' 个采样';
+                        status.textContent = soundset.name + ' 中没有找到有效采样';
+                        return false;
                     }
+
+                    sampleCache.clear();
+                    for (const [k, v] of newSampleCache) {
+                        sampleCache.set(k, v);
+                    }
+                    assignNearestSamples();
+
+                    status.className = 'load-status success';
+                    status.textContent = (fromCache ? '已从缓存加载 ' : '已下载并缓存 ') + loadedSamples.length + ' 个采样 [' + soundset.name + ']';
+                    return true;
 
                 } catch(err) {
                     status.className = 'load-status error';
-                    status.textContent = '加载失败: ' + err.message;
+                    status.textContent = soundset.name + ' 加载失败: ' + err.message;
                     console.error(err);
+                    return false;
                 }
             }
 
@@ -1418,6 +1591,108 @@
                 sustainedNotes.clear();
             }
 
+            // ========== 音色选择 UI ==========
+            function buildSoundsetUI() {
+                const list = document.getElementById('soundsetList');
+                if (!list) return;
+                list.innerHTML = '';
+
+                SOUNDSETS.forEach(soundset => {
+                    const card = document.createElement('div');
+                    card.className = 'soundset-card';
+                    card.dataset.id = soundset.id;
+
+                    const name = document.createElement('div');
+                    name.className = 'soundset-name';
+                    name.textContent = soundset.name;
+
+                    const desc = document.createElement('div');
+                    desc.className = 'soundset-desc';
+                    desc.textContent = soundset.desc;
+
+                    card.appendChild(name);
+                    card.appendChild(desc);
+
+                    card.addEventListener('click', () => onSoundsetClick(soundset.id));
+                    list.appendChild(card);
+                });
+            }
+
+            async function updateSoundsetUI() {
+                const cards = document.querySelectorAll('.soundset-card');
+                for (const card of cards) {
+                    const id = card.dataset.id;
+                    const isActive = id === currentSoundsetId;
+                    const cached = await getCache(SOUNDSETS.find(s => s.id === id).key);
+
+                    card.classList.toggle('active', isActive);
+                    card.classList.toggle('cached', !!cached && !isActive);
+                }
+            }
+
+            async function onSoundsetClick(id) {
+                if (isSwitchingSoundset) return;
+                if (id === currentSoundsetId) return;
+                await switchSoundset(id);
+            }
+
+            async function switchSoundset(id) {
+                if (isSwitchingSoundset) return;
+                if (id === currentSoundsetId) return;
+                const target = SOUNDSETS.find(s => s.id === id);
+                if (!target) return;
+
+                isSwitchingSoundset = true;
+                const card = document.querySelector('.soundset-card[data-id="' + id + '"]');
+                if (card) card.classList.add('loading');
+
+                try {
+                    allNotesOff();
+                    midiStop();
+
+                    const success = await loadSoundset(id, true);
+                    if (success) {
+                        currentSoundsetId = id;
+                        await saveSelectedSound(id);
+                    }
+                } finally {
+                    isSwitchingSoundset = false;
+                    if (card) card.classList.remove('loading');
+                    updateSoundsetUI();
+                }
+            }
+
+            async function initSoundsets() {
+                buildSoundsetUI();
+
+                const saved = await getSelectedSound();
+                let targetId = saved;
+
+                if (targetId) {
+                    const soundset = SOUNDSETS.find(s => s.id === targetId);
+                    if (!soundset) {
+                        targetId = null;
+                    } else {
+                        const hasCache = await getCache(soundset.key);
+                        if (!hasCache) targetId = null;
+                    }
+                }
+
+                if (!targetId) targetId = 'Splendid';
+                currentSoundsetId = targetId;
+
+                const target = SOUNDSETS.find(s => s.id === targetId);
+                const hasCache = await getCache(target.key);
+
+                if (hasCache) {
+                    await loadSoundset(targetId, true);
+                } else {
+                    await loadSoundset(targetId, false);
+                }
+                await saveSelectedSound(targetId);
+                updateSoundsetUI();
+            }
+
             // ========== 钢琴 UI ==========
             const keyboard = document.getElementById('pianoKeyboard');
             const keyToElementMap = new Map();
@@ -1624,7 +1899,6 @@
                 const graphW = w - pad * 2;
                 const graphH = h - pad * 2;
 
-                // 包络预览中 release 缩放为 0-3 秒范围显示，避免太长压缩前面
                 const previewRelease = Math.min(adsr.release, 3.0);
                 const total = adsr.attack + adsr.decay + 0.5 + previewRelease;
                 const aX = pad + (adsr.attack / total) * graphW;
@@ -1731,7 +2005,6 @@
                     return value;
                 }
 
-                // MThd
                 if (readUint32() !== 0x4D546864) return null;
                 const headerLen = readUint32();
                 const format = readUint16();
@@ -1810,7 +2083,6 @@
                     tracks.push(trackEvents);
                 }
 
-                // 合并所有轨道事件并按时间排序
                 const allEvents = [];
                 for (const track of tracks) {
                     for (const ev of track) {
@@ -1819,8 +2091,7 @@
                 }
                 allEvents.sort((a, b) => a.time - b.time);
 
-                // 将 tick 转换为绝对秒数，正确解析 MIDI 文件中的速度变化
-                let currentTempo = 500000; // 默认 120 BPM
+                let currentTempo = 500000;
                 let lastTick = 0;
                 let lastTime = 0;
                 let tempoIdx = 0;
@@ -1851,26 +2122,26 @@
                 return m + ':' + (s < 10 ? '0' : '') + s;
             }
 
-async function midiPlay() {
-    if (!midiData) return;
-    if (midiIsPaused) {
-        midiIsPaused = false;
-        midiIsPlaying = true;
-        midiPlaybackStartTime = getAudioContext().currentTime - midiPausedAt;
-        midiScheduleEvents();
-        updateMidiStatus('正在播放');
-        return;
-    }
+            async function midiPlay() {
+                if (!midiData) return;
+                if (midiIsPaused) {
+                    midiIsPaused = false;
+                    midiIsPlaying = true;
+                    midiPlaybackStartTime = getAudioContext().currentTime - midiPausedAt;
+                    midiScheduleEvents();
+                    updateMidiStatus('正在播放');
+                    return;
+                }
 
-    await resumeAudioContext();
-    midiIsPlaying = true;
-    midiIsPaused = false;
-    midiPausedAt = 0;
-    midiEventIndex = 0;   // ← 新增：从头开始
-    midiPlaybackStartTime = getAudioContext().currentTime;
-    midiScheduleEvents();
-    updateMidiStatus('正在播放');
-}
+                await resumeAudioContext();
+                midiIsPlaying = true;
+                midiIsPaused = false;
+                midiPausedAt = 0;
+                midiEventIndex = 0;
+                midiPlaybackStartTime = getAudioContext().currentTime;
+                midiScheduleEvents();
+                updateMidiStatus('正在播放');
+            }
 
             function midiPause() {
                 if (!midiIsPlaying) return;
@@ -1878,7 +2149,6 @@ async function midiPlay() {
                 midiIsPlaying = false;
                 midiPausedAt = getAudioContext().currentTime - midiPlaybackStartTime;
 
-                // 停止所有正在播放的 MIDI 音符
                 for (const noteId of midiPlayingNotes) {
                     const el = activeElements.get(noteId);
                     if (el) {
@@ -1905,12 +2175,11 @@ async function midiPlay() {
                 updateMidiStatus('已暂停');
             }
 
-function midiStop() {
-    midiIsPlaying = false;
-    midiIsPaused = false;
-    midiPausedAt = 0;
-    midiEventIndex = 0;   // ← 新增：重置索引
-    // 后面保留原代码不动...
+            function midiStop() {
+                midiIsPlaying = false;
+                midiIsPaused = false;
+                midiPausedAt = 0;
+                midiEventIndex = 0;
 
                 for (const noteId of midiPlayingNotes) {
                     const el = activeElements.get(noteId);
@@ -1932,59 +2201,57 @@ function midiStop() {
                 updateMidiStatus('已停止');
             }
 
-function midiScheduleEvents() {
-    if (!midiIsPlaying) return;
+            function midiScheduleEvents() {
+                if (!midiIsPlaying) return;
 
-    const ctx = getAudioContext();
-    const currentTime = ctx.currentTime - midiPlaybackStartTime;
+                const ctx = getAudioContext();
+                const currentTime = ctx.currentTime - midiPlaybackStartTime;
 
-    // 顺序处理所有已到时间的事件，每个事件只处理一次
-    while (midiEventIndex < midiData.events.length) {
-        const ev = midiData.events[midiEventIndex];
-        const eventTime = ev.seconds; // 已预计算为绝对秒数
+                while (midiEventIndex < midiData.events.length) {
+                    const ev = midiData.events[midiEventIndex];
+                    const eventTime = ev.seconds;
 
-        // 给 50ms 提前量，防止跳帧漏音，但每个事件只进一次
-        if (eventTime > currentTime + 0.05) break;
+                    if (eventTime > currentTime + 0.05) break;
 
-        if (ev.type === 'noteOn' || ev.type === 'noteOff') {
-            const noteId = midiToNoteId(Math.max(0, Math.min(127, ev.note + midiTranspose)));
-            const freq = getFreq(Math.max(0, Math.min(127, ev.note + midiTranspose)));
+                    if (ev.type === 'noteOn' || ev.type === 'noteOff') {
+                        const noteId = midiToNoteId(Math.max(0, Math.min(127, ev.note + midiTranspose)));
+                        const freq = getFreq(Math.max(0, Math.min(127, ev.note + midiTranspose)));
 
-            if (ev.type === 'noteOn') {
-                if (!midiPlayingNotes.has(noteId)) {
-                    noteOn(noteId, freq);
-                    const el = findElementByNoteId(noteId);
-                    if (el) {
-                        el.classList.add('active');
-                        activeElements.set(noteId, el);
+                        if (ev.type === 'noteOn') {
+                            if (!midiPlayingNotes.has(noteId)) {
+                                noteOn(noteId, freq);
+                                const el = findElementByNoteId(noteId);
+                                if (el) {
+                                    el.classList.add('active');
+                                    activeElements.set(noteId, el);
+                                }
+                                midiPlayingNotes.add(noteId);
+                            }
+                        } else if (ev.type === 'noteOff') {
+                            if (midiPlayingNotes.has(noteId)) {
+                                noteOff(noteId, false);
+                                midiPlayingNotes.delete(noteId);
+                            }
+                        }
+                    } else if (ev.type === 'sustain') {
+                        setSustainPedal(ev.value);
                     }
-                    midiPlayingNotes.add(noteId);
+
+                    midiEventIndex++;
                 }
-            } else if (ev.type === 'noteOff') {
-                if (midiPlayingNotes.has(noteId)) {
-                    noteOff(noteId, false);
-                    midiPlayingNotes.delete(noteId);
+
+                const progress = Math.min(currentTime / midiDuration, 1);
+                document.getElementById('midiProgressFill').style.width = (progress * 100) + '%';
+                document.getElementById('midiTime').textContent = formatTime(currentTime) + ' / ' + formatTime(midiDuration);
+
+                if (currentTime >= midiDuration) {
+                    midiStop();
+                    updateMidiStatus('播放完成');
+                    return;
                 }
+
+                midiPlaybackRaf = requestAnimationFrame(midiScheduleEvents);
             }
-        } else if (ev.type === 'sustain') {
-            setSustainPedal(ev.value);
-        }
-
-        midiEventIndex++;
-    }
-
-    const progress = Math.min(currentTime / midiDuration, 1);
-    document.getElementById('midiProgressFill').style.width = (progress * 100) + '%';
-    document.getElementById('midiTime').textContent = formatTime(currentTime) + ' / ' + formatTime(midiDuration);
-
-    if (currentTime >= midiDuration) {
-        midiStop();
-        updateMidiStatus('播放完成');
-        return;
-    }
-
-    midiPlaybackRaf = requestAnimationFrame(midiScheduleEvents);
-}
 
             function findElementByNoteId(noteId) {
                 const allKeys = document.querySelectorAll('.piano-key');
@@ -2027,7 +2294,7 @@ function midiScheduleEvents() {
 
                     midiDuration = midiData.duration;
                     midiTranspose = 0;
-                    midiEventIndex = 0;   // ← 新增：新文件从头来
+                    midiEventIndex = 0;
                     transposeValue.textContent = '0';
                     document.getElementById('midiTime').textContent = '0:00 / ' + formatTime(midiDuration);
 
@@ -2041,65 +2308,62 @@ function midiScheduleEvents() {
                 pauseBtn.addEventListener('click', midiPause);
                 stopBtn.addEventListener('click', midiStop);
 
-progressBar.addEventListener('click', (e) => {
-    if (!midiData) return;
-    const rect = progressBar.getBoundingClientRect();
-    const pct = (e.clientX - rect.left) / rect.width;
-    const seekTime = pct * midiDuration;
+                progressBar.addEventListener('click', (e) => {
+                    if (!midiData) return;
+                    const rect = progressBar.getBoundingClientRect();
+                    const pct = (e.clientX - rect.left) / rect.width;
+                    const seekTime = pct * midiDuration;
 
-    if (midiIsPlaying || midiIsPaused) {
-        // 强制释放当前所有 MIDI 音符，避免 seek 后残留
-        for (const noteId of midiPlayingNotes) {
-            const el = activeElements.get(noteId);
-            if (el) {
-                el.classList.remove('active');
-                activeElements.delete(noteId);
+                    if (midiIsPlaying || midiIsPaused) {
+                        for (const noteId of midiPlayingNotes) {
+                            const el = activeElements.get(noteId);
+                            if (el) {
+                                el.classList.remove('active');
+                                activeElements.delete(noteId);
+                            }
+                            const voice = activeVoices.get(noteId);
+                            if (voice) {
+                                try {
+                                    const now = getAudioContext().currentTime;
+                                    voice.gain.gain.cancelScheduledValues(now);
+                                    voice.gain.gain.setValueAtTime(voice.gain.gain.value, now);
+                                    voice.gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
+                                    voice.source.stop(now + 0.06);
+                                } catch(e) {}
+                                activeVoices.delete(noteId);
+                            }
+                        }
+                        midiPlayingNotes.clear();
+
+                        midiPausedAt = seekTime;
+                        if (midiIsPlaying) {
+                            midiPlaybackStartTime = getAudioContext().currentTime - midiPausedAt;
+                        }
+
+                        midiEventIndex = 0;
+                        for (let i = 0; i < midiData.events.length; i++) {
+                            if (midiData.events[i].seconds > seekTime) {
+                                midiEventIndex = i;
+                                break;
+                            }
+                            midiEventIndex = i + 1;
+                        }
+
+                        document.getElementById('midiProgressFill').style.width = (pct * 100) + '%';
+                        document.getElementById('midiTime').textContent = formatTime(seekTime) + ' / ' + formatTime(midiDuration);
+                    }
+                });
+
+                transposeDown.addEventListener('click', () => {
+                    midiTranspose -= 1;
+                    transposeValue.textContent = midiTranspose;
+                });
+
+                transposeUp.addEventListener('click', () => {
+                    midiTranspose += 1;
+                    transposeValue.textContent = midiTranspose;
+                });
             }
-            const voice = activeVoices.get(noteId);
-            if (voice) {
-                try {
-                    const now = getAudioContext().currentTime;
-                    voice.gain.gain.cancelScheduledValues(now);
-                    voice.gain.gain.setValueAtTime(voice.gain.gain.value, now);
-                    voice.gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
-                    voice.source.stop(now + 0.06);
-                } catch(e) {}
-                activeVoices.delete(noteId);
-            }
-        }
-        midiPlayingNotes.clear();
-
-        midiPausedAt = seekTime;
-        if (midiIsPlaying) {
-            midiPlaybackStartTime = getAudioContext().currentTime - midiPausedAt;
-        }
-
-        // 重新定位事件索引到 seek 位置
-        midiEventIndex = 0;
-        for (let i = 0; i < midiData.events.length; i++) {
-            if (midiData.events[i].seconds > seekTime) {
-                midiEventIndex = i;
-                break;
-            }
-            midiEventIndex = i + 1;
-        }
-
-        document.getElementById('midiProgressFill').style.width = (pct * 100) + '%';
-        document.getElementById('midiTime').textContent = formatTime(seekTime) + ' / ' + formatTime(midiDuration);
-    }
-});
-            }
-
-            transposeDown.addEventListener('click', () => {
-    midiTranspose -= 1;   // ← 原来这里是 12
-    transposeValue.textContent = midiTranspose;
-});
-
-transposeUp.addEventListener('click', () => {
-    midiTranspose += 1;   // ← 原来这里是 12
-    transposeValue.textContent = midiTranspose;
-});
-            
 
             // ========== Anming_cat 精选集 (mid.zip) ==========
             let demoMidiFiles = [];
@@ -2116,14 +2380,14 @@ transposeUp.addEventListener('click', () => {
                     if (typeof JSZip === 'undefined') {
                         await new Promise((resolve, reject) => {
                             const script = document.createElement('script');
-                            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+                            script.src = '../assets/jszip.min.js';
                             script.onload = resolve;
                             script.onerror = () => reject(new Error('无法加载 JSZip'));
                             document.head.appendChild(script);
                         });
                     }
 
-                    let arrayBuffer = await getCachedZipBufferByKey(DEMO_ZIP_KEY);
+                    let arrayBuffer = await getCache(DEMO_ZIP_KEY);
                     let fromCache = false;
 
                     if (arrayBuffer) {
@@ -2136,7 +2400,7 @@ transposeUp.addEventListener('click', () => {
                             throw new Error('找不到 mid.zip (HTTP ' + response.status + ')');
                         }
                         arrayBuffer = await response.arrayBuffer();
-                        await saveZipBufferByKey(arrayBuffer, DEMO_ZIP_KEY);
+                        await saveCache(DEMO_ZIP_KEY, arrayBuffer);
                     }
 
                     demoMidiZipBuffer = arrayBuffer;
@@ -2177,36 +2441,6 @@ transposeUp.addEventListener('click', () => {
                 }
             }
 
-            async function getCachedZipBufferByKey(key) {
-                try {
-                    const db = await openCacheDB();
-                    return new Promise((resolve, reject) => {
-                        const tx = db.transaction(STORE_NAME, 'readonly');
-                        const store = tx.objectStore(STORE_NAME);
-                        const req = store.get(key);
-                        req.onsuccess = () => resolve(req.result || null);
-                        req.onerror = () => reject(req.error);
-                    });
-                } catch (e) {
-                    return null;
-                }
-            }
-
-            async function saveZipBufferByKey(arrayBuffer, key) {
-                try {
-                    const db = await openCacheDB();
-                    return new Promise((resolve, reject) => {
-                        const tx = db.transaction(STORE_NAME, 'readwrite');
-                        const store = tx.objectStore(STORE_NAME);
-                        const req = store.put(arrayBuffer, key);
-                        req.onsuccess = () => resolve();
-                        req.onerror = () => reject(req.error);
-                    });
-                } catch (e) {
-                    console.warn('精选集缓存失败:', e);
-                }
-            }
-
             function renderDemoList() {
                 const list = document.getElementById('demoMidiList');
                 if (!list) return;
@@ -2238,18 +2472,16 @@ transposeUp.addEventListener('click', () => {
                 if (!demoMidiFiles[index]) return;
                 const item = demoMidiFiles[index];
 
-                // 更新列表激活状态
                 document.querySelectorAll('.demo-midi-item').forEach(el => el.classList.remove('active'));
                 const activeItem = document.querySelector('.demo-midi-item[data-index="' + index + '"]');
                 if (activeItem) activeItem.classList.add('active');
 
-                // 先停止当前播放
                 midiStop();
 
                 try {
                     updateMidiStatus('正在加载: ' + item.name);
-                    const mp3Data = await item.file.async('arraybuffer');
-                    midiData = parseMidi(mp3Data);
+                    const midiRawData = await item.file.async('arraybuffer');
+                    midiData = parseMidi(midiRawData);
 
                     if (!midiData) {
                         updateMidiStatus('MIDI 解析失败: ' + item.name);
@@ -2267,16 +2499,17 @@ transposeUp.addEventListener('click', () => {
                     document.getElementById('midiPauseBtn').disabled = false;
                     document.getElementById('midiStopBtn').disabled = false;
 
-                    // 自动开始播放
                     await midiPlay();
                     updateMidiStatus('正在播放: ' + item.name);
 
-                    // 在 midiStop 后清除 active 状态
-                    const originalMidiStop = midiStop;
-                    midiStop = function() {
-                        originalMidiStop();
-                        document.querySelectorAll('.demo-midi-item').forEach(el => el.classList.remove('active'));
-                    };
+                    if (!window.hasWrappedMidiStop) {
+                        const originalMidiStop = midiStop;
+                        midiStop = function() {
+                            originalMidiStop();
+                            document.querySelectorAll('.demo-midi-item').forEach(el => el.classList.remove('active'));
+                        };
+                        window.hasWrappedMidiStop = true;
+                    }
 
                 } catch (err) {
                     updateMidiStatus('加载失败: ' + err.message);
@@ -2307,7 +2540,7 @@ transposeUp.addEventListener('click', () => {
             document.body.addEventListener('mousedown', warmAudio, { once: true });
 
             window.addEventListener('load', () => {
-                setTimeout(loadSamples, 100);
+                setTimeout(initSoundsets, 100);
                 setTimeout(loadDemoMidis, 200);
             });
 
@@ -2318,280 +2551,390 @@ transposeUp.addEventListener('click', () => {
                 }
             }, 50);
 
-            console.log('88键延音直角钢琴已启动 | 缓存采样 | 延音踏板 | MIDI 播放器');
+            console.log('88键延音直角钢琴已启动 | 多音色缓存 | 延音踏板 | MIDI 播放器');
         })();
     </script>
     <script>
-    // ========== 和弦识别引擎 (Chord Recognition Engine) ==========
-    (function() {
-        'use strict';
 
-        const NOTE_NAMES_SHARP = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-        const NOTE_NAME_MAP = { 'C': 0, 'C#': 1, 'D': 2, 'D#': 3, 'E': 4, 'F': 5, 'F#': 6, 'G': 7, 'G#': 8, 'A': 9, 'A#': 10, 'B': 11 };
 
-        function noteIdToMidi(noteId) {
-            const m = noteId.match(/^([A-G]#?)(\d)$/);
-            if (!m) return 60;
-            return (NOTE_NAME_MAP[m[1]] || 0) + (parseInt(m[2]) + 1) * 12;
-        }
 
-        function midiToPitchClass(midi) { return midi % 12; }
-        function pitchClassToName(pc) { return NOTE_NAMES_SHARP[pc]; }
+// ========== 和弦识别引擎 (Chord Recognition Engine) v2.2 ==========
+// 修复：required 检查未取模 12，导致所有 intervals > 11 的和弦被错误排除
+(function() {
+    'use strict';
 
-        const CHORD_TYPES = [
-            // === 三和弦 (6种) ===
-            { name: '大三和弦',   abbr: '',       intervals: [0, 4, 7] },
-            { name: '小三和弦',   abbr: 'm',      intervals: [0, 3, 7] },
-            { name: '增三和弦',   abbr: 'aug',    intervals: [0, 4, 8] },
-            { name: '减三和弦',   abbr: 'dim',    intervals: [0, 3, 6] },
-            { name: '挂二和弦',   abbr: 'sus2',   intervals: [0, 2, 7] },
-            { name: '挂四和弦',   abbr: 'sus4',   intervals: [0, 5, 7] },
+    const NOTE_NAMES_SHARP = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+    const NOTE_NAME_MAP = { 'C': 0, 'C#': 1, 'D': 2, 'D#': 3, 'E': 4, 'F': 5, 'F#': 6, 'G': 7, 'G#': 8, 'A': 9, 'A#': 10, 'B': 11 };
 
-            // === 七和弦 (10种) ===
-            { name: '大七和弦',   abbr: 'maj7',   intervals: [0, 4, 7, 11] },
-            { name: '属七和弦',   abbr: '7',      intervals: [0, 4, 7, 10] },
-            { name: '小七和弦',   abbr: 'm7',     intervals: [0, 3, 7, 10] },
-            { name: '半减七和弦', abbr: 'm7b5',   intervals: [0, 3, 6, 10] },
-            { name: '减七和弦',   abbr: 'dim7',   intervals: [0, 3, 6, 9] },
-            { name: '小大七和弦', abbr: 'mM7',    intervals: [0, 3, 7, 11] },
-            { name: '增七和弦',   abbr: 'aug7',   intervals: [0, 4, 8, 10] },
-            { name: '大七挂四',   abbr: 'maj7sus4', intervals: [0, 5, 7, 11] },
-            { name: '属七挂四',   abbr: '7sus4',  intervals: [0, 5, 7, 10] },
-            { name: '属七挂二',   abbr: '7sus2',  intervals: [0, 2, 7, 10] },
+    function noteIdToMidi(noteId) {
+        const m = noteId.match(/^([A-G]#?)(\d)$/);
+        if (!m) return 60;
+        return (NOTE_NAME_MAP[m[1]] || 0) + (parseInt(m[2]) + 1) * 12;
+    }
 
-            // === 六和弦与六九和弦 (4种) ===
-            { name: '大六和弦',   abbr: '6',      intervals: [0, 4, 7, 9] },
-            { name: '小六和弦',   abbr: 'm6',     intervals: [0, 3, 7, 9] },
-            { name: '六九和弦',   abbr: '6/9',    intervals: [0, 4, 7, 9, 14] },
-            { name: '小六九和弦', abbr: 'm6/9',   intervals: [0, 3, 7, 9, 14] },
+    function midiToPitchClass(midi) { return midi % 12; }
+    function pitchClassToName(pc) { return NOTE_NAMES_SHARP[pc]; }
 
-            // === 九和弦 (12种) ===
-            { name: '属九和弦',   abbr: '9',      intervals: [0, 4, 7, 10, 14] },
-            { name: '大九和弦',   abbr: 'maj9',   intervals: [0, 4, 7, 11, 14] },
-            { name: '小九和弦',   abbr: 'm9',     intervals: [0, 3, 7, 10, 14] },
-            { name: '加九和弦',   abbr: 'add9',   intervals: [0, 4, 7, 14] },
-            { name: '小加九和弦', abbr: 'madd9',  intervals: [0, 3, 7, 14] },
-            { name: '属七降九',   abbr: '7b9',    intervals: [0, 4, 7, 10, 13] },
-            { name: '属七升九',   abbr: '7#9',    intervals: [0, 4, 7, 10, 15] },
-            { name: '小七降九',   abbr: 'm7b9',   intervals: [0, 3, 7, 10, 13] },
-            { name: '小七升九',   abbr: 'm7#9',   intervals: [0, 3, 7, 10, 15] },
-            { name: '九挂四和弦', abbr: '9sus4',  intervals: [0, 5, 7, 10, 14] },
-            { name: '属九升五',   abbr: '9#5',    intervals: [0, 4, 8, 10, 14] },
-            { name: '属九降五',   abbr: '9b5',    intervals: [0, 4, 6, 10, 14] },
+    // ========== 和弦类型数据库 ==========
+    const CHORD_TYPES = [
+        // --- 三和弦基础 ---
+        { name: '大三和弦', abbr: '',       intervals: [0, 4, 7],     required: [0, 4, 7],     category: 1 },
+        { name: '小三和弦', abbr: 'm',      intervals: [0, 3, 7],     required: [0, 3, 7],     category: 1 },
+        { name: '增三和弦', abbr: 'aug',    intervals: [0, 4, 8],     required: [0, 4, 8],     category: 1 },
+        { name: '减三和弦', abbr: 'dim',    intervals: [0, 3, 6],     required: [0, 3, 6],     category: 1 },
+        { name: '挂二和弦', abbr: 'sus2',   intervals: [0, 2, 7],     required: [0, 2, 7],     category: 1 },
+        { name: '挂四和弦', abbr: 'sus4',   intervals: [0, 5, 7],     required: [0, 5, 7],     category: 1 },
+        { name: '五和弦',   abbr: '5',      intervals: [0, 7],        required: [0, 7],        category: 1 },
 
-            // === 十一和弦 (4种) ===
-            { name: '属十一和弦', abbr: '11',     intervals: [0, 4, 7, 10, 14, 17] },
-            { name: '大十一和弦', abbr: 'maj11',  intervals: [0, 4, 7, 11, 14, 17] },
-            { name: '小十一和弦', abbr: 'm11',    intervals: [0, 3, 7, 10, 14, 17] },
-            { name: '十一降九',   abbr: '11b9',   intervals: [0, 4, 7, 10, 13, 17] },
+        // --- add 和弦（无7音的扩展和弦）---
+        { name: '大加九和弦',   abbr: 'add9',   intervals: [0, 4, 7, 14], required: [0, 4, 7, 14], avoid: [10, 11], category: 2 },
+        { name: '小加九和弦',   abbr: 'madd9',  intervals: [0, 3, 7, 14], required: [0, 3, 7, 14], avoid: [10, 11], category: 2 },
+        { name: '大加十一和弦', abbr: 'add11',  intervals: [0, 4, 7, 17], required: [0, 4, 7, 17], avoid: [10, 11], category: 2 },
+        { name: '小加十一和弦', abbr: 'madd11', intervals: [0, 3, 7, 17], required: [0, 3, 7, 17], avoid: [10, 11], category: 2 },
+        { name: '大加十三和弦', abbr: 'add13',  intervals: [0, 4, 7, 21], required: [0, 4, 7, 21], avoid: [10, 11], category: 2 },
+        { name: '小加十三和弦', abbr: 'madd13',  intervals: [0, 3, 7, 21], required: [0, 3, 7, 21], avoid: [10, 11], category: 2 },
 
-            // === 十三和弦 (4种) ===
-            { name: '属十三和弦', abbr: '13',     intervals: [0, 4, 7, 10, 14, 17, 21] },
-            { name: '大十三和弦', abbr: 'maj13',  intervals: [0, 4, 7, 11, 14, 17, 21] },
-            { name: '小十三和弦', abbr: 'm13',    intervals: [0, 3, 7, 10, 14, 17, 21] },
-            { name: '十三降九',   abbr: '13b9',   intervals: [0, 4, 7, 10, 13, 17, 21] },
+        // --- 六和弦 ---
+        { name: '大六和弦', abbr: '6',      intervals: [0, 4, 7, 9],  required: [0, 4, 7, 9],  category: 2 },
+        { name: '小六和弦', abbr: 'm6',     intervals: [0, 3, 7, 9],  required: [0, 3, 7, 9],  category: 2 },
+        { name: '六九和弦', abbr: '6/9',    intervals: [0, 4, 7, 9, 14], required: [0, 4, 7, 9, 14], category: 3 },
+        { name: '小六九和弦', abbr: 'm6/9', intervals: [0, 3, 7, 9, 14], required: [0, 3, 7, 9, 14], category: 3 },
 
-            // === 变化和弦 (8种) ===
-            { name: '属七升五',   abbr: '7#5',    intervals: [0, 4, 8, 10] },
-            { name: '属七降五',   abbr: '7b5',    intervals: [0, 4, 6, 10] },
-            { name: '属七升十一', abbr: '7#11',   intervals: [0, 4, 7, 10, 18] },
-            { name: '属七降十三', abbr: '7b13',   intervals: [0, 4, 7, 10, 20] },
-            { name: '属七升五升九', abbr: '7#5#9', intervals: [0, 4, 8, 10, 15] },
-            { name: '属七升五降九', abbr: '7#5b9', intervals: [0, 4, 8, 10, 13] },
-            { name: '属七降五升九', abbr: '7b5#9', intervals: [0, 4, 6, 10, 15] },
-            { name: '属七降五降九', abbr: '7b5b9', intervals: [0, 4, 6, 10, 13] },
+        // --- 七和弦 ---
+        { name: '大七和弦', abbr: 'maj7',   intervals: [0, 4, 7, 11], required: [0, 4, 7, 11], category: 2 },
+        { name: '属七和弦', abbr: '7',      intervals: [0, 4, 7, 10], required: [0, 4, 7, 10], category: 2 },
+        { name: '小七和弦', abbr: 'm7',     intervals: [0, 3, 7, 10], required: [0, 3, 7, 10], category: 2 },
+        { name: '半减七和弦', abbr: 'm7b5', intervals: [0, 3, 6, 10], required: [0, 3, 6, 10], category: 2 },
+        { name: '减七和弦', abbr: 'dim7',   intervals: [0, 3, 6, 9],  required: [0, 3, 6, 9],  category: 2 },
+        { name: '小大七和弦', abbr: 'mM7',  intervals: [0, 3, 7, 11], required: [0, 3, 7, 11], category: 2 },
+        { name: '增七和弦', abbr: 'aug7',   intervals: [0, 4, 8, 10], required: [0, 4, 8, 10], category: 2 },
+        { name: '大七挂四', abbr: 'maj7sus4', intervals: [0, 5, 7, 11], required: [0, 5, 7, 11], category: 2 },
+        { name: '属七挂四', abbr: '7sus4',  intervals: [0, 5, 7, 10], required: [0, 5, 7, 10], category: 2 },
+        { name: '属七挂二', abbr: '7sus2',  intervals: [0, 2, 7, 10], required: [0, 2, 7, 10], category: 2 },
 
-            // === add和弦 (2种) ===
-            { name: '加十一和弦', abbr: 'add11',  intervals: [0, 4, 7, 17] },
-            { name: '小加十一和弦', abbr: 'madd11', intervals: [0, 3, 7, 17] },
+        // --- 属七变化和弦 ---
+        { name: '属七升五', abbr: '7#5',    intervals: [0, 4, 8, 10], required: [0, 4, 8, 10], category: 2 },
+        { name: '属七降五', abbr: '7b5',    intervals: [0, 4, 6, 10], required: [0, 4, 6, 10], category: 2 },
+        { name: '属七升九', abbr: '7#9',    intervals: [0, 4, 7, 10, 15], required: [0, 4, 7, 10, 15], category: 3 },
+        { name: '属七降九', abbr: '7b9',    intervals: [0, 4, 7, 10, 13], required: [0, 4, 7, 10, 13], category: 3 },
+        { name: '属七升十一', abbr: '7#11', intervals: [0, 4, 7, 10, 18], required: [0, 4, 7, 10, 18], category: 3 },
+        { name: '属七降十三', abbr: '7b13', intervals: [0, 4, 7, 10, 20], required: [0, 4, 7, 10, 20], category: 3 },
+        { name: '属七升五升九', abbr: '7#5#9', intervals: [0, 4, 8, 10, 15], required: [0, 4, 8, 10, 15], category: 3 },
+        { name: '属七升五降九', abbr: '7#5b9', intervals: [0, 4, 8, 10, 13], required: [0, 4, 8, 10, 13], category: 3 },
+        { name: '属七降五升九', abbr: '7b5#9', intervals: [0, 4, 6, 10, 15], required: [0, 4, 6, 10, 15], category: 3 },
+        { name: '属七降五降九', abbr: '7b5b9', intervals: [0, 4, 6, 10, 13], required: [0, 4, 6, 10, 13], category: 3 },
 
-            // === 其他 (1种) ===
-            { name: '五和弦',     abbr: '5',      intervals: [0, 7] },
-        ];
+        // --- 九和弦 ---
+        { name: '属九和弦', abbr: '9',      intervals: [0, 4, 7, 10, 14], required: [0, 4, 7, 10, 14], category: 3 },
+        { name: '大九和弦', abbr: 'maj9',   intervals: [0, 4, 7, 11, 14], required: [0, 4, 7, 11, 14], category: 3 },
+        { name: '小九和弦', abbr: 'm9',     intervals: [0, 3, 7, 10, 14], required: [0, 3, 7, 10, 14], category: 3 },
+        { name: '九挂四和弦', abbr: '9sus4', intervals: [0, 5, 7, 10, 14], required: [0, 5, 7, 10, 14], category: 3 },
+        { name: '属九升五', abbr: '9#5',   intervals: [0, 4, 8, 10, 14], required: [0, 4, 8, 10, 14], category: 3 },
+        { name: '属九降五', abbr: '9b5',   intervals: [0, 4, 6, 10, 14], required: [0, 4, 6, 10, 14], category: 3 },
+        { name: '小七降九', abbr: 'm7b9',  intervals: [0, 3, 7, 10, 13], required: [0, 3, 7, 10, 13], category: 3 },
+        { name: '小七升九', abbr: 'm7#9',  intervals: [0, 3, 7, 10, 15], required: [0, 3, 7, 10, 15], category: 3 },
 
-        // ---- 音程定义 ----
-        const INTERVAL_TYPES = [
-            { name: '纯一度',   en: 'Perfect Unison',  semitones: 0 },
-            { name: '小二度',   en: 'Minor 2nd',       semitones: 1 },
-            { name: '大二度',   en: 'Major 2nd',       semitones: 2 },
-            { name: '小三度',   en: 'Minor 3rd',       semitones: 3 },
-            { name: '大三度',   en: 'Major 3rd',       semitones: 4 },
-            { name: '纯四度',   en: 'Perfect 4th',     semitones: 5 },
-            { name: '三全音',   en: 'Tritone',         semitones: 6 },
-            { name: '纯五度',   en: 'Perfect 5th',     semitones: 7 },
-            { name: '小六度',   en: 'Minor 6th',       semitones: 8 },
-            { name: '大六度',   en: 'Major 6th',       semitones: 9 },
-            { name: '小七度',   en: 'Minor 7th',       semitones: 10 },
-            { name: '大七度',   en: 'Major 7th',       semitones: 11 },
-            { name: '纯八度',   en: 'Perfect Octave',  semitones: 12 },
-        ];
+        // --- 十一和弦 ---
+        { name: '属十一和弦', abbr: '11',    intervals: [0, 4, 7, 10, 14, 17], required: [0, 4, 7, 10, 14, 17], category: 4 },
+        { name: '大十一和弦', abbr: 'maj11', intervals: [0, 4, 7, 11, 14, 17], required: [0, 4, 7, 11, 14, 17], category: 4 },
+        { name: '小十一和弦', abbr: 'm11',   intervals: [0, 3, 7, 10, 14, 17], required: [0, 3, 7, 10, 14, 17], category: 4 },
+        { name: '十一降九', abbr: '11b9',  intervals: [0, 4, 7, 10, 13, 17], required: [0, 4, 7, 10, 13, 17], category: 4 },
 
-        function identifyInterval(pressedMidiNotes) {
-            if (!pressedMidiNotes || pressedMidiNotes.length !== 2) return null;
-            const uniqueNotes = [...new Set(pressedMidiNotes)].sort((a, b) => a - b);
-            if (uniqueNotes.length < 2) return null;
-            const semitones = uniqueNotes[1] - uniqueNotes[0];
-            const normalized = semitones % 12;
-            const octaves = Math.floor(semitones / 12);
-            const lowerPC = midiToPitchClass(uniqueNotes[0]);
-            const lowerName = pitchClassToName(lowerPC);
-            const lowerOct = Math.floor(uniqueNotes[0] / 12) - 1;
-            for (const iv of INTERVAL_TYPES) {
-                if (iv.semitones === normalized) {
-                    return {
-                        lowerNote: lowerName + lowerOct,
-                        semitones: semitones,
-                        normalized: normalized,
-                        octaves: octaves,
-                        name: iv.name,
-                        enName: iv.en,
-                        isInterval: true
-                    };
-                }
-            }
-            return null;
-        }
+        // --- 十三和弦 ---
+        { name: '属十三和弦', abbr: '13',    intervals: [0, 4, 7, 10, 14, 17, 21], required: [0, 4, 7, 10, 14, 17, 21], category: 5 },
+        { name: '大十三和弦', abbr: 'maj13', intervals: [0, 4, 7, 11, 14, 17, 21], required: [0, 4, 7, 11, 14, 17, 21], category: 5 },
+        { name: '小十三和弦', abbr: 'm13',   intervals: [0, 3, 7, 10, 14, 17, 21], required: [0, 3, 7, 10, 14, 17, 21], category: 5 },
+        { name: '十三降九', abbr: '13b9',  intervals: [0, 4, 7, 10, 13, 17, 21], required: [0, 4, 7, 10, 13, 17, 21], category: 5 },
+    ];
 
-        function identifyChord(pressedMidiNotes) {
-            if (!pressedMidiNotes || pressedMidiNotes.length < 3) return null;
-            const uniqueNotes = [...new Set(pressedMidiNotes)].sort((a, b) => a - b);
-            const pitchClasses = uniqueNotes.map(midiToPitchClass);
-            const uniquePCs = [...new Set(pitchClasses)].sort((a, b) => a - b);
-            if (uniquePCs.length < 3) return null;
+    const INTERVAL_TYPES = [
+        { name: '纯一度',   en: 'Perfect Unison',  semitones: 0 },
+        { name: '小二度',   en: 'Minor 2nd',       semitones: 1 },
+        { name: '大二度',   en: 'Major 2nd',       semitones: 2 },
+        { name: '小三度',   en: 'Minor 3rd',       semitones: 3 },
+        { name: '大三度',   en: 'Major 3rd',       semitones: 4 },
+        { name: '纯四度',   en: 'Perfect 4th',     semitones: 5 },
+        { name: '三全音',   en: 'Tritone',         semitones: 6 },
+        { name: '纯五度',   en: 'Perfect 5th',     semitones: 7 },
+        { name: '小六度',   en: 'Minor 6th',       semitones: 8 },
+        { name: '大六度',   en: 'Major 6th',       semitones: 9 },
+        { name: '小七度',   en: 'Minor 7th',       semitones: 10 },
+        { name: '大七度',   en: 'Major 7th',       semitones: 11 },
+        { name: '纯八度',   en: 'Perfect Octave',  semitones: 12 },
+    ];
 
-            let bestMatch = null, bestScore = -1;
-            for (let rootPC = 0; rootPC < 12; rootPC++) {
-                const intervalsFromRoot = uniquePCs.map(pc => { let d = pc - rootPC; if (d < 0) d += 12; return d; });
-                for (const chordType of CHORD_TYPES) {
-                    const required = chordType.intervals;
-                    if (!required.every(req => intervalsFromRoot.includes(req))) continue;
-                    const extraNotes = intervalsFromRoot.filter(iv => !required.includes(iv));
-                    const matchScore = required.length / Math.max(intervalsFromRoot.length, required.length);
-                    const simplicityBonus = 1.0 / (1 + extraNotes.length * 0.15);
-                    const score = matchScore * simplicityBonus;
-                    const lowestPC = midiToPitchClass(uniqueNotes[0]);
-                    const bassDiff = (lowestPC - rootPC + 12) % 12;
-                    const isInversion = bassDiff !== 0;
-                    if (score > bestScore) {
-                        bestScore = score;
-                        bestMatch = {
-                            rootPC: rootPC, rootName: pitchClassToName(rootPC),
-                            type: chordType, isInversion: isInversion,
-                            bassPC: isInversion ? lowestPC : null,
-                            bassName: isInversion ? pitchClassToName(lowestPC) : null,
-                            notes: uniqueNotes, pitchClasses: uniquePCs, score: score
-                        };
-                    }
-                }
-            }
-            return bestMatch;
-        }
-
-        function formatChordName(chord) {
-            if (!chord) return '';
-            let name = chord.rootName;
-            if (chord.type.abbr) name += chord.type.abbr;
-            if (chord.isInversion && chord.bassName) name += '/' + chord.bassName;
-            return name;
-        }
-
-        function getChordFullName(chord) {
-            if (!chord) return '';
-            let full = chord.rootName + chord.type.name;
-            if (chord.isInversion && chord.bassName) full += ' (' + chord.bassName + ' 低音)';
-            return full;
-        }
-
-        let currentPressedNotes = new Set();
-
-        function createChordUI() {
-            const header = document.querySelector('.piano-header');
-            if (!header || document.getElementById('chordRecognitionPanel')) return;
-            const container = document.createElement('div');
-            container.id = 'chordRecognitionPanel';
-            container.className = 'chord-recognition-panel';
-            container.innerHTML = `
-                <div class="chord-recognition-title">和弦识别</div>
-                <div class="chord-display" id="chordDisplay">—</div>
-                <div class="chord-detail" id="chordDetail">按下多个键以识别和弦</div>
-                <div class="chord-note-list" id="chordNoteList"></div>
-            `;
-            header.parentNode.insertBefore(container, header.nextSibling);
-        }
-
-        function updateChordDisplay() {
-            const display = document.getElementById('chordDisplay');
-            const detail = document.getElementById('chordDetail');
-            const noteList = document.getElementById('chordNoteList');
-            if (!display) return;
-            const notes = Array.from(currentPressedNotes).sort((a, b) => a - b);
-            const chord = identifyChord(notes);
-            const interval = identifyInterval(notes);
-
-            if (chord) {
-                display.textContent = formatChordName(chord);
-                display.style.color = 'var(--color-accent)';
-                detail.textContent = getChordFullName(chord);
-            } else if (interval) {
-                display.textContent = interval.lowerNote + ' ' + interval.enName;
-                display.style.color = 'var(--color-accent)';
-                detail.textContent = interval.lowerNote + ' ' + interval.name + ' (' + interval.semitones + '半音)';
-            } else if (notes.length >= 2) {
-                display.textContent = '?';
-                display.style.color = '#c44';
-                detail.textContent = '无法识别的和弦或音程';
-            } else if (notes.length === 1) {
-                const pc = midiToPitchClass(notes[0]);
-                const octave = Math.floor(notes[0] / 12) - 1;
-                display.textContent = pitchClassToName(pc) + octave;
-                display.style.color = 'var(--color-dark)';
-                detail.textContent = '单音';
-            } else {
-                display.textContent = '—';
-                display.style.color = 'var(--color-dark)';
-                detail.textContent = '按下多个键以识别和弦或音程';
-            }
-            if (noteList) {
-                noteList.textContent = notes.length > 0 ? '当前音符: ' + notes.map(n => pitchClassToName(midiToPitchClass(n)) + (Math.floor(n / 12) - 1)).join('  ') : '';
+    // ========== 音程识别 ==========
+    function identifyInterval(pressedMidiNotes) {
+        if (!pressedMidiNotes || pressedMidiNotes.length !== 2) return null;
+        const uniqueNotes = [...new Set(pressedMidiNotes)].sort((a, b) => a - b);
+        if (uniqueNotes.length < 2) return null;
+        const semitones = uniqueNotes[1] - uniqueNotes[0];
+        const normalized = semitones % 12;
+        const octaves = Math.floor(semitones / 12);
+        const lowerPC = midiToPitchClass(uniqueNotes[0]);
+        const lowerName = pitchClassToName(lowerPC);
+        const lowerOct = Math.floor(uniqueNotes[0] / 12) - 1;
+        for (const iv of INTERVAL_TYPES) {
+            if (iv.semitones === normalized) {
+                return {
+                    lowerNote: lowerName + lowerOct,
+                    semitones: semitones,
+                    normalized: normalized,
+                    octaves: octaves,
+                    name: iv.name,
+                    enName: iv.en,
+                    isInterval: true
+                };
             }
         }
+        return null;
+    }
 
-        function observePianoKeys() {
-            const keyboard = document.getElementById('pianoKeyboard');
-            if (!keyboard) return;
-            const observer = new MutationObserver((mutations) => {
-                let changed = false;
-                for (const mutation of mutations) {
-                    if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-                        const el = mutation.target;
-                        const noteId = el.getAttribute('data-noteid');
-                        if (!noteId) continue;
-                        const midi = noteIdToMidi(noteId);
-                        if (el.classList.contains('active')) {
-                            if (!currentPressedNotes.has(midi)) { currentPressedNotes.add(midi); changed = true; }
-                        } else {
-                            if (currentPressedNotes.has(midi)) { currentPressedNotes.delete(midi); changed = true; }
+    // ========== 和弦识别核心算法 v2.2 ==========
+    // 修复 v2.2：required 检查时对 req 取模 12
+    // 因为 intervalsFromRoot 只包含 0-11 的 pitch class
+    // 而 required 中可能包含 >11 的值（如 add9 的 14, 9和弦的 14 等）
+    function identifyChord(pressedMidiNotes) {
+        if (!pressedMidiNotes || pressedMidiNotes.length < 3) return null;
+
+        const uniqueNotes = [...new Set(pressedMidiNotes)].sort((a, b) => a - b);
+        const pitchClasses = uniqueNotes.map(midiToPitchClass);
+        const uniquePCs = [...new Set(pitchClasses)].sort((a, b) => a - b);
+
+        if (uniquePCs.length < 3) return null;
+
+        let bestMatch = null;
+        let bestScore = -Infinity;
+
+        for (let rootPC = 0; rootPC < 12; rootPC++) {
+            const intervalsFromRoot = uniquePCs.map(pc => {
+                let d = pc - rootPC;
+                if (d < 0) d += 12;
+                return d;
+            });
+
+            for (const chordType of CHORD_TYPES) {
+                const required = chordType.required;
+
+                // === 核心修复 v2.2 ===
+                // required 中的值可能 >11（如 add9 的 14, 9和弦的 14, 11和弦的 17 等）
+                // 而 intervalsFromRoot 只包含 0-11 的 pitch class
+                // 所以必须对 req 取模 12 后再比较
+                if (!required.every(req => intervalsFromRoot.includes(req % 12))) continue;
+
+                // 计算和弦定义音的 pitch class 集合
+                const definedPCs = chordType.intervals.map(iv => iv % 12);
+                const uniqueDefined = [...new Set(definedPCs)].sort((a, b) => a - b);
+
+                // 交集：同时存在于实际音和定义音中的 pitch class
+                const intersection = uniquePCs.filter(pc => uniqueDefined.includes(pc));
+
+                // 匹配率 = 交集数量 / max(实际音数, 定义音数)
+                const matchRate = intersection.length / Math.max(uniquePCs.length, uniqueDefined.length);
+
+                // 额外音：实际音中不在定义音里的
+                const extraNotes = uniquePCs.filter(pc => !uniqueDefined.includes(pc));
+
+                // 缺失音：定义音中不在实际音里的
+                const missingNotes = uniqueDefined.filter(pc => !uniquePCs.includes(pc));
+
+                // avoid 音惩罚（add和弦出现7音时）
+                let avoidPenalty = 0;
+                if (chordType.avoid) {
+                    for (const avoidIv of chordType.avoid) {
+                        if (intervalsFromRoot.includes(avoidIv)) {
+                            avoidPenalty += 2.0;
                         }
                     }
                 }
-                if (changed) updateChordDisplay();
+
+                // 类别权重：简单和弦优先，但差异温和
+                const categoryBonus = 1.0 - (chordType.category - 1) * 0.05;
+
+                // 额外音惩罚
+                const extraPenalty = extraNotes.length * 0.25;
+
+                // 缺失音惩罚
+                const missingPenalty = missingNotes.length * 0.15;
+
+                // 完整度奖励
+                const completeness = intersection.length / uniqueDefined.length;
+                const completenessBonus = completeness >= 1.0 ? 0.3 : 0;
+
+                // 转位检测
+                const lowestPC = midiToPitchClass(uniqueNotes[0]);
+                const bassDiff = (lowestPC - rootPC + 12) % 12;
+                const isInversion = bassDiff !== 0;
+                const inversionPenalty = isInversion ? 0.1 : 0;
+
+                // 综合分数
+                const score = matchRate * categoryBonus + completenessBonus - extraPenalty - missingPenalty - avoidPenalty - inversionPenalty;
+
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestMatch = {
+                        rootPC: rootPC,
+                        rootName: pitchClassToName(rootPC),
+                        type: chordType,
+                        isInversion: isInversion,
+                        bassPC: isInversion ? lowestPC : null,
+                        bassName: isInversion ? pitchClassToName(lowestPC) : null,
+                        notes: uniqueNotes,
+                        pitchClasses: uniquePCs,
+                        score: score,
+                        extraNotes: extraNotes,
+                        missingNotes: missingNotes,
+                        completeness: completeness
+                    };
+                }
+            }
+        }
+
+        if (bestMatch && bestMatch.score < 0.3) {
+            return null;
+        }
+
+        return bestMatch;
+    }
+
+    // ========== 和弦名称格式化 ==========
+    function formatChordName(chord) {
+        if (!chord) return '';
+        let name = chord.rootName;
+        if (chord.type.abbr) name += chord.type.abbr;
+        if (chord.isInversion && chord.bassName) name += '/' + chord.bassName;
+        return name;
+    }
+
+    function getChordFullName(chord) {
+        if (!chord) return '';
+        let full = chord.rootName + chord.type.name;
+        if (chord.isInversion && chord.bassName) full += ' (' + chord.bassName + ' 低音)';
+        return full;
+    }
+
+    function getChordExtraInfo(chord) {
+        if (!chord) return '';
+        const parts = [];
+        if (chord.extraNotes.length > 0) {
+            const extraNames = chord.extraNotes.map(pc => {
+                const names = ['根', 'b9', '9', '#9', '3', '11', '#11', 'b13', '13', '7', 'b7', '7'];
+                return names[pc] || pc + '半音';
             });
-            observer.observe(keyboard, { attributes: true, attributeFilter: ['class'], subtree: true });
+            parts.push('额外音: ' + extraNames.join(', '));
         }
-
-        function init() {
-            createChordUI();
-            observePianoKeys();
-            console.log('和弦识别引擎已加载 | 支持 51 种和弦 + 13 种音程 | 自动识别转位');
+        if (chord.missingNotes.length > 0) {
+            const missingNames = chord.missingNotes.map(pc => {
+                const names = ['根', 'b9', '9', '#9', '3', '11', '#11', 'b13', '13', '7', 'b7', '7'];
+                return names[pc] || pc + '半音';
+            });
+            parts.push('缺: ' + missingNames.join(', '));
         }
+        return parts.join(' | ');
+    }
 
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', init);
+    // ========== UI 创建与更新 ==========
+    let currentPressedNotes = new Set();
+
+    function createChordUI() {
+        const header = document.querySelector('.piano-header');
+        if (!header || document.getElementById('chordRecognitionPanel')) return;
+        const container = document.createElement('div');
+        container.id = 'chordRecognitionPanel';
+        container.className = 'chord-recognition-panel';
+        container.innerHTML = `
+            <div class="chord-recognition-title">和弦识别</div>
+            <div class="chord-display" id="chordDisplay">—</div>
+            <div class="chord-detail" id="chordDetail">按下多个键以识别和弦</div>
+            <div class="chord-note-list" id="chordNoteList"></div>
+        `;
+        header.parentNode.insertBefore(container, header.nextSibling);
+    }
+
+    function updateChordDisplay() {
+        const display = document.getElementById('chordDisplay');
+        const detail = document.getElementById('chordDetail');
+        const noteList = document.getElementById('chordNoteList');
+        if (!display) return;
+
+        const notes = Array.from(currentPressedNotes).sort((a, b) => a - b);
+        const chord = identifyChord(notes);
+        const interval = identifyInterval(notes);
+
+        if (chord) {
+            display.textContent = formatChordName(chord);
+            display.style.color = 'var(--color-accent)';
+            let detailText = getChordFullName(chord);
+            const extraInfo = getChordExtraInfo(chord);
+            if (extraInfo) detailText += ' | ' + extraInfo;
+            detail.textContent = detailText;
+        } else if (interval) {
+            display.textContent = interval.lowerNote + ' ' + interval.enName;
+            display.style.color = 'var(--color-accent)';
+            detail.textContent = interval.lowerNote + ' ' + interval.name + ' (' + interval.semitones + '半音)';
+        } else if (notes.length >= 2) {
+            display.textContent = '?';
+            display.style.color = '#c44';
+            detail.textContent = '无法识别的和弦或音程';
+        } else if (notes.length === 1) {
+            const pc = midiToPitchClass(notes[0]);
+            const octave = Math.floor(notes[0] / 12) - 1;
+            display.textContent = pitchClassToName(pc) + octave;
+            display.style.color = 'var(--color-dark)';
+            detail.textContent = '单音';
         } else {
-            init();
+            display.textContent = '—';
+            display.style.color = 'var(--color-dark)';
+            detail.textContent = '按下多个键以识别和弦或音程';
         }
-    })();
+
+        if (noteList) {
+            noteList.textContent = notes.length > 0 
+                ? '当前音符: ' + notes.map(n => pitchClassToName(midiToPitchClass(n)) + (Math.floor(n / 12) - 1)).join('  ') 
+                : '';
+        }
+    }
+
+    // ========== 监听钢琴键状态变化 ==========
+    function observePianoKeys() {
+        const keyboard = document.getElementById('pianoKeyboard');
+        if (!keyboard) return;
+
+        const observer = new MutationObserver((mutations) => {
+            let changed = false;
+            for (const mutation of mutations) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    const el = mutation.target;
+                    const noteId = el.getAttribute('data-noteid');
+                    if (!noteId) continue;
+                    const midi = noteIdToMidi(noteId);
+                    if (el.classList.contains('active')) {
+                        if (!currentPressedNotes.has(midi)) { currentPressedNotes.add(midi); changed = true; }
+                    } else {
+                        if (currentPressedNotes.has(midi)) { currentPressedNotes.delete(midi); changed = true; }
+                    }
+                }
+            }
+            if (changed) updateChordDisplay();
+        });
+        observer.observe(keyboard, { attributes: true, attributeFilter: ['class'], subtree: true });
+    }
+
+    // ========== 初始化 ==========
+    function init() {
+        createChordUI();
+        observePianoKeys();
+        console.log('和弦识别引擎 v2.2 已加载 | 支持 60+ 种和弦 | add和弦修复 | 覆盖度匹配算法');
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();
     </script>
+    <script src="../script.js"></script>
 
 </body>
 </html>

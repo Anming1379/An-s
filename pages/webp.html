@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>WebP 动图工具 · 视频转动画 | 离线可用版</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.geekzu.org">
+    <link href="https://fonts.geekzu.org/css2?family=Urbanist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        /* 原有风格保留，增加离线加载模块样式 */
+        .tool-container { max-width: 1024px; margin: 0 auto; padding: 48px 28px 64px; }
+        .tool-header { margin-bottom: 40px; text-align: center; }
+        .tool-header h1 { font-size: 2rem; font-weight: 700; color: var(--color-dark); margin-bottom: 10px; }
+        .tool-header p { color: var(--color-dark-60); }
+        .upload-zone { border: 2px dashed var(--color-dark-20); background: var(--color-dark-02); padding: 40px 24px; text-align: center; cursor: pointer; transition: all var(--transition-smooth); margin-bottom: 32px; }
+        .upload-zone:hover { border-color: var(--color-accent); background: var(--color-accent-04); }
+        .upload-icon { font-size: 52px; color: var(--color-dark-40); margin-bottom: 12px; }
+        .preview-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 36px; }
+        .preview-card { background: var(--color-white); border: 1px solid var(--color-dark-08); box-shadow: var(--shadow-sm); }
+        .preview-label { font-size: 0.85rem; font-weight: 600; padding: 12px 18px; background: var(--color-dark-04); border-bottom: 1px solid var(--color-dark-08); display: flex; align-items: center; gap: 8px; }
+        .preview-media { min-height: 220px; background: #fafafc; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        video, .webp-preview-img { max-width: 100%; max-height: 260px; object-fit: contain; }
+        .control-panel { background: var(--color-white); border: 1px solid var(--color-dark-08); padding: 24px 28px; margin-bottom: 32px; }
+        .param-row { display: flex; flex-wrap: wrap; gap: 32px; margin-bottom: 28px; align-items: flex-end; }
+        .param-group { flex: 1; min-width: 150px; }
+        .param-group label { display: block; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; color: var(--color-dark-60); margin-bottom: 8px; }
+        .param-group input, .param-group select { width: 100%; padding: 10px 12px; border: 1px solid var(--color-dark-12); background: var(--color-white); font-family: monospace; font-size: 0.9rem; border-radius: 0; }
+        .param-group input:focus { outline: none; border-color: var(--color-accent); }
+        .action-bar { display: flex; gap: 18px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+        .progress-area { background: var(--color-dark-04); padding: 16px; margin-top: 24px; font-family: monospace; font-size: 0.8rem; }
+        .progress-bar-bg { background: var(--color-dark-12); height: 4px; width: 100%; margin-top: 12px; }
+        .progress-fill { background: var(--color-accent); width: 0%; height: 4px; transition: width 0.2s; }
+        .btn-secondary { background: transparent; border: 1px solid var(--color-dark-20); color: var(--color-dark-80); }
+        .status-badge { font-size: 0.75rem; background: var(--color-dark-08); display: inline-block; padding: 4px 10px; }
+        .retry-btn, .offline-btn { background: none; border: 1px solid var(--color-accent); color: var(--color-accent); padding: 4px 12px; font-size: 0.7rem; cursor: pointer; margin-left: 8px; }
+        .offline-zone { margin-top: 20px; padding: 16px; background: var(--color-dark-04); border: 1px solid var(--color-dark-12); display: none; }
+        .offline-zone.visible { display: block; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; }
+        @media (max-width: 720px) { .preview-row { grid-template-columns: 1fr; } .param-row { flex-direction: column; } }
+    </style>
+</head>
+<body>
+    <header class="navbar" id="navbar">
+        <div class="navbar-inner">
+            <a href="../index.html" class="navbar-brand brand-top-arrow" title="回到首页">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor" class="custom-arrow-svg">
+                    <path d="M704-240 320-624v344h-80v-480h480v80H376l384 384-56 56Z" />
+                </svg>
+            </a>
+            <nav class="navbar-links">
+                <a href="../index.html" class="nav-link">首页</a>
+                <a href="../alambda.html" class="nav-link">ALambda</a>
+                <a href="../note.html" class="nav-link">笔记</a>
+                <a href="../contact.html" class="nav-link">联系</a>
+            </nav>
+        </div>
+    </header>
+    <main class="main-content">
+        <div class="tool-container">
+            <div class="tool-header">
+                <h1>🎞️ MP4 → WebP 动图</h1>
+                <p>纯前端转换 · 支持离线加载 FFmpeg 核心 (网络不通时手动上传)</p>
+            </div>
+            <div class="upload-zone" id="uploadZone">
+                <span class="material-icons upload-icon">cloud_upload</span>
+                <p>点击或拖拽上传 MP4 视频文件</p>
+                <input type="file" id="videoInput" accept="video/mp4" style="display: none;">
+                <div id="fileInfo" class="file-info" style="display: none;"></div>
+            </div>
+            <div class="preview-row">
+                <div class="preview-card"><div class="preview-label"><span class="material-icons">smart_display</span> 原始视频</div><div class="preview-media"><video id="sourceVideo" controls style="max-width:100%; max-height:240px; display:none;"></video><span id="noVideoMsg">等待上传 MP4</span></div></div>
+                <div class="preview-card"><div class="preview-label"><span class="material-icons">animation</span> 输出 WebP 动图</div><div class="preview-media"><img id="webpResultImage" class="webp-preview-img" style="display:none;"><span id="noResultMsg">转换后预览</span></div></div>
+            </div>
+            <div class="control-panel">
+                <div class="param-row">
+                    <div class="param-group"><label>🎬 帧率 (FPS)</label><input type="number" id="fpsInput" value="15" min="1" max="60"></div>
+                    <div class="param-group"><label>✨ 质量 (0-100)</label><input type="range" id="qualitySlider" min="0" max="100" value="80" style="width:100%"><div class="flex-between"><span>压缩</span><span id="qualityValue">80</span><span>高质量</span></div></div>
+                    <div class="param-group"><label>📐 宽度 (px)</label><input type="number" id="widthInput" placeholder="自动" value="720"></div>
+                </div>
+                <div class="action-bar">
+                    <button id="convertBtn" class="btn btn-primary"><span class="material-icons">bolt</span> 开始转换</button>
+                    <button id="downloadBtn" class="btn btn-outline" disabled><span class="material-icons">download</span> 下载动图</button>
+                    <span id="ffmpegStatus" class="status-badge">⚙️ 初始化...</span>
+                    <button id="retryBtn" class="retry-btn">🔄 重试加载</button>
+                    <button id="showOfflineBtn" class="offline-btn">📁 离线加载核心</button>
+                </div>
+                <div id="offlinePanel" class="offline-zone">
+                    <p style="margin-bottom: 12px;"><strong>📦 手动加载 FFmpeg 核心</strong> (适用于网络完全阻断)</p>
+                    <p style="font-size:0.75rem;">请先下载两个文件：<a href="https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.js" target="_blank">ffmpeg-core.js</a> 和 <a href="https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.wasm" target="_blank">ffmpeg-core.wasm</a><br>然后分别上传：</p>
+                    <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px;">
+                        <label style="background:var(--color-accent-08); padding:6px 12px; cursor:pointer;">选择 ffmpeg-core.js <input type="file" id="coreJsFile" accept=".js" style="display:none;"></label>
+                        <label style="background:var(--color-accent-08); padding:6px 12px; cursor:pointer;">选择 ffmpeg-core.wasm <input type="file" id="coreWasmFile" accept=".wasm" style="display:none;"></label>
+                        <button id="applyOfflineBtn" class="btn-secondary" style="padding:4px 16px;">应用离线核心</button>
+                    </div>
+                    <div id="offlineMsg" style="margin-top:10px; font-size:0.7rem;"></div>
+                </div>
+                <div id="progressArea" class="progress-area" style="display: none;">
+                    <div class="flex-between"><span>🔄 转换进度</span><span id="progressPercent">0%</span></div>
+                    <div class="progress-bar-bg"><div id="progressFill" class="progress-fill"></div></div>
+                    <div id="logMsg"></div>
+                </div>
+            </div>
+            <div style="font-size:0.75rem; text-align:center;">⚡ 完全本地处理，视频不会上传</div>
+        </div>
+    </main>
+    <footer class="footer"><p>© 2026 Anming_cat · WebP 工具 · 支持离线加载</p></footer>
+
+    <script src="../script.js"></script>
+    <script>
+        (function(){
+            // ---------- DOM 元素 ----------
+            const uploadZone = document.getElementById('uploadZone');
+            const fileInput = document.getElementById('videoInput');
+            const sourceVideo = document.getElementById('sourceVideo');
+            const noVideoMsg = document.getElementById('noVideoMsg');
+            const webpImg = document.getElementById('webpResultImage');
+            const noResultMsg = document.getElementById('noResultMsg');
+            const convertBtn = document.getElementById('convertBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const fpsInput = document.getElementById('fpsInput');
+            const qualitySlider = document.getElementById('qualitySlider');
+            const qualityValue = document.getElementById('qualityValue');
+            const widthInput = document.getElementById('widthInput');
+            const progressArea = document.getElementById('progressArea');
+            const progressFill = document.getElementById('progressFill');
+            const progressPercent = document.getElementById('progressPercent');
+            const logMsg = document.getElementById('logMsg');
+            const ffmpegStatusSpan = document.getElementById('ffmpegStatus');
+            const retryBtn = document.getElementById('retryBtn');
+            const showOfflineBtn = document.getElementById('showOfflineBtn');
+            const offlinePanel = document.getElementById('offlinePanel');
+            const coreJsFile = document.getElementById('coreJsFile');
+            const coreWasmFile = document.getElementById('coreWasmFile');
+            const applyOfflineBtn = document.getElementById('applyOfflineBtn');
+            const offlineMsg = document.getElementById('offlineMsg');
+
+            // 状态变量
+            let ffmpeg = null;
+            let ffmpegLoaded = false;
+            let currentVideoFile = null;
+            let outputWebpBlob = null;
+            let originalVideoURL = null;
+            let originalVideoWidth = 0, originalVideoHeight = 0;
+            let converting = false;
+            let totalFramesEstimate = null;
+            let offlineCoreData = { js: null, wasm: null }; // 存储离线文件内容
+
+            qualitySlider.addEventListener('input', () => { qualityValue.innerText = qualitySlider.value; });
+
+            // 上传视频
+            function handleFile(file) {
+                if (!file.type.includes('mp4')) { alert('请上传 MP4 文件'); return; }
+                currentVideoFile = file;
+                if (originalVideoURL) URL.revokeObjectURL(originalVideoURL);
+                originalVideoURL = URL.createObjectURL(file);
+                sourceVideo.src = originalVideoURL;
+                sourceVideo.style.display = 'block';
+                noVideoMsg.style.display = 'none';
+                sourceVideo.load();
+                sourceVideo.onloadedmetadata = () => {
+                    originalVideoWidth = sourceVideo.videoWidth;
+                    originalVideoHeight = sourceVideo.videoHeight;
+                    if (!widthInput.value || widthInput.value <= 0) widthInput.value = originalVideoWidth;
+                    document.getElementById('fileInfo').style.display = 'inline-flex';
+                    document.getElementById('fileInfo').innerHTML = `<span class="material-icons" style="font-size:16px;">videocam</span> ${file.name} (${(file.size/1024/1024).toFixed(2)} MB) · ${originalVideoWidth}x${originalVideoHeight}`;
+                };
+                resetOutput();
+            }
+            function resetOutput() {
+                if (outputWebpBlob) URL.revokeObjectURL(outputWebpBlob);
+                outputWebpBlob = null;
+                webpImg.style.display = 'none';
+                noResultMsg.style.display = 'block';
+                downloadBtn.disabled = true;
+                webpImg.src = '';
+            }
+            uploadZone.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', e => { if(e.target.files.length) handleFile(e.target.files[0]); });
+            uploadZone.addEventListener('dragover', e => e.preventDefault());
+            uploadZone.addEventListener('drop', e => { e.preventDefault(); if(e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]); });
+
+            // 多CDN加载主库 + core (自动重试)
+            const cdnList = [
+                { name: 'jsDelivr', lib: 'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js', coreJs: 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.js', coreWasm: 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.wasm' },
+                { name: 'unpkg', lib: 'https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js', coreJs: 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.js', coreWasm: 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.wasm' },
+                { name: 'skypack', lib: 'https://cdn.skypack.dev/@ffmpeg/ffmpeg@0.12.10', coreJs: 'https://cdn.skypack.dev/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.js', coreWasm: 'https://cdn.skypack.dev/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.wasm' }
+            ];
+            let currentCdnIndex = 0;
+
+            async function loadScript(src) {
+                return new Promise((resolve, reject) => {
+                    const script = document.createElement('script');
+                    script.src = src;
+                    script.onload = () => resolve();
+                    script.onerror = () => reject(new Error(`加载失败: ${src}`));
+                    document.head.appendChild(script);
+                });
+            }
+
+            async function initFFmpegWithCDN(cdnIndex) {
+                if (cdnIndex >= cdnList.length) throw new Error('所有CDN均失败，请使用离线加载');
+                const cdn = cdnList[cdnIndex];
+                ffmpegStatusSpan.innerHTML = `📡 尝试 ${cdn.name} ...`;
+                try {
+                    // 确保 FFmpeg 库已加载
+                    if (typeof window.FFmpeg === 'undefined') {
+                        await loadScript(cdn.lib);
+                    }
+                    if (!window.FFmpeg) throw new Error('FFmpeg 构造函数不存在');
+                    ffmpeg = new window.FFmpeg();
+                    // 配置 core 文件 URL
+                    await ffmpeg.load({
+                        coreURL: cdn.coreJs,
+                        wasmURL: cdn.coreWasm,
+                    });
+                    ffmpegLoaded = true;
+                    ffmpegStatusSpan.innerHTML = `✅ FFmpeg 就绪 (${cdn.name})`;
+                    return true;
+                } catch (err) {
+                    console.warn(`${cdn.name} 失败`, err);
+                    // 尝试下一个 CDN
+                    return initFFmpegWithCDN(cdnIndex + 1);
+                }
+            }
+
+            // 主初始化入口
+            async function initFFmpeg() {
+                if (ffmpegLoaded && ffmpeg) return true;
+                ffmpegLoaded = false;
+                ffmpeg = null;
+                currentCdnIndex = 0;
+                try {
+                    return await initFFmpegWithCDN(0);
+                } catch (err) {
+                    ffmpegStatusSpan.innerHTML = '❌ 自动加载失败';
+                    logMsg.innerText = err.message + ' 请尝试「离线加载核心」';
+                    return false;
+                }
+            }
+
+            // 重试
+            retryBtn.addEventListener('click', async () => {
+                ffmpegLoaded = false;
+                ffmpeg = null;
+                await initFFmpeg();
+            });
+
+            // 离线核心上传处理
+            coreJsFile.addEventListener('change', e => { if(e.target.files[0]) readFileAsText(e.target.files[0], 'js'); });
+            coreWasmFile.addEventListener('change', e => { if(e.target.files[0]) readFileAsArrayBuffer(e.target.files[0], 'wasm'); });
+            function readFileAsText(file, type) {
+                const reader = new FileReader();
+                reader.onload = (ev) => { offlineCoreData.js = ev.target.result; offlineMsg.innerText = '✅ js 已加载' + (offlineCoreData.wasm ? '，可应用' : ''); };
+                reader.readAsText(file);
+            }
+            function readFileAsArrayBuffer(file, type) {
+                const reader = new FileReader();
+                reader.onload = (ev) => { offlineCoreData.wasm = ev.target.result; offlineMsg.innerText = (offlineCoreData.js ? '✅ 两个文件都已加载，可应用' : '✅ wasm 已加载，还需 js'); };
+                reader.readAsArrayBuffer(file);
+            }
+            applyOfflineBtn.addEventListener('click', async () => {
+                if (!offlineCoreData.js || !offlineCoreData.wasm) {
+                    offlineMsg.innerText = '请先上传 ffmpeg-core.js 和 ffmpeg-core.wasm 文件';
+                    return;
+                }
+                ffmpegStatusSpan.innerHTML = '📦 使用离线核心...';
+                try {
+                    if (typeof window.FFmpeg === 'undefined') {
+                        // 动态执行离线 js 内容 (注意: 离线 js 期望导出全局 FFmpeg)
+                        const blob = new Blob([offlineCoreData.js], { type: 'application/javascript' });
+                        const url = URL.createObjectURL(blob);
+                        await loadScript(url);
+                        URL.revokeObjectURL(url);
+                    }
+                    if (!window.FFmpeg) throw new Error('离线 FFmpeg 库无效');
+                    ffmpeg = new window.FFmpeg();
+                    // 使用离线 wasm 文件，创建 Blob URL
+                    const wasmBlob = new Blob([offlineCoreData.wasm], { type: 'application/wasm' });
+                    const wasmUrl = URL.createObjectURL(wasmBlob);
+                    // 需要一个 dummy js 内容，因为 coreURL 需要指向一个 js 包装文件，但我们可以直接利用现有的 core 加载逻辑？更简单: 我们使用 ffmpeg.load 的 coreURL 和 wasmURL 参数，但是 coreURL 必须是一个有效的 js 文件。离线模式下，我们可以利用刚才加载的 window.FFmpeg 内部机制？更可靠：直接手动创建 ffmpeg 并注入 wasm。
+                    // 实际上 @ffmpeg/ffmpeg 的 load 接受 coreURL/wasmURL，我们可以将 wasmURL 指向 Blob，coreURL 指向一个最小的 stub？官方 core 包中 ffmpeg-core.js 是胶水代码，必须同时提供。因此离线时需要两个文件都提供 Blob URL。
+                    const coreJsBlob = new Blob([offlineCoreData.js], { type: 'application/javascript' });
+                    const coreJsUrl = URL.createObjectURL(coreJsBlob);
+                    await ffmpeg.load({
+                        coreURL: coreJsUrl,
+                        wasmURL: wasmUrl,
+                    });
+                    URL.revokeObjectURL(coreJsUrl);
+                    URL.revokeObjectURL(wasmUrl);
+                    ffmpegLoaded = true;
+                    ffmpegStatusSpan.innerHTML = '✅ 离线 FFmpeg 就绪';
+                    offlineMsg.innerText = '离线核心加载成功！';
+                } catch (err) {
+                    console.error(err);
+                    ffmpegStatusSpan.innerHTML = '❌ 离线加载失败';
+                    offlineMsg.innerText = '失败：' + err.message;
+                }
+            });
+
+            showOfflineBtn.addEventListener('click', () => { offlinePanel.classList.toggle('visible'); });
+
+            // 转换核心 (与原逻辑相同，使用 ffmpeg 对象)
+            async function convertToWebP() {
+                if (!currentVideoFile) { alert('请先上传 MP4'); return; }
+                if (converting) return;
+                if (!ffmpegLoaded) { alert('FFmpeg 未就绪，请稍后或重试/离线加载'); return; }
+                converting = true;
+                convertBtn.disabled = true;
+                downloadBtn.disabled = true;
+                progressArea.style.display = 'block';
+                updateProgress(0, '准备...');
+                resetOutput();
+                try {
+                    const data = new Uint8Array(await currentVideoFile.arrayBuffer());
+                    await ffmpeg.writeFile('input.mp4', data);
+                    let fps = parseInt(fpsInput.value) || 15;
+                    let quality = parseInt(qualitySlider.value);
+                    let width = parseInt(widthInput.value);
+                    let scale = '';
+                    if (width && width > 0 && originalVideoWidth) {
+                        let ratio = originalVideoHeight / originalVideoWidth;
+                        let height = Math.round(width * ratio);
+                        scale = `scale=${width}:${height},`;
+                    }
+                    let vf = [];
+                    if (fps) vf.push(`fps=${fps}`);
+                    if (scale) vf.push(scale.replace(/,$/, ''));
+                    let vfStr = vf.length ? `-vf "${vf.join(',')}"` : '';
+                    if (sourceVideo.duration && fps) totalFramesEstimate = sourceVideo.duration * fps;
+                    else totalFramesEstimate = 120;
+                    const cmd = ['-i', 'input.mp4', ...(vfStr ? vfStr.split(' ') : []), '-c:v', 'libwebp', '-quality', quality.toString(), '-loop', '0', '-y', 'output.webp'];
+                    ffmpeg.on('log', ({ message }) => { if (message.includes('frame=')) logMsg.innerText = message.slice(0, 100); });
+                    ffmpeg.on('progress', ({ progress }) => updateProgress(Math.floor(progress*100), `编码中 ${Math.floor(progress*100)}%`));
+                    await ffmpeg.exec(cmd);
+                    const out = await ffmpeg.readFile('output.webp');
+                    if (!out || out.length < 100) throw new Error('生成失败');
+                    outputWebpBlob = new Blob([out], { type: 'image/webp' });
+                    const url = URL.createObjectURL(outputWebpBlob);
+                    webpImg.src = url;
+                    webpImg.style.display = 'block';
+                    noResultMsg.style.display = 'none';
+                    downloadBtn.disabled = false;
+                    updateProgress(100, '完成');
+                    await ffmpeg.deleteFile('input.mp4');
+                    await ffmpeg.deleteFile('output.webp');
+                } catch (err) {
+                    logMsg.innerText = '❌ 错误：' + err.message;
+                    updateProgress(0, '转换失败');
+                } finally {
+                    converting = false;
+                    convertBtn.disabled = false;
+                }
+            }
+            function updateProgress(percent, msg) {
+                let p = Math.min(100, Math.max(0, percent));
+                progressFill.style.width = `${p}%`;
+                progressPercent.innerText = `${p}%`;
+                if (msg) logMsg.innerText = msg;
+            }
+            function downloadWebP() {
+                if (!outputWebpBlob) return;
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(outputWebpBlob);
+                a.download = `webp_${Date.now()}.webp`;
+                a.click();
+                URL.revokeObjectURL(a.href);
+            }
+            convertBtn.addEventListener('click', convertToWebP);
+            downloadBtn.addEventListener('click', downloadWebP);
+            // 自动开始初始化
+            initFFmpeg();
+        })();
+    </script>
+</body>
+</html>

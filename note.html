@@ -9,8 +9,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.geekzu.org/css2?family=Urbanist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js">
+    </script>
     <link rel="stylesheet" href="style.css">
     <style>
         /* ========== 布局与侧边栏（直角风格，保持不变） ========== */
@@ -66,14 +68,14 @@
             transition: margin 0.25s ease;
             margin: 0 auto;
         }
-        .notes-sidebar:not(.collapsed) ~ .notes-content,
-        .notes-sidebar:not(.collapsed) + .notes-content {
+        .notes-sidebar:not(.collapsed)~.notes-content,
+        .notes-sidebar:not(.collapsed)+.notes-content {
             max-width: calc(100% - 260px - 24px);
             margin-left: 24px;
             margin-right: auto;
         }
-        .notes-sidebar.collapsed ~ .notes-content,
-        .notes-sidebar.collapsed + .notes-content {
+        .notes-sidebar.collapsed~.notes-content,
+        .notes-sidebar.collapsed+.notes-content {
             max-width: 620px;
             margin-left: auto;
             margin-right: auto;
@@ -170,7 +172,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.3);
+            background-color: rgba(0, 0, 0, 0.3);
             z-index: 9;
             backdrop-filter: blur(2px);
             display: none;
@@ -245,7 +247,8 @@
             font-weight: 550;
             text-align: center;
         }
-        .markdown-body h5, .markdown-body h6 {
+        .markdown-body h5,
+        .markdown-body h6 {
             font-size: 1.2rem;
             margin-top: 1.6rem;
             margin-bottom: 0.8rem;
@@ -258,52 +261,52 @@
             color: var(--color-accent);
             font-weight: 700;
         }
-/* 普通链接：独占一行、宽度撑满、自动换行 */
-.markdown-body a {
-    display: block;
-    width: 100%;
-    box-sizing: border-box;
-    background-color: var(--color-accent-06);
-    border: 1px solid var(--color-accent-15);
-    padding: 0.4rem 1rem;
-    margin: 0.4rem 0;
-    text-decoration: none;
-    color: var(--color-accent);
-    font-weight: 500;
-    transition: all var(--transition-fast);
-    border-radius: 0;
-    box-shadow: var(--shadow-sm);
-    white-space: normal;
-    word-break: break-word;
-    text-align: left;
-    margin-left: 0;
-    margin-right: 0;
-}
+        /* 普通链接：独占一行、宽度撑满、自动换行 */
+        .markdown-body a {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            background-color: var(--color-accent-06);
+            border: 1px solid var(--color-accent-15);
+            padding: 0.4rem 1rem;
+            margin: 0.4rem 0;
+            text-decoration: none;
+            color: var(--color-accent);
+            font-weight: 500;
+            transition: all var(--transition-fast);
+            border-radius: 0;
+            box-shadow: var(--shadow-sm);
+            white-space: normal;
+            word-break: break-word;
+            text-align: left;
+            margin-left: 0;
+            margin-right: 0;
+        }
 
-.markdown-body a:hover {
-    background-color: var(--color-accent);
-    color: white;
-    border-color: var(--color-accent);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-}
+        .markdown-body a:hover {
+            background-color: var(--color-accent);
+            color: white;
+            border-color: var(--color-accent);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
 
-/* 图片链接：保持原有卡片居中样式，不强制占满整行 */
-.markdown-body a:has(img) {
-    display: block;
-    background: none;
-    border: none;
-    padding: 0;
-    box-shadow: none;
-    width: auto;
-    margin: 1.5rem auto;
-    text-align: center;
-}
+        /* 图片链接：保持原有卡片居中样式，不强制占满整行 */
+        .markdown-body a:has(img) {
+            display: block;
+            background: none;
+            border: none;
+            padding: 0;
+            box-shadow: none;
+            width: auto;
+            margin: 1.5rem auto;
+            text-align: center;
+        }
 
-.markdown-body a:has(img):hover {
-    transform: none;
-    background: none;
-}
+        .markdown-body a:has(img):hover {
+            transform: none;
+            background: none;
+        }
         /* 分割线：统一粗细，更长，间距更大，主题色 */
         .markdown-body hr {
             border: none;
@@ -324,7 +327,8 @@
             box-shadow: var(--shadow-sm);
         }
         /* 列表样式 */
-        .markdown-body ul, .markdown-body ol {
+        .markdown-body ul,
+        .markdown-body ol {
             padding-left: 1.8rem;
             margin-bottom: 1.4rem;
         }
@@ -378,7 +382,8 @@
             border-collapse: collapse;
             margin: 1.5rem 0;
         }
-        .markdown-body th, .markdown-body td {
+        .markdown-body th,
+        .markdown-body td {
             border: 1px solid var(--color-dark-12);
             padding: 8px 12px;
         }
@@ -417,7 +422,7 @@
             }
             .notes-sidebar.mobile-open {
                 transform: translateX(0);
-                box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+                box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
             }
             .sidebar-overlay {
                 display: block;
@@ -463,7 +468,8 @@
                 height: 40px;
             }
         }
-        .empty-notes, .loading-box {
+        .empty-notes,
+        .loading-box {
             text-align: center;
             padding: 80px 32px;
             color: var(--color-dark-50);
@@ -502,255 +508,326 @@
     <footer class="footer"><p>© 2026 Anming_cat</p></footer>
     <div id="backToTop" class="back-to-top"><span class="material-icons">arrow_upward</span></div>
 
-    <script src="script.js"></script>
-    <script>
-        // 侧边栏交互（与之前完全相同）
-        const sidebar = document.getElementById('notesSidebar');
-        const toggleBtn = document.getElementById('sidebarToggleBtn');
-        const overlay = document.getElementById('sidebarOverlay');
-        const isMobile = () => window.innerWidth <= 820;
+<script src="script.js"></script>
+<script>
+    // ========== 侧边栏交互 ==========
+    const sidebar = document.getElementById('notesSidebar');
+    const toggleBtn = document.getElementById('sidebarToggleBtn');
+    const overlay = document.getElementById('sidebarOverlay');
+    const isMobile = () => window.innerWidth <= 820;
 
-        function initSidebarState() {
-            if (isMobile()) { sidebar.classList.remove('collapsed', 'mobile-open'); }
-            else { sidebar.classList.remove('collapsed', 'mobile-open'); if (overlay) overlay.classList.remove('active'); }
-        }
-        function toggleSidebar() {
-            if (isMobile()) {
-                if (sidebar.classList.contains('mobile-open')) {
-                    sidebar.classList.remove('mobile-open'); if (overlay) overlay.classList.remove('active');
-                    document.body.style.overflow = '';
-                } else {
-                    sidebar.classList.add('mobile-open'); if (overlay) overlay.classList.add('active');
-                    document.body.style.overflow = 'hidden';
-                }
-            } else { sidebar.classList.toggle('collapsed'); if (overlay) overlay.classList.remove('active'); }
-        }
-        function closeSidebarMobile() {
-            if (isMobile() && sidebar.classList.contains('mobile-open')) {
+    function initSidebarState() {
+        if (isMobile()) { sidebar.classList.remove('collapsed', 'mobile-open'); }
+        else { sidebar.classList.remove('collapsed', 'mobile-open'); if (overlay) overlay.classList.remove('active'); }
+    }
+
+    function toggleSidebar() {
+        if (isMobile()) {
+            if (sidebar.classList.contains('mobile-open')) {
                 sidebar.classList.remove('mobile-open'); if (overlay) overlay.classList.remove('active');
                 document.body.style.overflow = '';
+            } else {
+                sidebar.classList.add('mobile-open'); if (overlay) overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
             }
+        } else { sidebar.classList.toggle('collapsed'); if (overlay) overlay.classList.remove('active'); }
+    }
+
+    function closeSidebarMobile() {
+        if (isMobile() && sidebar.classList.contains('mobile-open')) {
+            sidebar.classList.remove('mobile-open'); if (overlay) overlay.classList.remove('active');
+            document.body.style.overflow = '';
         }
-        window.addEventListener('resize', () => {
-            if (isMobile()) { sidebar.classList.remove('collapsed'); if (!sidebar.classList.contains('mobile-open')) { if (overlay) overlay.classList.remove('active'); document.body.style.overflow = ''; } }
-            else { if (sidebar.classList.contains('mobile-open')) sidebar.classList.remove('mobile-open'); if (overlay) overlay.classList.remove('active'); document.body.style.overflow = ''; }
+    }
+
+    window.addEventListener('resize', () => {
+        if (isMobile()) {
+            sidebar.classList.remove('collapsed');
+            if (!sidebar.classList.contains('mobile-open')) { if (overlay) overlay.classList.remove('active'); document.body.style.overflow = ''; }
+        } else {
+            if (sidebar.classList.contains('mobile-open')) sidebar.classList.remove('mobile-open');
+            if (overlay) overlay.classList.remove('active'); document.body.style.overflow = '';
+        }
+    });
+
+    if (toggleBtn) toggleBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleSidebar(); });
+    if (overlay) overlay.addEventListener('click', closeSidebarMobile);
+    const backTop = document.getElementById('backToTop');
+    if (backTop) backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+    // ========== 笔记核心逻辑 ==========
+    let manifestData = null;
+    let currentNotePath = null;
+    const folderTreeEl = document.getElementById('folderTree');
+    const noteContentArea = document.getElementById('noteContentArea');
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+    }
+
+    /**
+     * 将自定义语法 {文字}(路径) 替换为卡片链接 HTML
+     * 路径中允许任意字符，包括 & 和空格
+     */
+    function replaceCustomLinks(html) {
+        // 正则：匹配 {显示文字}(路径) ，不跨越换行，路径不能包含换行
+        // 路径部分支持任意非换行字符，但排除可能出现的闭合括号干扰（简单处理）
+        const regex = /\{([^}]+)\}\(([^\n)]+)\)/g;
+        return html.replace(regex, (match, text, href) => {
+            // 去除路径首尾空白
+            const cleanHref = href.trim();
+            // 生成卡片链接 HTML，使用与 Markdown 链接相同的结构，以便复用 CSS
+            return `<a href="${cleanHref}" class="note-custom-link" data-note-href="${cleanHref}">${text}</a>`;
         });
-        if (toggleBtn) toggleBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleSidebar(); });
-        if (overlay) overlay.addEventListener('click', closeSidebarMobile);
-        const backTop = document.getElementById('backToTop');
-        if (backTop) backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    }
 
-        // ---------- 笔记核心（适配新 manifest.js 并按清单顺序排列）----------
-        let manifestData = null;
-        let currentNotePath = null;
-        const folderTreeEl = document.getElementById('folderTree');
-        const noteContentArea = document.getElementById('noteContentArea');
+    // 解析链接 href 到 manifest 中的实际文件路径（支持自动补全 .md / .txt）
+    function resolveNotePathFromHref(rawHref, currentPath) {
+        if (!rawHref || !manifestData || !manifestData.files) return null;
+        let clean = rawHref.split('#')[0].split('?')[0].trim();
+        if (!clean || /^(https?:)?\/\//i.test(clean) || clean.startsWith('#')) return null;
+        clean = clean.replace(/\\/g, '/');
 
-        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
+        const tryResolve = (path) => {
+            for (let ext of ['', '.md', '.txt']) {
+                const tryPath = path + ext;
+                if (manifestData.files.some(f => f.path === tryPath)) return tryPath;
+            }
+            return null;
+        };
 
-        function renderMarkdownToContent(filePath, markdownText) {
-            console.log('🎨 开始渲染:', filePath, '内容长度:', markdownText.length);
-            if (!noteContentArea) return;
-            try {
-                let htmlContent = marked.parse(markdownText);
-                let fileNameDisplay = filePath.split('/').pop().replace(/\.(md|txt)$/i, '') || filePath;
-                noteContentArea.innerHTML = `
-                    <div class="content-header"><h2>${escapeHtml(fileNameDisplay)}</h2><div class="content-meta"><span class="material-icons" style="font-size:14px;">folder</span> ${escapeHtml(filePath)}</div></div>
-                    <div class="markdown-body">${htmlContent}</div>
-                `;
-                document.querySelectorAll('.markdown-body pre code').forEach(block => hljs.highlightElement(block));
-            } catch (err) { noteContentArea.innerHTML = `<div class="empty-notes"><span class="material-icons">bug_report</span><p>渲染失败: ${escapeHtml(err.message)}</p></div>`; }
+        let result = tryResolve(clean);
+        if (result) return result;
+
+        // 基于当前笔记所在目录解析相对路径
+        if (currentPath) {
+            let base = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
+            let rel = base + clean;
+            let parts = rel.split('/');
+            let resolved = [];
+            for (let p of parts) {
+                if (p === '..') resolved.pop();
+                else if (p !== '.' && p !== '') resolved.push(p);
+            }
+            rel = resolved.join('/');
+            result = tryResolve(rel);
+            if (result) return result;
         }
+        return null;
+    }
 
-        function openNoteByPath(path) {
-            console.log('📂 openNoteByPath 被调用, 路径:', path);
-            if (!manifestData || !manifestData.files) {
-                console.error('manifestData 未加载');
-                noteContentArea.innerHTML = '<div class="empty-notes"><p>笔记数据未加载</p></div>';
-                return;
+    function renderMarkdownToContent(filePath, markdownText) {
+        console.log('🎨 渲染笔记:', filePath);
+        if (!noteContentArea) return;
+        try {
+            // 先正常解析 Markdown
+            let htmlContent = marked.parse(markdownText);
+            // 再替换自定义 {文字}(路径) 语法
+            htmlContent = replaceCustomLinks(htmlContent);
+
+            let displayName = filePath.split('/').pop().replace(/\.(md|txt)$/i, '') || filePath;
+            noteContentArea.innerHTML = `
+                <div class="content-header">
+                    <h2>${escapeHtml(displayName)}</h2>
+                    <div class="content-meta">
+                        <span class="material-icons" style="font-size:14px;">folder</span> ${escapeHtml(filePath)}
+                    </div>
+                </div>
+                <div class="markdown-body">${htmlContent}</div>
+            `;
+            // 代码高亮
+            document.querySelectorAll('.markdown-body pre code').forEach(block => hljs.highlightElement(block));
+        } catch (err) {
+            noteContentArea.innerHTML = `<div class="empty-notes"><span class="material-icons">bug_report</span><p>渲染失败: ${escapeHtml(err.message)}</p></div>`;
+        }
+    }
+
+    function openNoteByPath(path) {
+        if (!manifestData || !manifestData.files) {
+            noteContentArea.innerHTML = '<div class="empty-notes"><p>笔记数据未加载</p></div>';
+            return;
+        }
+        const noteFile = manifestData.files.find(f => f.path === path);
+        if (!noteFile) {
+            noteContentArea.innerHTML = `<div class="empty-notes"><p>未找到笔记: ${escapeHtml(path)}</p></div>`;
+            return;
+        }
+        currentNotePath = path;
+        renderMarkdownToContent(noteFile.path, noteFile.content);
+
+        // 高亮侧边栏当前项
+        document.querySelectorAll('.note-link').forEach(link => {
+            link.classList.toggle('active-note', link.getAttribute('data-path') === path);
+        });
+
+        if (isMobile() && sidebar.classList.contains('mobile-open')) closeSidebarMobile();
+
+        const newUrl = `${window.location.pathname}?note=${encodeURIComponent(path)}`;
+        window.history.pushState({ path }, '', newUrl);
+    }
+
+    function buildOrderedFolderGroups(filesArray) {
+        const groups = new Map();
+        const folderOrder = [];
+        for (const file of filesArray) {
+            let normalized = file.path.replace(/\\/g, '/');
+            let lastSlash = normalized.lastIndexOf('/');
+            let folder = lastSlash !== -1 ? normalized.substring(0, lastSlash) : '';
+            let fileName = lastSlash !== -1 ? normalized.substring(lastSlash + 1) : normalized;
+            let displayName = fileName.replace(/\.(md|txt)$/i, '') || fileName;
+
+            if (!groups.has(folder)) {
+                groups.set(folder, []);
+                folderOrder.push(folder);
             }
-            const noteFile = manifestData.files.find(f => f.path === path);
-            if (!noteFile) {
-                console.error('未找到笔记文件:', path);
-                noteContentArea.innerHTML = `<div class="empty-notes"><p>未找到笔记: ${escapeHtml(path)}</p></div>`;
-                return;
+            groups.get(folder).push({ fullPath: normalized, displayName, content: file.content });
+        }
+        return { groups, folderOrder };
+    }
+
+    function renderSidebar(groups, folderOrder) {
+        if (!folderTreeEl) return;
+        if (!folderOrder.length) {
+            folderTreeEl.innerHTML = '<div class="empty-notes"><p>暂无笔记</p></div>';
+            return;
+        }
+        let html = '';
+        for (const folder of folderOrder) {
+            const notes = groups.get(folder);
+            if (!notes || notes.length === 0) continue;
+            const folderDisplay = folder === '' ? '全部笔记' : folder.split('/').pop();
+            html += `<div class="folder-group">
+                <div class="folder-title">
+                    <span class="material-icons">folder_open</span>
+                    <span>${escapeHtml(folderDisplay)}</span>
+                    <span style="margin-left:auto;font-size:0.7rem;">${notes.length}</span>
+                </div>
+                <ul class="note-list">`;
+            for (const note of notes) {
+                const active = (currentNotePath === note.fullPath) ? 'active-note' : '';
+                html += `<li class="note-item">
+                    <div class="note-link ${active}" data-path="${escapeHtml(note.fullPath)}">
+                        <span class="material-icons">description</span>
+                        <span>${escapeHtml(note.displayName)}</span>
+                    </div>
+                </li>`;
             }
-            console.log('📄 找到笔记文件:', noteFile);
-            currentNotePath = path;
-            try {
-                renderMarkdownToContent(noteFile.path, noteFile.content);
-                console.log('✅ 渲染完成');
-            } catch (err) {
-                console.error('渲染失败:', err);
-                noteContentArea.innerHTML = `<div class="empty-notes"><p>渲染错误: ${escapeHtml(err.message)}</p></div>`;
-            }
-            // 高亮当前选中的条目
-            document.querySelectorAll('.note-link').forEach(link => {
-                if (link.getAttribute('data-path') === path) link.classList.add('active-note');
-                else link.classList.remove('active-note');
+            html += `</ul></div>`;
+        }
+        folderTreeEl.innerHTML = html;
+
+        document.querySelectorAll('.note-link').forEach(el => {
+            el.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const path = el.getAttribute('data-path');
+                if (path) openNoteByPath(path);
             });
-            if (isMobile() && sidebar.classList.contains('mobile-open')) closeSidebarMobile();
-            const newUrl = `${window.location.pathname}?note=${encodeURIComponent(path)}`;
-            window.history.pushState({ path }, '', newUrl);
-        }
-
-        /**
-         * 构建侧边栏分组 —— 严格按照 manifest 中文件的顺序显示
-         * 不进行任何额外的字母排序，完全尊重构建工具排好的顺序（数字前缀、文件夹顺序等）
-         */
-        function buildOrderedFolderGroups(filesArray) {
-            // 使用 Map 保存每个文件夹对应的文件列表（保持插入顺序）
-            const groups = new Map();
-            // 使用数组保存文件夹的出现顺序（第一次出现时记录）
-            const folderOrder = [];
-
-            for (const file of filesArray) {
-                let normalized = file.path.replace(/\\/g, '/');
-                let lastSlash = normalized.lastIndexOf('/');
-                let folder = lastSlash !== -1 ? normalized.substring(0, lastSlash) : '';
-                let fileName = lastSlash !== -1 ? normalized.substring(lastSlash + 1) : normalized;
-                let displayName = fileName.replace(/\.(md|txt)$/i, '') || fileName;
-
-                if (!groups.has(folder)) {
-                    groups.set(folder, []);
-                    // 只有新文件夹才记录顺序（空字符串根目录也会被记录）
-                    folderOrder.push(folder);
-                }
-                groups.get(folder).push({
-                    fullPath: normalized,
-                    displayName,
-                    content: file.content
-                });
-            }
-            // 注意：每个文件夹内的文件列表已经按照 manifest 中的顺序自然排列，无需额外排序
-            return { groups, folderOrder };
-        }
-
-        function renderSidebar(groups, folderOrder) {
-            if (!folderTreeEl) return;
-            if (!folderOrder.length) {
-                folderTreeEl.innerHTML = '<div class="empty-notes"><p>暂无笔记</p></div>';
-                return;
-            }
-            let html = '';
-            for (const folderKey of folderOrder) {
-                const notesList = groups.get(folderKey);
-                if (!notesList || notesList.length === 0) continue;
-                // 文件夹显示名称：根目录显示“全部笔记”，否则显示最后一级文件夹名（干净名称）
-                let folderDisplay = folderKey === '' ? '全部笔记' : folderKey.split('/').pop();
-                html += `<div class="folder-group">
-                            <div class="folder-title">
-                                <span class="material-icons">folder_open</span>
-                                <span>${escapeHtml(folderDisplay)}</span>
-                                <span style="margin-left:auto; font-size:0.7rem;">${notesList.length}</span>
-                            </div>
-                            <ul class="note-list">`;
-                for (const note of notesList) {
-                    const activeClass = (currentNotePath === note.fullPath) ? 'active-note' : '';
-                    html += `<li class="note-item">
-                                <div class="note-link ${activeClass}" data-path="${escapeHtml(note.fullPath)}">
-                                    <span class="material-icons">description</span>
-                                    <span>${escapeHtml(note.displayName)}</span>
-                                </div>
-                             </li>`;
-                }
-                html += `</ul></div>`;
-            }
-            folderTreeEl.innerHTML = html;
-
-            // 绑定笔记点击事件
-            document.querySelectorAll('.note-link').forEach(el => {
-                el.addEventListener('click', (e) => {
+        });
+        document.querySelectorAll('.folder-title').forEach(title => {
+            const list = title.nextElementSibling;
+            if (list && list.classList.contains('note-list')) {
+                title.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    const path = el.getAttribute('data-path');
-                    if (path) openNoteByPath(path);
+                    list.style.display = list.style.display === 'none' ? 'block' : 'none';
                 });
-            });
-            // 绑定文件夹折叠/展开（保持原有体验）
-            document.querySelectorAll('.folder-title').forEach(title => {
-                const list = title.nextElementSibling;
-                if (list && list.classList.contains('note-list')) {
-                    title.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        list.style.display = list.style.display === 'none' ? 'block' : 'none';
-                    });
-                }
-            });
-        }
-
-        async function loadManifest() {
-            return new Promise((resolve, reject) => {
-                const existing = document.getElementById('note-manifest-script');
-                if (existing) existing.remove();
-                const script = document.createElement('script');
-                script.id = 'note-manifest-script';
-                script.src = '/note/manifest.js?v=' + Date.now();
-                script.onload = () => {
-                    if (window.__NOTE_MANIFEST__ && Array.isArray(window.__NOTE_MANIFEST__.files)) {
-                        resolve(window.__NOTE_MANIFEST__);
-                    } else {
-                        reject(new Error('manifest.js 格式无效，缺少 files 数组'));
-                    }
-                };
-                script.onerror = () => reject(new Error('无法加载 /note/manifest.js，请确保文件存在'));
-                document.head.appendChild(script);
-            });
-        }
-
-        function getQueryParam(name) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(name);
-        }
-
-        async function initNotes() {
-            try {
-                folderTreeEl.innerHTML = '<div class="loading-box"><span class="material-icons">autorenew</span><p>加载笔记库...</p></div>';
-                const data = await loadManifest();
-                manifestData = data;
-                if (!data.files || data.files.length === 0) throw new Error('笔记清单为空');
-
-                console.log('📚 已加载笔记条目数:', data.files.length);
-                // 调试：打印前几个路径以确认顺序
-                console.log('📄 笔记顺序(前5):', data.files.slice(0,5).map(f => f.path));
-
-                // 构建严格按清单顺序的分组
-                const { groups, folderOrder } = buildOrderedFolderGroups(data.files);
-                renderSidebar(groups, folderOrder);
-
-                // 处理 URL 参数：打开指定笔记
-                const targetNotePath = getQueryParam('note');
-                let noteToOpen = null;
-                if (targetNotePath) {
-                    const decodedPath = decodeURIComponent(targetNotePath);
-                    console.log('🔗 尝试打开 URL 指定笔记:', decodedPath);
-                    noteToOpen = manifestData.files.find(f => f.path === decodedPath);
-                    if (!noteToOpen) {
-                        console.warn('❌ 未找到匹配笔记，将回退到第一篇');
-                    } else {
-                        console.log('✅ 找到匹配笔记:', noteToOpen.path);
-                    }
-                }
-
-                // 如果没有指定或找不到，则打开清单中的第一个文件（整个 manifest 的第一个文件）
-                if (!noteToOpen && manifestData.files.length > 0) {
-                    noteToOpen = manifestData.files[0];
-                    console.log('📖 回退打开第一篇笔记:', noteToOpen.path);
-                }
-
-                if (noteToOpen) {
-                    openNoteByPath(noteToOpen.path);
-                } else {
-                    noteContentArea.innerHTML = '<div class="empty-notes"><p>没有可显示的笔记</p></div>';
-                }
-            } catch (err) {
-                console.error('初始化笔记失败:', err);
-                folderTreeEl.innerHTML = `<div class="empty-notes"><span class="material-icons">error</span><p>${escapeHtml(err.message)}</p><a href="../build.html" style="color:var(--color-accent);margin-top:12px;display:inline-block;">前往构建工具</a></div>`;
-                noteContentArea.innerHTML = `<div class="empty-notes"><span class="material-icons">error</span><p>${escapeHtml(err.message)}</p></div>`;
             }
-        }
+        });
+    }
 
-        window.addEventListener('DOMContentLoaded', () => { initSidebarState(); initNotes(); });
-        document.querySelector('.nav-link[href="note.html"]')?.classList.add('active');
-    </script>
+    async function loadManifest() {
+        return new Promise((resolve, reject) => {
+            const existing = document.getElementById('note-manifest-script');
+            if (existing) existing.remove();
+            const script = document.createElement('script');
+            script.id = 'note-manifest-script';
+            script.src = '/note/manifest.js?v=' + Date.now();
+            script.onload = () => {
+                if (window.__NOTE_MANIFEST__ && Array.isArray(window.__NOTE_MANIFEST__.files)) {
+                    resolve(window.__NOTE_MANIFEST__);
+                } else {
+                    reject(new Error('manifest.js 格式无效'));
+                }
+            };
+            script.onerror = () => reject(new Error('无法加载 manifest.js'));
+            document.head.appendChild(script);
+        });
+    }
+
+    function getQueryParam(name) {
+        return new URLSearchParams(window.location.search).get(name);
+    }
+
+    // 事件委托：处理所有内部笔记链接的点击（包括自定义语法和原有 Markdown 链接）
+    function setupInternalLinkHandler() {
+        if (!noteContentArea) return;
+        noteContentArea.removeEventListener('click', internalClickHandler);
+        noteContentArea.addEventListener('click', internalClickHandler);
+    }
+
+    function internalClickHandler(e) {
+        // 忽略修饰键点击、图片链接
+        if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button !== 0) return;
+        const link = e.target.closest('a');
+        if (!link) return;
+        if (link.querySelector('img')) return;
+
+        // 优先使用 data-note-href（自定义语法），其次 href（标准 Markdown 链接）
+        const href = link.getAttribute('data-note-href') || link.getAttribute('href');
+        if (!href) return;
+
+        const resolved = resolveNotePathFromHref(href, currentNotePath);
+        if (resolved) {
+            e.preventDefault();
+            e.stopPropagation();
+            openNoteByPath(resolved);
+        }
+        // 否则，如果链接是外部链接且已有 target="_blank"，保持默认行为
+    }
+
+    // 初始化
+    async function initNotes() {
+        try {
+            folderTreeEl.innerHTML = '<div class="loading-box"><span class="material-icons">autorenew</span><p>加载笔记库...</p></div>';
+            const data = await loadManifest();
+            manifestData = data;
+            if (!data.files || data.files.length === 0) throw new Error('笔记清单为空');
+
+            const { groups, folderOrder } = buildOrderedFolderGroups(data.files);
+            renderSidebar(groups, folderOrder);
+
+            // 绑定内部链接点击委托
+            setupInternalLinkHandler();
+
+            // 处理 URL 指定笔记或打开第一篇
+            const targetNote = getQueryParam('note');
+            let noteToOpen = null;
+            if (targetNote) {
+                const decoded = decodeURIComponent(targetNote);
+                noteToOpen = manifestData.files.find(f => f.path === decoded);
+            }
+            if (!noteToOpen && manifestData.files.length > 0) {
+                noteToOpen = manifestData.files[0];
+            }
+
+            if (noteToOpen) {
+                openNoteByPath(noteToOpen.path);
+            } else {
+                noteContentArea.innerHTML = '<div class="empty-notes"><p>没有可显示的笔记</p></div>';
+            }
+        } catch (err) {
+            console.error(err);
+            folderTreeEl.innerHTML = `<div class="empty-notes"><span class="material-icons">error</span><p>${escapeHtml(err.message)}</p></div>`;
+            noteContentArea.innerHTML = `<div class="empty-notes"><span class="material-icons">error</span><p>${escapeHtml(err.message)}</p></div>`;
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        initSidebarState();
+        initNotes();
+    });
+
+    document.querySelector('.nav-link[href="note.html"]')?.classList.add('active');
+</script>
 </body>
 </html>
