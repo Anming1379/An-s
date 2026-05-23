@@ -7,8 +7,13 @@
 ## 工具与效率
 
 - **路过图床**  
-  https://imgse.com  
+  https://imgchr.com/ 
   —— 免费好用的图床，专门用来托管图片并生成外链，是博客和 Markdown 文档的好搭档
+
+- **ImgURL图床**  
+  https://www.imgurl.org/
+  —— 一样, 支持wepb动图
+
 
 - **wormhole**  
   https://wormhole.app/  
@@ -185,6 +190,10 @@ https://www.runoob.com/
 - **MCAPKs（我的世界移动版资源）**  
   https://mcapks.net  
   —— 提供《我的世界》移动版的安装包与相关资源，手机游玩也方便
+
+- **LITEAPKS**  
+  https://liteapks.com/  
+  —— 很多安卓软件下载
 
 - **steamsunlocked**    
 https://steamsunlocked.com/  
