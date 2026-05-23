@@ -10,6 +10,10 @@
 ——激活 Windows 和 Office
 [MAS_AIO 181KB](https://anmingcat.pages.dev/share/MAS_AIO.zip)  
 
+- **PC-clean**  
+——里面有一些清理存储, 卸载软件的工具和我写的清理存储脚本, 记得以管理员身份运行
+[PC-clean.zip 8.66MB](https://anmingcat.pages.dev/share/PC-clean.zip)  
+
 - **Windows 媒体播放器视频插件**  
 ——让你的 Windows 能播放 AV1, HEIF, HEVC, MPEG2, Raw image, VP9, web 媒体扩展, 不用去买了
 [MediaExt 19.4MB](https://anmingcat.pages.dev/share/Win10-MediaExt-main.rar)  
