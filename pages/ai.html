@@ -439,6 +439,7 @@
         .msg {
             display: flex; gap: 12px; max-width: 85%;
             animation: fadeInUp 0.3s ease forwards;
+            min-width: 0;
         }
         .msg.user { align-self: flex-end; flex-direction: row-reverse; }
         .msg.assistant { align-self: flex-start; }
@@ -453,6 +454,8 @@
             padding: 12px 16px; border: 1px solid var(--color-dark-08);
             background: var(--color-white); line-height: 1.7;
             font-size: 0.95rem; word-break: break-word; min-width: 60px;
+            max-width: 100%;
+            overflow-wrap: break-word;
         }
         [theme="dark"] .msg .bubble { background: #2A2A34; border-color: rgba(255,255,255,0.08); }
         .msg.user .bubble { background: var(--color-accent-10); border-color: var(--color-accent-15); }
@@ -628,7 +631,6 @@
         :focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
     </style>
 <base target="_blank">
-<base target="_blank">
 </head>
 <body theme="light">
 
@@ -740,7 +742,7 @@
                     <!-- 生成结果区域 -->
                     <div id="imgResultArea" style="display:none;flex-direction:column;gap:12px;">
                         <div style="position:relative;border:1px solid var(--color-dark-08);background:var(--color-dark-04);min-height:200px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
-                            <img id="imgResult" style="max-width:100%;display:block;" alt="生成的图片" />
+                            <img id="imgResult" src="" style="max-width:100%;display:block;" alt="生成的图片" />
                             <div id="imgLoading" style="display:none;flex-direction:column;align-items:center;gap:8px;color:var(--color-dark-40);">
                                 <span class="material-icons" style="font-size:40px;animation:spin 1.5s linear infinite;">refresh</span>
                                 <span style="font-size:0.85rem;">正在生成…</span>
@@ -775,14 +777,14 @@
                 <button class="an-btn an-btn-sm an-btn-ghost" id="clearChatBtn">
                     <span class="material-icons" style="font-size:14px;">delete</span> 清空
                 </button>
-            </div></aside>
+            </div>
 
     <!-- ==================== 导航栏 ==================== -->
     <header class="navbar" id="navbar">
         <div class="navbar-inner">
             <button class="navbar-brand" id="menuToggle" aria-label="打开侧边栏">
                 <span class="material-icons">menu</span>
-                <span>Anming AI</span>
+                <span>AI 工具</span>
             </button>
             <nav class="nav-links" id="navLinks">
                 <a href="../index.html" class="nav-link">首页</a>
@@ -819,7 +821,7 @@
             <div class="empty-state" id="emptyState">
                 <span class="material-icons">forum</span>
                 <h3>开始新的对话</h3>
-                <p>在下方输入消息，与 AI 模型交流。对话会自动保存。</p>
+                <p>AI 功能来自 pollinations.ai AI 生成内容与网站无关</p>
                 <p style="font-size:0.8rem;color:var(--color-dark-40);margin-top:8px;">⚡ 匿名模式 · text.pollinations.ai/openai · 约15秒/次</p>
             </div>
         </div>
@@ -1577,6 +1579,6 @@
             console.log('🧠 推理深度: minimal | low | medium | high');
             console.log('⌨️  快捷键: T 切换主题 | N 新建对话 | Esc 关闭侧边栏');
         })();
-    </script>
+    </main>
 </body>
 </html>

@@ -1,0 +1,1882 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <title>俄罗斯方块 - 40行模式</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.geekzu.org">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.geekzu.org/css2?family=Urbanist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --color-white: #ffffff;
+            --color-dark: #3E3F4F;
+            --color-accent: #3E3393;
+            --color-accent-light: #5A4DB8;
+            --color-dark-90: rgba(62, 63, 79, 0.9);
+            --color-dark-80: rgba(62, 63, 79, 0.8);
+            --color-dark-60: rgba(62, 63, 79, 0.6);
+            --color-dark-40: rgba(62, 63, 79, 0.4);
+            --color-dark-20: rgba(62, 63, 79, 0.2);
+            --color-dark-12: rgba(62, 63, 79, 0.12);
+            --color-dark-08: rgba(62, 63, 79, 0.08);
+            --color-dark-06: rgba(62, 63, 79, 0.06);
+            --color-dark-04: rgba(62, 63, 79, 0.04);
+            --color-accent-25: rgba(61, 51, 147, 0.25);
+            --color-accent-15: rgba(61, 51, 147, 0.15);
+            --color-accent-10: rgba(61, 51, 147, 0.10);
+            --color-bg-light: #F7F7F9;
+            --color-bg-grid: rgba(62, 63, 79, 0.03);
+            --rect-radius: 0px;
+            --font-main: 'Urbanist', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            --nav-height: 60px;
+            --transition-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+            --shadow-sm: 0 1px 2px var(--color-dark-04);
+            --shadow-md: 0 4px 12px var(--color-dark-06);
+            --shadow-lg: 0 8px 24px var(--color-dark-08);
+            --shadow-xl: 0 16px 48px var(--color-dark-12);
+        }
+
+        [theme="dark"] {
+            --color-white: #1E1E26;
+            --color-dark: #F5F5F7;
+            --color-accent: #7A6FFF;
+            --color-accent-light: #9B91FF;
+            --color-bg-light: #121216;
+            --color-bg-grid: rgba(255, 255, 255, 0.02);
+            --color-dark-04: rgba(255, 255, 255, 0.04);
+            --color-dark-06: rgba(255, 255, 255, 0.06);
+            --color-dark-08: rgba(255, 255, 255, 0.08);
+            --color-dark-12: rgba(255, 255, 255, 0.12);
+            --color-dark-20: rgba(255, 255, 255, 0.2);
+            --color-dark-40: rgba(255, 255, 255, 0.4);
+            --color-dark-60: rgba(255, 255, 255, 0.6);
+            --color-dark-80: rgba(255, 255, 255, 0.8);
+            --color-accent-25: rgba(122, 111, 255, 0.25);
+            --color-accent-15: rgba(122, 111, 255, 0.15);
+            --color-accent-10: rgba(122, 111, 255, 0.10);
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.4);
+            --shadow-xl: 0 16px 48px rgba(0,0,0,0.5);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+        html {
+            scroll-behavior: smooth;
+            color-scheme: light dark;
+            touch-action: manipulation;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--color-white);
+            color: var(--color-dark);
+            line-height: 1.6;
+            padding-top: var(--nav-height);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background-color 0.4s ease, color 0.4s ease;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        ::selection {
+            background-color: var(--color-accent-25);
+            color: var(--color-dark);
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--color-dark-20); border-radius: 0; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--color-dark-40); }
+
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .bg-grid {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(var(--color-dark-08) 1px, transparent 1px),
+                linear-gradient(90deg, var(--color-dark-08) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse at 50% 0%, black 40%, transparent 80%);
+            -webkit-mask-image: radial-gradient(ellipse at 50% 0%, black 40%, transparent 80%);
+            opacity: 0.6;
+        }
+
+        .bg-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.5;
+            animation: orbFloat 20s ease-in-out infinite;
+        }
+
+        .bg-orb-1 {
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, var(--color-accent-25) 0%, transparent 70%);
+            top: -10%; right: -5%;
+            animation-delay: 0s;
+        }
+
+        .bg-orb-2 {
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, var(--color-accent-15) 0%, transparent 70%);
+            bottom: 10%; left: -10%;
+            animation-delay: -7s;
+            animation-duration: 25s;
+        }
+
+        .bg-orb-3 {
+            width: 250px; height: 250px;
+            background: radial-gradient(circle, var(--color-accent-10) 0%, transparent 70%);
+            top: 40%; right: 20%;
+            animation-delay: -14s;
+            animation-duration: 18s;
+        }
+
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(30px, -30px) scale(1.1); }
+            50% { transform: translate(-20px, 20px) scale(0.95); }
+            75% { transform: translate(20px, 10px) scale(1.05); }
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: var(--nav-height);
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px) saturate(1.2);
+            -webkit-backdrop-filter: blur(16px) saturate(1.2);
+            border-bottom: 1px solid var(--color-dark-08);
+            z-index: 1000;
+            transition: box-shadow 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        [theme="dark"] .navbar {
+            background-color: rgba(30, 30, 38, 0.85);
+            border-bottom-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .navbar.scrolled {
+            box-shadow: var(--shadow-md);
+            border-bottom-color: transparent;
+        }
+
+        .navbar-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+        }
+
+        .navbar-brand {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--color-dark);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: opacity 0.2s ease;
+        }
+
+        .navbar-brand:hover { opacity: 0.8; }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border: 1px solid var(--color-dark-12);
+            background: transparent;
+            color: var(--color-dark-80);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .theme-btn:hover {
+            border-color: var(--color-accent);
+            color: var(--color-accent);
+            background: var(--color-accent-10);
+        }
+
+        .theme-btn .material-icons {
+            font-size: 18px;
+            transition: transform 0.4s var(--transition-smooth);
+        }
+
+        .theme-btn:active .material-icons {
+            transform: rotate(180deg) scale(0.8);
+        }
+
+        .theme-btn.sound-loading { border-color: #F59E0B; color: #F59E0B; }
+        .theme-btn.sound-ready { border-color: #10B981; color: #10B981; }
+        .theme-btn.sound-failed { border-color: #EF4444; color: #EF4444; }
+        [theme="dark"] .theme-btn.sound-loading { border-color: #FBBF24; color: #FBBF24; }
+        [theme="dark"] .theme-btn.sound-ready { border-color: #34D399; color: #34D399; }
+        [theme="dark"] .theme-btn.sound-failed { border-color: #F87171; color: #F87171; }
+
+        @keyframes soundSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .sound-loading .material-icons { animation: soundSpin 1.5s linear infinite; }
+
+        .an-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 20px;
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: var(--rect-radius);
+            border: 1px solid var(--color-dark);
+            background-color: var(--color-white);
+            color: var(--color-dark);
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .an-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--color-dark);
+            transform: translateY(100%);
+            transition: transform 0.2s var(--transition-smooth);
+            z-index: 0;
+        }
+
+        .an-btn:hover::before { transform: translateY(0); }
+
+        .an-btn span,
+        .an-btn .material-icons { position: relative; z-index: 1; }
+
+        .an-btn:hover { color: var(--color-white); border-color: var(--color-dark); }
+
+        .an-btn:active { transform: scale(0.98); }
+
+        .an-btn-primary {
+            background-color: var(--color-accent);
+            border-color: var(--color-accent);
+            color: var(--color-white);
+        }
+
+        .an-btn-primary::before { background: var(--color-dark); }
+        .an-btn-primary:hover { border-color: var(--color-dark); }
+
+        .an-btn-ghost {
+            border-color: var(--color-dark-20);
+            color: var(--color-dark-60);
+        }
+
+        .an-btn-ghost::before { background: var(--color-dark-06); }
+        .an-btn-ghost:hover {
+            color: var(--color-dark);
+            border-color: var(--color-dark-40);
+        }
+
+        .an-btn .material-icons { font-size: 16px; }
+
+        .game-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 32px 24px 80px;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        #menu-screen {
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 70vh;
+            text-align: center;
+        }
+
+        #menu-screen h1 {
+            font-size: 5rem;
+            font-weight: 800;
+            letter-spacing: 0px;
+            line-height: 1;
+            margin-bottom: 8px;
+            color: var(--color-dark);
+        }
+
+        #menu-screen .subtitle {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--color-accent);
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            margin-bottom: 48px;
+        }
+
+        .record-box {
+            border: 1px dashed var(--color-dark-20);
+            padding: 20px 40px;
+            margin-bottom: 32px;
+            font-size: 1rem;
+            color: var(--color-dark-60);
+            transition: all 0.2s ease;
+        }
+
+        .record-box:hover {
+            border-color: var(--color-accent);
+            background: var(--color-accent-10);
+        }
+
+        .record-box strong {
+            color: var(--color-dark);
+            font-size: 1.75rem;
+            font-weight: 800;
+            display: block;
+            margin-top: 4px;
+        }
+
+        .controls-hint {
+            margin-top: 48px;
+            font-size: 0.85rem;
+            color: var(--color-dark-40);
+            line-height: 2.2;
+        }
+
+        .controls-hint kbd {
+            display: inline-block;
+            padding: 2px 8px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            background: var(--color-dark-06);
+            border: 1px solid var(--color-dark-12);
+            color: var(--color-dark-80);
+            font-weight: 700;
+            margin: 0 2px;
+        }
+
+        .setting-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 16px;
+            font-size: 0.85rem;
+            color: var(--color-dark-60);
+        }
+
+        .an-switch-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--color-dark-60);
+        }
+
+        .an-switch {
+            appearance: none;
+            width: 40px;
+            height: 22px;
+            background: var(--color-dark-20);
+            border-radius: 11px;
+            position: relative;
+            cursor: pointer;
+            outline: none;
+            transition: background 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .an-switch::after {
+            content: '';
+            position: absolute;
+            width: 18px; height: 18px;
+            background: var(--color-white);
+            border-radius: 50%;
+            top: 2px; left: 2px;
+            transition: transform 0.2s var(--transition-smooth);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .an-switch:checked { background: var(--color-accent); }
+        .an-switch:checked::after { transform: translateX(18px); }
+
+        #game-screen {
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        #game-screen.active {
+            display: flex;
+        }
+
+        .game-layout {
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+            justify-content: center;
+            margin-top: 16px;
+        }
+
+        .side-panel {
+            width: 160px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .info-box {
+            background: var(--color-white);
+            border: 1px solid var(--color-dark-12);
+            padding: 16px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
+        }
+
+        .info-box:hover {
+            border-color: var(--color-dark-40);
+            box-shadow: var(--shadow-md);
+        }
+
+        .info-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--color-dark-40);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .info-value {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--color-dark);
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .info-value.small {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        #next-canvas {
+            display: block;
+            margin: 0 auto;
+            background: var(--color-bg-light);
+            border: 1px solid var(--color-dark-08);
+        }
+
+        #game-canvas {
+            display: block;
+            background: var(--color-bg-light);
+            border: 2px solid var(--color-dark);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(62, 63, 79, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        [theme="dark"] .overlay {
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        .overlay.hidden {
+            display: none;
+            opacity: 0;
+        }
+
+        .overlay-content {
+            background: var(--color-white);
+            border: 2px solid var(--color-dark);
+            padding: 40px;
+            text-align: center;
+            max-width: 420px;
+            width: 90%;
+            box-shadow: 12px 12px 0px var(--color-dark-20);
+            animation: modalIn 0.3s var(--transition-smooth);
+        }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .overlay-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+            color: var(--color-dark);
+        }
+
+        .overlay-message {
+            font-size: 1rem;
+            color: var(--color-dark-80);
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        .overlay-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .virtual-keyboard {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 12px 16px 24px;
+            pointer-events: none;
+        }
+
+        .virtual-keyboard.active {
+            display: block;
+        }
+
+        .vk-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            max-width: 360px;
+            margin: 0 auto;
+            pointer-events: auto;
+        }
+
+        .vk-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-main);
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--color-dark);
+            background: transparent;
+            border: 1px solid var(--color-dark-20);
+            border-radius: var(--rect-radius);
+            cursor: pointer;
+            transition: all 0.1s ease;
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: manipulation;
+            min-height: 50px;
+            padding: 0 8px;
+        }
+
+        [theme="dark"] .vk-btn {
+            border-color: rgba(255, 255, 255, 0.2);
+            color: var(--color-dark);
+        }
+
+        .vk-btn:active {
+            background: var(--color-accent);
+            color: var(--color-white);
+            border-color: var(--color-accent);
+            transform: scale(0.95);
+        }
+
+        .vk-btn.empty {
+            background: transparent;
+            border: none;
+            pointer-events: none;
+        }
+
+        .vk-btn .material-icons {
+            font-size: 20px;
+        }
+
+        .vk-label {
+            text-align: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--color-dark-40);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            pointer-events: auto;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px 24px;
+            border-top: 1px solid var(--color-dark-08);
+            color: var(--color-dark-40);
+            font-size: 0.85rem;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .navbar-inner { padding: 0 16px; }
+            .game-container { padding: 20px 16px 60px; }
+            .game-layout { flex-direction: column; align-items: center; }
+            .side-panel {
+                width: 100%;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .info-box { flex: 1; min-width: 120px; }
+            #menu-screen h1 { font-size: 3rem; }
+            #game-canvas { max-width: 100%; height: auto; }
+        }
+
+        @media (max-width: 480px) {
+            .overlay-buttons { flex-direction: column; }
+            .overlay-buttons .an-btn { width: 100%; }
+            .vk-btn { min-height: 54px; font-size: 0.8rem; }
+            .vk-grid { gap: 6px; }
+        }
+
+        :focus-visible {
+            outline: 2px solid var(--color-accent);
+            outline-offset: 2px;
+        }
+    </style>
+<base target="_blank">
+<base target="_blank">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<base target="_blank">
+</head>
+
+<body theme="light">
+
+    <div class="bg-layer">
+        <div class="bg-grid"></div>
+        <div class="bg-orb bg-orb-1"></div>
+        <div class="bg-orb bg-orb-2"></div>
+        <div class="bg-orb bg-orb-3"></div>
+    </div>
+
+    <header class="navbar" id="navbar">
+        <div class="navbar-inner">
+            <a href="../Ancat_web_Design.html" class="navbar-brand">
+                <span class="material-icons" style="color: var(--color-accent);">arrow_back</span>
+                <span>TETRIS</span>
+            </a>
+            <div class="nav-actions">
+                <button class="theme-btn" id="sound-status-btn" title="音效状态" aria-label="音效加载状态">
+                    <span class="material-icons" id="sound-status-icon">hourglass_empty</span>
+                </button>
+                <button class="theme-btn" id="theme-switcher" title="切换主题 (T)" aria-label="切换明暗主题">
+                    <span class="material-icons" id="theme-icon">dark_mode</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="game-container">
+
+        <div id="menu-screen" class="screen active">
+            <h1>TETRIS</h1>
+            <div class="subtitle">40 LINE MODE</div>
+            <div class="record-box">
+                最快记录
+                <strong id="best-record">--:--.--</strong>
+            </div>
+            <button class="an-btn an-btn-primary" onclick="startGame()" style="font-size:1.1rem; padding:14px 32px;">
+                <span class="material-icons" style="font-size:20px;">play_arrow</span>
+                开始游戏
+            </button>
+            <div class="setting-row">
+                <label class="an-switch-label">
+                    <input type="checkbox" class="an-switch" id="vk-toggle">
+                    <span>虚拟键盘</span>
+                </label>
+                <span id="vk-auto-label" style="font-size:0.75rem; color:var(--color-dark-40);">自动检测中</span>
+            </div>
+            <div class="controls-hint">
+                <kbd>A</kbd> <kbd>D</kbd> 左右移动 &nbsp;|&nbsp; <kbd>S</kbd> 硬降 &nbsp;|&nbsp; <kbd>W</kbd> 软着陆<br>
+                <kbd>&larr;</kbd> 逆时针 &nbsp;|&nbsp; <kbd>&rarr;</kbd> 顺时针 &nbsp;|&nbsp; <kbd>&uarr;</kbd><kbd>&darr;</kbd> 180&deg;<br>
+                <kbd>Shift</kbd> 随机换块 (每块限1次)
+            </div>
+        </div>
+
+        <div id="game-screen" class="screen">
+            <div class="game-layout">
+                <div class="side-panel left">
+                    <div class="info-box">
+                        <div class="info-label">已消除</div>
+                        <div class="info-value" id="lines-display">0 / 40</div>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-label">时间</div>
+                        <div class="info-value" id="time-display">00:00.00</div>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-label">Shift</div>
+                        <div class="info-value small" id="shift-status">可用</div>
+                    </div>
+                </div>
+
+                <canvas id="game-canvas" width="280" height="560"></canvas>
+
+                <div class="side-panel right">
+                    <div class="info-box">
+                        <div class="info-label">下一个</div>
+                        <canvas id="next-canvas" width="120" height="120"></canvas>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-label">等级</div>
+                        <div class="info-value" id="level-display">1</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="virtual-keyboard" id="virtual-keyboard">
+            <div class="vk-label">虚拟键盘</div>
+            <div class="vk-grid">
+                <button class="vk-btn empty"></button>
+                <button class="vk-btn" data-key="ArrowUp" ontouchstart="vkPress(event, 'ArrowUp')" onmousedown="vkPress(event, 'ArrowUp')">
+                    <span class="material-icons">rotate_90_degrees_ccw</span>
+                </button>
+                <button class="vk-btn empty"></button>
+
+                <button class="vk-btn" data-key="ArrowLeft" ontouchstart="vkPress(event, 'ArrowLeft')" onmousedown="vkPress(event, 'ArrowLeft')">
+                    <span class="material-icons">rotate_left</span>
+                </button>
+                <button class="vk-btn" data-key="ArrowDown" ontouchstart="vkPress(event, 'ArrowDown')" onmousedown="vkPress(event, 'ArrowDown')">
+                    <span class="material-icons">rotate_180</span>
+                </button>
+                <button class="vk-btn" data-key="ArrowRight" ontouchstart="vkPress(event, 'ArrowRight')" onmousedown="vkPress(event, 'ArrowRight')">
+                    <span class="material-icons">rotate_right</span>
+                </button>
+
+                <button class="vk-btn" data-key="a" ontouchstart="vkPress(event, 'a')" onmousedown="vkPress(event, 'a')">
+                    <span class="material-icons">west</span>
+                </button>
+                <button class="vk-btn" data-key="w" ontouchstart="vkPress(event, 'w')" onmousedown="vkPress(event, 'w')">
+                    <span class="material-icons">south</span>
+                </button>
+                <button class="vk-btn" data-key="d" ontouchstart="vkPress(event, 'd')" onmousedown="vkPress(event, 'd')">
+                    <span class="material-icons">east</span>
+                </button>
+
+                <button class="vk-btn" data-key="Shift" ontouchstart="vkPress(event, 'Shift')" onmousedown="vkPress(event, 'Shift')">
+                    <span class="material-icons">shuffle</span>
+                </button>
+                <button class="vk-btn" data-key="s" ontouchstart="vkPress(event, 's')" onmousedown="vkPress(event, 's')">
+                    <span class="material-icons">vertical_align_bottom</span>
+                </button>
+                <button class="vk-btn empty"></button>
+            </div>
+        </div>
+
+        <div id="overlay" class="overlay hidden">
+            <div class="overlay-content">
+                <div class="overlay-title" id="overlay-title">游戏结束</div>
+                <div class="overlay-message" id="overlay-message">...</div>
+                <div class="overlay-buttons">
+                    <button class="an-btn" onclick="returnToMenu()">返回菜单</button>
+                    <button class="an-btn an-btn-primary" onclick="startGame()">再来一局</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="footer">
+        <p>音效: DJ_XD</p>
+    </footer>
+
+    <script>
+        const COLS = 10;
+        const ROWS = 20;
+        const CELL_SIZE = 28;
+        const LOCK_DELAY = 500;
+        const SOFT_LANDING_DELAY = 1000;
+        const DAS_DELAY = 170;
+        const DAS_REPEAT = 50;
+        const STORAGE_KEY = 'anming_tetris_40l_record';
+        const VK_STORAGE_KEY = 'anming_tetris_vk';
+
+        const PIECES = {
+            I: {
+                color: '#00BCD4',
+                shapes: [
+                    [[0,0,0,0], [1,1,1,1], [0,0,0,0], [0,0,0,0]],
+                    [[0,0,1,0], [0,0,1,0], [0,0,1,0], [0,0,1,0]],
+                    [[0,0,0,0], [0,0,0,0], [1,1,1,1], [0,0,0,0]],
+                    [[0,1,0,0], [0,1,0,0], [0,1,0,0], [0,1,0,0]]
+                ]
+            },
+            O: {
+                color: '#FFEB3B',
+                shapes: [
+                    [[1,1], [1,1]],
+                    [[1,1], [1,1]],
+                    [[1,1], [1,1]],
+                    [[1,1], [1,1]]
+                ]
+            },
+            T: {
+                color: '#9C27B0',
+                shapes: [
+                    [[0,1,0], [1,1,1], [0,0,0]],
+                    [[0,1,0], [0,1,1], [0,1,0]],
+                    [[0,0,0], [1,1,1], [0,1,0]],
+                    [[0,1,0], [1,1,0], [0,1,0]]
+                ]
+            },
+            S: {
+                color: '#4CAF50',
+                shapes: [
+                    [[0,1,1], [1,1,0], [0,0,0]],
+                    [[0,1,0], [0,1,1], [0,0,1]],
+                    [[0,0,0], [0,1,1], [1,1,0]],
+                    [[1,0,0], [1,1,0], [0,1,0]]
+                ]
+            },
+            Z: {
+                color: '#F44336',
+                shapes: [
+                    [[1,1,0], [0,1,1], [0,0,0]],
+                    [[0,0,1], [0,1,1], [0,1,0]],
+                    [[0,0,0], [1,1,0], [0,1,1]],
+                    [[0,1,0], [1,1,0], [1,0,0]]
+                ]
+            },
+            J: {
+                color: '#2196F3',
+                shapes: [
+                    [[1,0,0], [1,1,1], [0,0,0]],
+                    [[0,1,1], [0,1,0], [0,1,0]],
+                    [[0,0,0], [1,1,1], [0,0,1]],
+                    [[0,1,0], [0,1,0], [1,1,0]]
+                ]
+            },
+            L: {
+                color: '#FF9800',
+                shapes: [
+                    [[0,0,1], [1,1,1], [0,0,0]],
+                    [[0,1,0], [0,1,0], [0,1,1]],
+                    [[0,0,0], [1,1,1], [1,0,0]],
+                    [[1,1,0], [0,1,0], [0,1,0]]
+                ]
+            }
+        };
+
+        let board = [];
+        let currentPiece = null;
+        let nextPieceType = null;
+        let bag = [];
+        let linesCleared = 0;
+        let startTime = 0;
+        let gameState = 'menu';
+        let lastTime = 0;
+        let dropAccumulator = 0;
+        let lockDelayTimer = null;
+        let isOnGround = false;
+        let dasLeft = false;
+        let dasRight = false;
+        let dasTimer = null;
+        let softLandingTimer = null;
+        let isSoftLanding = false;
+        let vkEnabled = false;
+
+        function isMobileDevice() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+                || ('ontouchstart' in window && window.innerWidth <= 768);
+        }
+
+        function cssVar(name) {
+            return getComputedStyle(document.body).getPropertyValue(name).trim();
+        }
+
+        function formatTime(ms) {
+            const totalSeconds = Math.floor(ms / 1000);
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            const centis = Math.floor((ms % 1000) / 10);
+            return String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0') + '.' + String(centis).padStart(2, '0');
+        }
+
+        function getLevel() {
+            return Math.floor(linesCleared / 10) + 1;
+        }
+
+        function getDropInterval() {
+            return Math.max(100, 1000 - (getLevel() - 1) * 80);
+        }
+
+        function getNextFromBag() {
+            if (bag.length === 0) {
+                bag = ['I', 'O', 'T', 'S', 'Z', 'J', 'L'];
+                for (let i = bag.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [bag[i], bag[j]] = [bag[j], bag[i]];
+                }
+            }
+            return bag.pop();
+        }
+
+        function getCurrentShape() {
+            return PIECES[currentPiece.type].shapes[currentPiece.rotation];
+        }
+
+        function isValidPosition(piece) {
+            const shape = PIECES[piece.type].shapes[piece.rotation];
+            for (let y = 0; y < shape.length; y++) {
+                for (let x = 0; x < shape[y].length; x++) {
+                    if (shape[y][x]) {
+                        const bx = piece.x + x;
+                        const by = piece.y + y;
+                        if (bx < 0 || bx >= COLS || by >= ROWS) return false;
+                        if (by >= 0 && board[by][bx]) return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        function canMove(dx, dy) {
+            if (!currentPiece) return false;
+            return isValidPosition({
+                type: currentPiece.type,
+                rotation: currentPiece.rotation,
+                x: currentPiece.x + dx,
+                y: currentPiece.y + dy,
+                color: currentPiece.color,
+                hasShifted: currentPiece.hasShifted
+            });
+        }
+
+        function movePiece(dx, dy) {
+            if (!currentPiece) return false;
+            const test = {
+                type: currentPiece.type,
+                rotation: currentPiece.rotation,
+                x: currentPiece.x + dx,
+                y: currentPiece.y + dy,
+                color: currentPiece.color,
+                hasShifted: currentPiece.hasShifted
+            };
+            if (isValidPosition(test)) {
+                currentPiece.x = test.x;
+                currentPiece.y = test.y;
+                return true;
+            }
+            return false;
+        }
+
+        function rotatePiece(direction) {
+            if (!currentPiece) return;
+            const oldRotation = currentPiece.rotation;
+            const newRotation = (oldRotation + direction + 4) % 4;
+
+            const tests = [
+                {x: 0, y: 0}, {x: -1, y: 0}, {x: 1, y: 0},
+                {x: 0, y: -1}, {x: -2, y: 0}, {x: 2, y: 0}
+            ];
+
+            for (const test of tests) {
+                currentPiece.rotation = newRotation;
+                currentPiece.x += test.x;
+                currentPiece.y += test.y;
+                if (isValidPosition(currentPiece)) {
+                    onPieceMoved();
+                    return;
+                }
+                currentPiece.x -= test.x;
+                currentPiece.y -= test.y;
+            }
+            currentPiece.rotation = oldRotation;
+        }
+
+        function hardDrop() {
+            if (!currentPiece) return;
+            while (movePiece(0, 1)) {}
+            SoundManager.playHardDrop();
+            lockPiece();
+        }
+
+        function softLanding() {
+            if (!currentPiece || isSoftLanding) return;
+            while (movePiece(0, 1)) {}
+            isSoftLanding = true;
+            startSoftLandingTimer();
+        }
+
+        function startSoftLandingTimer() {
+            if (softLandingTimer) clearTimeout(softLandingTimer);
+            softLandingTimer = setTimeout(() => {
+                SoundManager.playSoftLand();
+                lockPiece();
+            }, SOFT_LANDING_DELAY);
+        }
+
+        function cancelSoftLanding() {
+            if (isSoftLanding && softLandingTimer) {
+                clearTimeout(softLandingTimer);
+                softLandingTimer = null;
+            }
+            isSoftLanding = false;
+        }
+
+        function shiftPiece() {
+            if (!currentPiece || currentPiece.hasShifted) return;
+            const otherTypes = Object.keys(PIECES).filter(t => t !== currentPiece.type);
+            const newType = otherTypes[Math.floor(Math.random() * otherTypes.length)];
+
+            currentPiece.type = newType;
+            currentPiece.rotation = 0;
+            currentPiece.x = Math.floor((COLS - PIECES[newType].shapes[0][0].length) / 2);
+            currentPiece.y = 0;
+            currentPiece.color = PIECES[newType].color;
+            currentPiece.hasShifted = true;
+            SoundManager.playShift();
+
+            if (!isValidPosition(currentPiece)) {
+                currentPiece.y = -1;
+                if (!isValidPosition(currentPiece)) {
+                    currentPiece.y = -2;
+                    if (!isValidPosition(currentPiece)) {
+                        gameOver();
+                        return;
+                    }
+                }
+            }
+            checkGround();
+            updateShiftStatus();
+        }
+
+        function onPieceMoved() {
+            if (lockDelayTimer) {
+                clearTimeout(lockDelayTimer);
+                lockDelayTimer = null;
+            }
+            if (isSoftLanding) {
+                if (!canMove(0, 1)) {
+                    startSoftLandingTimer();
+                } else {
+                    cancelSoftLanding();
+                }
+            }
+            checkGround();
+        }
+
+        function checkGround() {
+            const onGround = !canMove(0, 1);
+            if (onGround && !lockDelayTimer && !isSoftLanding) {
+                lockDelayTimer = setTimeout(() => {
+                    lockPiece();
+                    lockDelayTimer = null;
+                }, LOCK_DELAY);
+            } else if (!onGround && lockDelayTimer) {
+                clearTimeout(lockDelayTimer);
+                lockDelayTimer = null;
+            }
+            isOnGround = onGround;
+        }
+
+        function lockPiece() {
+            if (!currentPiece) return;
+            cancelSoftLanding();
+            const shape = getCurrentShape();
+            let overflow = false;
+
+            for (let y = 0; y < shape.length; y++) {
+                for (let x = 0; x < shape[y].length; x++) {
+                    if (shape[y][x]) {
+                        const bx = currentPiece.x + x;
+                        const by = currentPiece.y + y;
+                        if (by < 0) {
+                            overflow = true;
+                        } else if (by < ROWS && bx >= 0 && bx < COLS) {
+                            board[by][bx] = currentPiece.color;
+                        }
+                    }
+                }
+            }
+
+            if (overflow) {
+                gameOver();
+                return;
+            }
+
+            clearLines();
+            updateLinesDisplay();
+            updateLevelDisplay();
+
+            if (linesCleared >= 40) {
+                victory();
+                return;
+            }
+
+            spawnPiece();
+        }
+
+        function clearLines() {
+            let cleared = false;
+            for (let y = ROWS - 1; y >= 0; y--) {
+                if (board[y].every(cell => cell !== null)) {
+                    board.splice(y, 1);
+                    board.unshift(new Array(COLS).fill(null));
+                    linesCleared++;
+                    cleared = true;
+                    y++;
+                }
+            }
+            if (cleared) SoundManager.playClear();
+        }
+
+        function spawnPiece() {
+            const type = nextPieceType || getNextFromBag();
+            nextPieceType = getNextFromBag();
+
+            currentPiece = {
+                type: type,
+                rotation: 0,
+                x: Math.floor((COLS - PIECES[type].shapes[0][0].length) / 2),
+                y: 0,
+                color: PIECES[type].color,
+                hasShifted: false
+            };
+
+            if (!isValidPosition(currentPiece)) {
+                currentPiece.y = -1;
+                if (!isValidPosition(currentPiece)) {
+                    currentPiece.y = -2;
+                    if (!isValidPosition(currentPiece)) {
+                        gameOver();
+                        return;
+                    }
+                }
+            }
+
+            isOnGround = false;
+            checkGround();
+            drawNext();
+            updateShiftStatus();
+        }
+
+        function startGame() {
+            board = Array.from({ length: ROWS }, () => new Array(COLS).fill(null));
+            linesCleared = 0;
+            bag = [];
+            nextPieceType = null;
+            currentPiece = null;
+            lockDelayTimer = null;
+            softLandingTimer = null;
+            isSoftLanding = false;
+            isOnGround = false;
+            dropAccumulator = 0;
+            dasLeft = false;
+            dasRight = false;
+            stopDAS();
+
+            nextPieceType = getNextFromBag();
+
+            gameState = 'playing';
+            document.getElementById('menu-screen').classList.remove('active');
+            document.getElementById('game-screen').classList.add('active');
+            document.getElementById('overlay').classList.add('hidden');
+
+            updateVKVisibility();
+            SoundManager.playStart();
+
+            startTime = Date.now();
+            lastTime = performance.now();
+
+            spawnPiece();
+            updateLinesDisplay();
+            updateLevelDisplay();
+            updateTimeDisplay();
+            requestAnimationFrame(gameLoop);
+        }
+
+        function returnToMenu() {
+            gameState = 'menu';
+            document.getElementById('game-screen').classList.remove('active');
+            document.getElementById('menu-screen').classList.add('active');
+            document.getElementById('overlay').classList.add('hidden');
+            updateRecordDisplay();
+        }
+
+        function gameOver() {
+            gameState = 'gameover';
+            SoundManager.playEnd();
+            document.getElementById('overlay-title').textContent = '游戏结束';
+            document.getElementById('overlay-message').innerHTML =
+                '消除行数: ' + linesCleared + ' / 40<br>本次成绩不计入记录';
+            document.getElementById('overlay').classList.remove('hidden');
+        }
+
+        function victory() {
+            gameState = 'victory';
+            SoundManager.playEnd();
+            const elapsed = Date.now() - startTime;
+            const isNew = saveRecord(elapsed);
+
+            document.getElementById('overlay-title').textContent = '挑战成功！';
+            document.getElementById('overlay-message').innerHTML =
+                '完成时间: <strong style="color:var(--color-accent);font-size:1.25rem;">' + formatTime(elapsed) + '</strong><br>' +
+                '消除行数: ' + linesCleared + '<br>' +
+                (isNew ? '<span style="color:var(--color-accent);font-weight:700;">新纪录！</span>' : '');
+            document.getElementById('overlay').classList.remove('hidden');
+        }
+
+        function saveRecord(time) {
+            const current = localStorage.getItem(STORAGE_KEY);
+            if (!current || time < parseFloat(current)) {
+                localStorage.setItem(STORAGE_KEY, time.toString());
+                return true;
+            }
+            return false;
+        }
+
+        function drawCell(ctx, x, y, color, isGhost) {
+            const px = x * CELL_SIZE;
+            const py = y * CELL_SIZE;
+            if (isGhost) {
+                ctx.fillStyle = color + '0D';
+                ctx.fillRect(px + 1, py + 1, CELL_SIZE - 2, CELL_SIZE - 2);
+                ctx.strokeStyle = color + '30';
+                ctx.lineWidth = 0.5;
+                ctx.strokeRect(px + 0.5, py + 0.5, CELL_SIZE - 1, CELL_SIZE - 1);
+            } else {
+                ctx.fillStyle = color;
+                ctx.fillRect(px + 1, py + 1, CELL_SIZE - 2, CELL_SIZE - 2);
+                ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+                ctx.lineWidth = 0.5;
+                ctx.strokeRect(px + 1, py + 1, CELL_SIZE - 2, CELL_SIZE - 2);
+            }
+        }
+
+        function drawPiece(ctx, piece, isGhost) {
+            const shape = PIECES[piece.type].shapes[piece.rotation];
+            for (let y = 0; y < shape.length; y++) {
+                for (let x = 0; x < shape[y].length; x++) {
+                    if (shape[y][x]) {
+                        const boardY = piece.y + y;
+                        if (boardY >= 0) {
+                            drawCell(ctx, piece.x + x, boardY, piece.color, isGhost);
+                        }
+                    }
+                }
+            }
+        }
+
+        function getGhostPosition() {
+            const ghost = {
+                type: currentPiece.type,
+                rotation: currentPiece.rotation,
+                x: currentPiece.x,
+                y: currentPiece.y,
+                color: currentPiece.color,
+                hasShifted: currentPiece.hasShifted
+            };
+            while (isValidPosition({ ...ghost, y: ghost.y + 1 })) {
+                ghost.y++;
+            }
+            return ghost;
+        }
+
+        function draw() {
+            const canvas = document.getElementById('game-canvas');
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = cssVar('--color-bg-light');
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.strokeStyle = cssVar('--color-dark-08');
+            ctx.lineWidth = 1;
+            for (let x = 0; x <= COLS; x++) {
+                ctx.beginPath();
+                ctx.moveTo(x * CELL_SIZE, 0);
+                ctx.lineTo(x * CELL_SIZE, ROWS * CELL_SIZE);
+                ctx.stroke();
+            }
+            for (let y = 0; y <= ROWS; y++) {
+                ctx.beginPath();
+                ctx.moveTo(0, y * CELL_SIZE);
+                ctx.lineTo(COLS * CELL_SIZE, y * CELL_SIZE);
+                ctx.stroke();
+            }
+
+            for (let y = 0; y < ROWS; y++) {
+                for (let x = 0; x < COLS; x++) {
+                    if (board[y][x]) {
+                        drawCell(ctx, x, y, board[y][x], false);
+                    }
+                }
+            }
+
+            if (currentPiece) {
+                const ghost = getGhostPosition();
+                drawPiece(ctx, ghost, true);
+                drawPiece(ctx, currentPiece, false);
+            }
+        }
+
+        function drawNext() {
+            const canvas = document.getElementById('next-canvas');
+            const ctx = canvas.getContext('2d');
+            const size = 28;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (!nextPieceType) return;
+
+            const shape = PIECES[nextPieceType].shapes[0];
+            const color = PIECES[nextPieceType].color;
+            const offsetX = (canvas.width - shape[0].length * size) / 2;
+            const offsetY = (canvas.height - shape.length * size) / 2;
+
+            for (let y = 0; y < shape.length; y++) {
+                for (let x = 0; x < shape[y].length; x++) {
+                    if (shape[y][x]) {
+                        const px = offsetX + x * size;
+                        const py = offsetY + y * size;
+                        ctx.fillStyle = color;
+                        ctx.fillRect(px + 1, py + 1, size - 2, size - 2);
+                        ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+                        ctx.lineWidth = 0.5;
+                        ctx.strokeRect(px + 1, py + 1, size - 2, size - 2);
+                    }
+                }
+            }
+        }
+
+        function updateLinesDisplay() {
+            document.getElementById('lines-display').textContent = linesCleared + ' / 40';
+        }
+
+        function updateTimeDisplay() {
+            if (gameState !== 'playing') return;
+            const elapsed = Date.now() - startTime;
+            document.getElementById('time-display').textContent = formatTime(elapsed);
+        }
+
+        function updateLevelDisplay() {
+            document.getElementById('level-display').textContent = getLevel();
+        }
+
+        function updateShiftStatus() {
+            const el = document.getElementById('shift-status');
+            if (!currentPiece || currentPiece.hasShifted) {
+                el.textContent = '已用';
+                el.style.color = 'var(--color-dark-40)';
+            } else {
+                el.textContent = '可用';
+                el.style.color = 'var(--color-accent)';
+            }
+        }
+
+        function updateRecordDisplay() {
+            const record = localStorage.getItem(STORAGE_KEY);
+            const el = document.getElementById('best-record');
+            el.textContent = record ? formatTime(parseFloat(record)) : '--:--.--';
+        }
+
+        function updateVKVisibility() {
+            const vk = document.getElementById('virtual-keyboard');
+            if (vkEnabled && gameState === 'playing') {
+                vk.classList.add('active');
+            } else {
+                vk.classList.remove('active');
+            }
+        }
+
+        function gameLoop(timestamp) {
+            if (gameState !== 'playing') return;
+
+            const deltaTime = timestamp - lastTime;
+            lastTime = timestamp;
+
+            if (!lockDelayTimer && !isSoftLanding && !isOnGround) {
+                dropAccumulator += deltaTime;
+                const interval = getDropInterval();
+                while (dropAccumulator >= interval) {
+                    dropAccumulator -= interval;
+                    if (movePiece(0, 1)) {
+                        checkGround();
+                    } else {
+                        checkGround();
+                        break;
+                    }
+                }
+            }
+
+            draw();
+            updateTimeDisplay();
+            requestAnimationFrame(gameLoop);
+        }
+
+        function startDAS(direction) {
+            stopDAS();
+            function loop() {
+                if ((direction === -1 && !dasLeft) || (direction === 1 && !dasRight)) return;
+                movePiece(direction, 0);
+                onPieceMoved();
+                dasTimer = setTimeout(loop, DAS_REPEAT);
+            }
+            dasTimer = setTimeout(loop, DAS_DELAY);
+        }
+
+        function stopDAS() {
+            if (dasTimer) {
+                clearTimeout(dasTimer);
+                dasTimer = null;
+            }
+        }
+
+        function vkPress(e, key) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (gameState !== 'playing') return;
+
+            switch (key) {
+                case 'a':
+                    if (!dasLeft) {
+                        dasLeft = true;
+                        if (movePiece(-1, 0)) SoundManager.playMove();
+                        onPieceMoved();
+                        startDAS(-1);
+                    }
+                    break;
+                case 'd':
+                    if (!dasRight) {
+                        dasRight = true;
+                        if (movePiece(1, 0)) SoundManager.playMove();
+                        onPieceMoved();
+                        startDAS(1);
+                    }
+                    break;
+                case 's':
+                    hardDrop();
+                    break;
+                case 'w':
+                    softLanding();
+                    break;
+                case 'ArrowLeft':
+                    rotatePiece(-1);
+                    SoundManager.playRotateLeft();
+                    break;
+                case 'ArrowRight':
+                    rotatePiece(1);
+                    SoundManager.playRotateRight();
+                    break;
+                case 'ArrowUp':
+                case 'ArrowDown':
+                    rotatePiece(2);
+                    SoundManager.playRotateRight();
+                    break;
+                case 'Shift':
+                    shiftPiece();
+                    break;
+            }
+
+            setTimeout(() => {
+                if (key === 'a' || key === 'A') dasLeft = false;
+                if (key === 'd' || key === 'D') dasRight = false;
+                if (!dasLeft && !dasRight) stopDAS();
+            }, 100);
+        }
+
+        document.addEventListener('keydown', e => {
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
+                e.preventDefault();
+            }
+
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+            if (e.key === 't' || e.key === 'T') {
+                e.preventDefault();
+                document.getElementById('theme-switcher').click();
+                return;
+            }
+
+            if (gameState !== 'playing') return;
+            if (e.repeat) return;
+
+            switch (e.key) {
+                case 'a': case 'A':
+                    if (!dasLeft) {
+                        dasLeft = true;
+                        if (movePiece(-1, 0)) SoundManager.playMove();
+                        onPieceMoved();
+                        startDAS(-1);
+                    }
+                    break;
+                case 'd': case 'D':
+                    if (!dasRight) {
+                        dasRight = true;
+                        if (movePiece(1, 0)) SoundManager.playMove();
+                        onPieceMoved();
+                        startDAS(1);
+                    }
+                    break;
+                case 's': case 'S':
+                    hardDrop();
+                    break;
+                case 'w': case 'W':
+                    softLanding();
+                    break;
+                case 'ArrowLeft':
+                    rotatePiece(-1);
+                    SoundManager.playRotateLeft();
+                    break;
+                case 'ArrowRight':
+                    rotatePiece(1);
+                    SoundManager.playRotateRight();
+                    break;
+                case 'ArrowUp':
+                case 'ArrowDown':
+                    rotatePiece(2);
+                    SoundManager.playRotateRight();
+                    break;
+                case 'Shift':
+                    shiftPiece();
+                    break;
+            }
+        });
+
+        document.addEventListener('keyup', e => {
+            if (e.key === 'a' || e.key === 'A') {
+                dasLeft = false;
+                if (!dasRight) stopDAS();
+            }
+            if (e.key === 'd' || e.key === 'D') {
+                dasRight = false;
+                if (!dasLeft) stopDAS();
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            SoundManager.init();
+            updateRecordDisplay();
+
+            const themeBtn = document.getElementById('theme-switcher');
+            const themeIcon = document.getElementById('theme-icon');
+            const navbar = document.getElementById('navbar');
+            const vkToggle = document.getElementById('vk-toggle');
+            const vkAutoLabel = document.getElementById('vk-auto-label');
+
+            const savedVK = localStorage.getItem(VK_STORAGE_KEY);
+            const isMobile = isMobileDevice();
+
+            if (savedVK === null) {
+                vkEnabled = isMobile;
+                vkToggle.checked = isMobile;
+                vkAutoLabel.textContent = isMobile ? '已自动开启' : '已自动关闭';
+            } else {
+                vkEnabled = savedVK === 'true';
+                vkToggle.checked = vkEnabled;
+                vkAutoLabel.textContent = '手动设置';
+            }
+
+            vkToggle.addEventListener('change', () => {
+                vkEnabled = vkToggle.checked;
+                localStorage.setItem(VK_STORAGE_KEY, vkEnabled.toString());
+                vkAutoLabel.textContent = '手动设置';
+                updateVKVisibility();
+            });
+
+            function getPreferredTheme() {
+                const saved = localStorage.getItem('anming-theme');
+                if (saved) return saved;
+                return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+
+            function applyTheme(theme) {
+                document.body.setAttribute('theme', theme);
+                themeIcon.textContent = theme === 'dark' ? 'light_mode' : 'dark_mode';
+                localStorage.setItem('anming-theme', theme);
+            }
+
+            applyTheme(getPreferredTheme());
+
+            themeBtn.addEventListener('click', () => {
+                const current = document.body.getAttribute('theme');
+                applyTheme(current === 'dark' ? 'light' : 'dark');
+            });
+
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+                if (!localStorage.getItem('anming-theme')) {
+                    applyTheme(e.matches ? 'dark' : 'light');
+                }
+            });
+
+            window.addEventListener('scroll', () => {
+                navbar.classList.toggle('scrolled', window.scrollY > 10);
+            });
+
+            window.addEventListener('resize', () => {
+                if (gameState === 'playing') {
+                    draw();
+                    drawNext();
+                }
+            });
+        });
+    
+
+        // ==================== 音效系统 ====================
+        const SoundManager = {
+            db: null,
+            dbName: 'TetrisSoundsDB',
+            storeName: 'sounds',
+            version: 1,
+            zipUrl: '../assets/sounds.zip',
+            sounds: {
+                start_end: '开始游戏_游戏结束.m4a',
+                soft_land: '软着陆.m4a',
+                clear: '消除.m4a',
+                move_shift: '移动_切换.m4a',
+                hard_drop: '硬降.m4a',
+                rotate_right: '右转.m4a',
+                rotate_left: '左转.m4a'
+            },
+            buffers: {},
+            audioCtx: null,
+            enabled: true,
+            ready: false,
+
+            async init() {
+                this.updateStatus('loading');
+                try {
+                    if (!window.JSZip) {
+                        console.warn('[SoundManager] JSZip 未加载，跳过音效初始化');
+                        this.enabled = false;
+                        this.updateStatus('failed');
+                        return;
+                    }
+                    this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    await this.initDB();
+                    const cached = await this.checkAllCached();
+                    if (!cached) {
+                        console.log('[SoundManager] 缓存未命中，开始下载音效包...');
+                        await this.downloadAndCache();
+                    } else {
+                        console.log('[SoundManager] 缓存命中，从 IndexedDB 加载...');
+                        await this.loadFromCache();
+                    }
+                    this.ready = true;
+                    this.updateStatus('ready');
+                    console.log('[SoundManager] 音效系统就绪');
+                } catch (e) {
+                    console.warn('[SoundManager] 初始化失败:', e);
+                    this.enabled = false;
+                    this.updateStatus('failed');
+                }
+            },
+
+            updateStatus(status) {
+                const btn = document.getElementById('sound-status-btn');
+                const icon = document.getElementById('sound-status-icon');
+                if (!btn || !icon) return;
+                btn.classList.remove('sound-loading', 'sound-ready', 'sound-failed');
+                if (status === 'loading') {
+                    btn.classList.add('sound-loading');
+                    icon.textContent = 'hourglass_empty';
+                    btn.title = '音效加载中...';
+                } else if (status === 'ready') {
+                    btn.classList.add('sound-ready');
+                    icon.textContent = 'check_circle';
+                    btn.title = '音效已就绪';
+                } else if (status === 'failed') {
+                    btn.classList.add('sound-failed');
+                    icon.textContent = 'error';
+                    btn.title = '音效加载失败';
+                }
+            },
+
+            initDB() {
+                return new Promise((resolve, reject) => {
+                    const req = indexedDB.open(this.dbName, this.version);
+                    req.onerror = () => reject(req.error);
+                    req.onsuccess = () => {
+                        this.db = req.result;
+                        resolve();
+                    };
+                    req.onupgradeneeded = (e) => {
+                        const db = e.target.result;
+                        if (!db.objectStoreNames.contains(this.storeName)) {
+                            db.createObjectStore(this.storeName);
+                        }
+                    };
+                });
+            },
+
+            async checkAllCached() {
+                for (const key of Object.keys(this.sounds)) {
+                    const data = await new Promise((resolve, reject) => {
+                        const tx = this.db.transaction(this.storeName, 'readonly');
+                        const store = tx.objectStore(this.storeName);
+                        const req = store.get(key);
+                        req.onsuccess = () => resolve(req.result);
+                        req.onerror = () => reject(req.error);
+                    });
+                    if (!data) return false;
+                }
+                return true;
+            },
+
+            async downloadAndCache() {
+                const response = await fetch(this.zipUrl);
+                if (!response.ok) throw new Error('下载音效包失败: ' + response.status);
+                const blob = await response.blob();
+                const zip = await JSZip.loadAsync(blob);
+
+                const allFiles = Object.keys(zip.files).filter(f => !f.endsWith('/') && f.endsWith('.m4a'));
+                console.log('[SoundManager] ZIP 内 .m4a 文件列表:', allFiles);
+
+                // 建立文件名 -> key 的映射
+                const fileToKey = new Map();
+                for (const [key, filename] of Object.entries(this.sounds)) {
+                    fileToKey.set(filename, key);
+                }
+
+                for (const zipPath of allFiles) {
+                    const baseName = zipPath.split('/').pop();
+                    let key = fileToKey.get(baseName);
+
+                    // 精确匹配失败，尝试模糊匹配
+                    if (!key) {
+                        for (const [fname, k] of fileToKey.entries()) {
+                            const fnameNoExt = fname.replace(/\.m4a$/i, '');
+                            const baseNoExt = baseName.replace(/\.m4a$/i, '');
+                            if (baseName.toLowerCase() === fname.toLowerCase() ||
+                                baseNoExt.toLowerCase() === fnameNoExt.toLowerCase() ||
+                                baseNoExt.includes(fnameNoExt) || fnameNoExt.includes(baseNoExt)) {
+                                key = k;
+                                console.log('[SoundManager] 模糊匹配: ' + baseName + ' -> key=' + k);
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!key) {
+                        console.warn('[SoundManager] ZIP 内文件无匹配: ' + zipPath);
+                        continue;
+                    }
+
+                    const file = zip.file(zipPath);
+                    if (!file) continue;
+
+                    const buffer = await file.async('arraybuffer');
+                    await new Promise((resolve, reject) => {
+                        const tx = this.db.transaction(this.storeName, 'readwrite');
+                        const store = tx.objectStore(this.storeName);
+                        const req = store.put(buffer, key);
+                        req.onsuccess = () => {
+                            console.log('[SoundManager] 已缓存: ' + key + ' (' + baseName + ')');
+                            resolve();
+                        };
+                        req.onerror = () => reject(req.error);
+                    });
+                }
+
+                await this.loadFromCache();
+            },
+
+            async loadFromCache() {
+                for (const key of Object.keys(this.sounds)) {
+                    const buffer = await new Promise((resolve, reject) => {
+                        const tx = this.db.transaction(this.storeName, 'readonly');
+                        const store = tx.objectStore(this.storeName);
+                        const req = store.get(key);
+                        req.onsuccess = () => resolve(req.result);
+                        req.onerror = () => reject(req.error);
+                    });
+                    if (buffer) {
+                        try {
+                            const audioBuffer = await this.audioCtx.decodeAudioData(buffer.slice(0));
+                            this.buffers[key] = audioBuffer;
+                            console.log('[SoundManager] 已解码: ' + key);
+                        } catch (e) {
+                            console.warn('[SoundManager] 解码音效失败: ' + key, e);
+                        }
+                    } else {
+                        console.warn('[SoundManager] IndexedDB 中无数据: ' + key);
+                    }
+                }
+            },
+
+            play(key) {
+                if (!this.enabled || !this.ready) return;
+                if (!this.buffers[key]) {
+                    console.warn('[SoundManager] 音效未加载: ' + key);
+                    return;
+                }
+                try {
+                    if (this.audioCtx.state === 'suspended') {
+                        this.audioCtx.resume();
+                    }
+                    const source = this.audioCtx.createBufferSource();
+                    source.buffer = this.buffers[key];
+                    const gain = this.audioCtx.createGain();
+                    gain.gain.value = 0.5;
+                    source.connect(gain);
+                    gain.connect(this.audioCtx.destination);
+                    source.start(0);
+                } catch (e) {
+                    console.warn('[SoundManager] 播放音效失败:', e);
+                }
+            },
+
+            playStart() { this.play('start_end'); },
+            playEnd() { this.play('start_end'); },
+            playSoftLand() { this.play('soft_land'); },
+            playClear() { this.play('clear'); },
+            playMove() { this.play('move_shift'); },
+            playShift() { this.play('move_shift'); },
+            playHardDrop() { this.play('hard_drop'); },
+            playRotateRight() { this.play('rotate_right'); },
+            playRotateLeft() { this.play('rotate_left'); }
+        };
+        // ==================== 音效系统结束 ====================
+    </script>
+</body>
+</html>
