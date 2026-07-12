@@ -583,14 +583,12 @@
             z-index: 100;
             padding: 8px 12px 16px;
             pointer-events: none;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: transparent;
             border-top: 1px solid var(--color-dark-08);
         }
 
         [theme="dark"] .virtual-keyboard {
-            background: rgba(30, 30, 38, 0.85);
+            background: transparent;
             border-top-color: rgba(255, 255, 255, 0.08);
         }
 
@@ -679,7 +677,6 @@
             color: var(--color-accent);
         }
 
-        /* ============ 移动端适配核心修改 ============ */
         @media (max-width: 768px) {
             .navbar-inner { padding: 0 16px; }
             .game-container { padding: 12px 12px 60px; }
@@ -804,7 +801,6 @@
             }
         }
 
-        /* 竖屏短屏手机特殊处理 */
         @media (max-height: 700px) and (max-width: 768px) {
             #menu-screen {
                 min-height: auto;
@@ -835,7 +831,6 @@
             }
         }
 
-        /* 横屏手机处理 */
         @media (max-height: 500px) and (orientation: landscape) {
             body {
                 padding-top: 48px;
@@ -882,6 +877,7 @@
     </style>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<base target="_blank">
 </head>
 
 <body theme="light">
@@ -974,7 +970,7 @@
             <div class="vk-grid">
                 <button class="vk-btn empty"></button>
                 <button class="vk-btn" data-key="ArrowUp" ontouchstart="vkPress(event, 'ArrowUp')" onmousedown="vkPress(event, 'ArrowUp')">
-                    <span class="material-icons">rotate_90_degrees_ccw</span>
+                    <span class="material-icons">rotate</span>
                 </button>
                 <button class="vk-btn empty"></button>
 
@@ -982,7 +978,7 @@
                     <span class="material-icons">rotate_left</span>
                 </button>
                 <button class="vk-btn" data-key="ArrowDown" ontouchstart="vkPress(event, 'ArrowDown')" onmousedown="vkPress(event, 'ArrowDown')">
-                    <span class="material-icons">rotate_180</span>
+                    <span class="material-icons">rotate_90_degrees_ccw</span>
                 </button>
                 <button class="vk-btn" data-key="ArrowRight" ontouchstart="vkPress(event, 'ArrowRight')" onmousedown="vkPress(event, 'ArrowRight')">
                     <span class="material-icons">rotate_right</span>
@@ -1713,9 +1709,21 @@
             }
         }
 
+        const vkLastPress = {};
+
         function vkPress(e, key) {
-            e.preventDefault();
+            if (e.type === 'mousedown' && e.sourceCapabilities && e.sourceCapabilities.firesTouchEvents) {
+                return;
+            }
+            if (e.cancelable) e.preventDefault();
             e.stopPropagation();
+
+            const now = performance.now();
+            if (vkLastPress[key] && (now - vkLastPress[key]) < 120) {
+                return;
+            }
+            vkLastPress[key] = now;
+
             if (gameState !== 'playing') return;
 
             switch (key) {
@@ -2015,7 +2023,6 @@
                 const allFiles = Object.keys(zip.files).filter(f => !f.endsWith('/') && f.endsWith('.m4a'));
                 console.log('[SoundManager] ZIP 内 .m4a 文件列表:', allFiles);
 
-                // 建立文件名 -> key 的映射
                 const fileToKey = new Map();
                 for (const [key, filename] of Object.entries(this.sounds)) {
                     fileToKey.set(filename, key);
@@ -2025,7 +2032,6 @@
                     const baseName = zipPath.split('/').pop();
                     let key = fileToKey.get(baseName);
 
-                    // 精确匹配失败，尝试模糊匹配
                     if (!key) {
                         for (const [fname, k] of fileToKey.entries()) {
                             const fnameNoExt = fname.replace(/\.m4a$/i, '');
