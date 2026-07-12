@@ -669,6 +669,16 @@
             margin-top: 40px;
         }
 
+        .footer a {
+            color: var(--color-dark-40);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .footer a:hover {
+            color: var(--color-accent);
+        }
+
         /* ============ 移动端适配核心修改 ============ */
         @media (max-width: 768px) {
             .navbar-inner { padding: 0 16px; }
@@ -870,6 +880,8 @@
             outline-offset: 2px;
         }
     </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 
 <body theme="light">
@@ -883,7 +895,7 @@
 
     <header class="navbar" id="navbar">
         <div class="navbar-inner">
-            <a href="../Ancat_web_Design.html" class="navbar-brand">
+            <a href="../alambda.html" class="navbar-brand">
                 <span class="material-icons" style="color: var(--color-accent);">arrow_back</span>
                 <span>TETRIS</span>
             </a>
@@ -1010,7 +1022,7 @@
     </main>
 
     <footer class="footer">
-        <a href="https://b23.tv/ugEhdRg">音效: DJ_XD</a>
+        <a href="https://b23.tv/ugEhdRg" target="_blank" rel="noopener noreferrer">音效: DJ_XD</a>
     </footer>
 
     <script>
