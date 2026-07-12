@@ -78,6 +78,7 @@
             line-height: 1.6;
             padding-top: var(--nav-height);
             min-height: 100vh;
+            min-height: 100dvh;
             overflow-x: hidden;
             transition: background-color 0.4s ease, color 0.4s ease;
             -webkit-user-select: none;
@@ -510,6 +511,8 @@
             background: var(--color-bg-light);
             border: 2px solid var(--color-dark);
             box-shadow: var(--shadow-lg);
+            max-width: 100%;
+            height: auto;
         }
 
         .overlay {
@@ -578,8 +581,17 @@
             left: 0;
             right: 0;
             z-index: 100;
-            padding: 12px 16px 24px;
+            padding: 8px 12px 16px;
             pointer-events: none;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid var(--color-dark-08);
+        }
+
+        [theme="dark"] .virtual-keyboard {
+            background: rgba(30, 30, 38, 0.85);
+            border-top-color: rgba(255, 255, 255, 0.08);
         }
 
         .virtual-keyboard.active {
@@ -589,7 +601,7 @@
         .vk-grid {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
-            gap: 8px;
+            gap: 6px;
             max-width: 360px;
             margin: 0 auto;
             pointer-events: auto;
@@ -611,7 +623,7 @@
             -webkit-user-select: none;
             user-select: none;
             touch-action: manipulation;
-            min-height: 50px;
+            min-height: 48px;
             padding: 0 8px;
         }
 
@@ -639,12 +651,12 @@
 
         .vk-label {
             text-align: center;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 700;
             color: var(--color-dark-40);
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             pointer-events: auto;
         }
 
@@ -657,26 +669,200 @@
             margin-top: 40px;
         }
 
+        /* ============ 移动端适配核心修改 ============ */
         @media (max-width: 768px) {
             .navbar-inner { padding: 0 16px; }
-            .game-container { padding: 20px 16px 60px; }
-            .game-layout { flex-direction: column; align-items: center; }
-            .side-panel {
-                width: 100%;
+            .game-container { padding: 12px 12px 60px; }
+
+            #menu-screen {
+                min-height: 60vh;
+                padding: 20px 0;
+            }
+
+            #menu-screen h1 { font-size: 2.8rem; }
+            #menu-screen .subtitle { font-size: 0.9rem; letter-spacing: 4px; margin-bottom: 32px; }
+
+            .record-box { padding: 16px 28px; margin-bottom: 24px; }
+            .record-box strong { font-size: 1.5rem; }
+
+            .controls-hint {
+                margin-top: 32px;
+                font-size: 0.75rem;
+                line-height: 2;
+            }
+
+            .game-layout {
                 flex-direction: row;
-                flex-wrap: wrap;
+                align-items: center;
+                gap: 12px;
+                margin-top: 8px;
+                width: 100%;
                 justify-content: center;
             }
-            .info-box { flex: 1; min-width: 120px; }
-            #menu-screen h1 { font-size: 3rem; }
-            #game-canvas { max-width: 100%; height: auto; }
+
+            .side-panel {
+                width: auto;
+                flex-direction: column;
+                gap: 8px;
+                flex-shrink: 0;
+            }
+
+            .side-panel.left {
+                order: 0;
+                width: 80px;
+            }
+
+            .side-panel.right {
+                order: 2;
+                width: 80px;
+            }
+
+            .info-box {
+                padding: 10px 8px;
+                min-width: 0;
+            }
+
+            .info-label {
+                font-size: 0.6rem;
+                margin-bottom: 4px;
+            }
+
+            .info-value {
+                font-size: 1.25rem;
+            }
+
+            .info-value.small {
+                font-size: 0.85rem;
+            }
+
+            #next-canvas {
+                width: 80px !important;
+                height: 80px !important;
+            }
+
+            #game-canvas {
+                order: 1;
+                max-width: none;
+                width: auto;
+                height: auto;
+            }
+
+            .overlay-content { padding: 28px 24px; }
+            .overlay-title { font-size: 1.4rem; }
+            .overlay-buttons { flex-direction: column; }
+            .overlay-buttons .an-btn { width: 100%; }
+
+            .vk-btn { min-height: 44px; font-size: 0.8rem; }
+            .vk-grid { gap: 5px; max-width: 320px; }
+            .virtual-keyboard { padding: 6px 10px 12px; }
         }
 
         @media (max-width: 480px) {
-            .overlay-buttons { flex-direction: column; }
-            .overlay-buttons .an-btn { width: 100%; }
-            .vk-btn { min-height: 54px; font-size: 0.8rem; }
-            .vk-grid { gap: 6px; }
+            .game-layout {
+                gap: 8px;
+            }
+
+            .side-panel.left, .side-panel.right {
+                width: 70px;
+            }
+
+            .info-box {
+                padding: 8px 6px;
+            }
+
+            .info-value {
+                font-size: 1.1rem;
+            }
+
+            #next-canvas {
+                width: 64px !important;
+                height: 64px !important;
+            }
+
+            .vk-btn { min-height: 40px; }
+            .vk-btn .material-icons { font-size: 18px; }
+            .vk-grid { gap: 4px; max-width: 280px; }
+        }
+
+        @media (max-width: 360px) {
+            .side-panel.left, .side-panel.right {
+                width: 60px;
+            }
+
+            .info-value {
+                font-size: 1rem;
+            }
+        }
+
+        /* 竖屏短屏手机特殊处理 */
+        @media (max-height: 700px) and (max-width: 768px) {
+            #menu-screen {
+                min-height: auto;
+                padding-top: 10px;
+            }
+
+            #menu-screen h1 { font-size: 2.4rem; }
+            #menu-screen .subtitle { margin-bottom: 20px; }
+
+            .record-box { margin-bottom: 16px; }
+            .controls-hint { margin-top: 20px; font-size: 0.7rem; }
+
+            .game-layout {
+                margin-top: 4px;
+            }
+
+            .virtual-keyboard {
+                padding: 4px 8px 8px;
+            }
+
+            .vk-btn {
+                min-height: 36px;
+            }
+
+            .vk-label {
+                margin-bottom: 4px;
+                font-size: 0.6rem;
+            }
+        }
+
+        /* 横屏手机处理 */
+        @media (max-height: 500px) and (orientation: landscape) {
+            body {
+                padding-top: 48px;
+            }
+
+            .navbar {
+                height: 48px;
+            }
+
+            #menu-screen {
+                min-height: auto;
+                padding: 10px;
+            }
+
+            #menu-screen h1 { font-size: 2rem; }
+            #menu-screen .subtitle { margin-bottom: 16px; }
+
+            .game-layout {
+                margin-top: 4px;
+                gap: 8px;
+            }
+
+            .virtual-keyboard {
+                position: relative;
+                padding: 4px 8px;
+                background: none;
+                backdrop-filter: none;
+                border: none;
+            }
+
+            .vk-grid {
+                max-width: 400px;
+            }
+
+            .vk-btn {
+                min-height: 32px;
+            }
         }
 
         :focus-visible {
@@ -684,10 +870,6 @@
             outline-offset: 2px;
         }
     </style>
-<base target="_blank">
-<base target="_blank">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<base target="_blank">
 </head>
 
 <body theme="light">
@@ -828,13 +1010,14 @@
     </main>
 
     <footer class="footer">
-        <p>音效: DJ_XD</p>
+        <a href="https://b23.tv/ugEhdRg">音效: DJ_XD</a>
     </footer>
 
     <script>
         const COLS = 10;
         const ROWS = 20;
-        const CELL_SIZE = 28;
+        const BASE_CELL_SIZE = 28;
+        let CELL_SIZE = 28;
         const LOCK_DELAY = 500;
         const SOFT_LANDING_DELAY = 1000;
         const DAS_DELAY = 170;
@@ -1225,6 +1408,7 @@
             document.getElementById('overlay').classList.add('hidden');
 
             updateVKVisibility();
+            resizeCanvas();
             SoundManager.playStart();
 
             startTime = Date.now();
@@ -1364,7 +1548,7 @@
         function drawNext() {
             const canvas = document.getElementById('next-canvas');
             const ctx = canvas.getContext('2d');
-            const size = 28;
+            const size = window.innerWidth <= 768 ? Math.floor(CELL_SIZE * 0.8) : 28;
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             if (!nextPieceType) return;
@@ -1426,6 +1610,51 @@
                 vk.classList.add('active');
             } else {
                 vk.classList.remove('active');
+            }
+        }
+
+        function resizeCanvas() {
+            const canvas = document.getElementById('game-canvas');
+            const nextCanvas = document.getElementById('next-canvas');
+            const isMobile = window.innerWidth <= 768;
+
+            if (isMobile) {
+                const navHeight = 60;
+                const vkHeight = vkEnabled ? 180 : 0;
+                const availableHeight = window.innerHeight - navHeight - vkHeight - 40;
+                const maxCanvasHeight = Math.min(availableHeight, 480);
+                const scale = Math.min(
+                    (window.innerWidth - 180) / (COLS * BASE_CELL_SIZE),
+                    maxCanvasHeight / (ROWS * BASE_CELL_SIZE)
+                );
+                CELL_SIZE = Math.max(12, Math.floor(BASE_CELL_SIZE * scale));
+
+                canvas.width = COLS * CELL_SIZE;
+                canvas.height = ROWS * CELL_SIZE;
+                canvas.style.width = canvas.width + 'px';
+                canvas.style.height = canvas.height + 'px';
+
+                const nextSize = Math.floor(CELL_SIZE * 3.2);
+                nextCanvas.width = nextSize;
+                nextCanvas.height = nextSize;
+                nextCanvas.style.width = nextSize + 'px';
+                nextCanvas.style.height = nextSize + 'px';
+            } else {
+                CELL_SIZE = BASE_CELL_SIZE;
+                canvas.width = COLS * CELL_SIZE;
+                canvas.height = ROWS * CELL_SIZE;
+                canvas.style.width = '';
+                canvas.style.height = '';
+
+                nextCanvas.width = 120;
+                nextCanvas.height = 120;
+                nextCanvas.style.width = '';
+                nextCanvas.style.height = '';
+            }
+
+            if (gameState === 'playing') {
+                draw();
+                drawNext();
             }
         }
 
@@ -1622,6 +1851,9 @@
                 localStorage.setItem(VK_STORAGE_KEY, vkEnabled.toString());
                 vkAutoLabel.textContent = '手动设置';
                 updateVKVisibility();
+                if (gameState === 'playing') {
+                    resizeCanvas();
+                }
             });
 
             function getPreferredTheme() {
@@ -1655,8 +1887,7 @@
 
             window.addEventListener('resize', () => {
                 if (gameState === 'playing') {
-                    draw();
-                    drawNext();
+                    resizeCanvas();
                 }
             });
         });
