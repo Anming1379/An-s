@@ -9,10 +9,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.geekzu.org/css2?family=Urbanist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js">
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js">
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <link rel="stylesheet" href="style.css">
     <style>
         /* ========== 布局与侧边栏（直角风格，保持不变） ========== */
@@ -475,6 +473,7 @@
             color: var(--color-dark-50);
         }
     </style>
+<base target="_blank">
 </head>
 <body>
     <header class="navbar" id="navbar">
@@ -741,7 +740,7 @@
             if (existing) existing.remove();
             const script = document.createElement('script');
             script.id = 'note-manifest-script';
-            script.src = '/note/manifest.js?v=' + Date.now();
+            script.src = './note/manifest.js?v=' + Date.now();
             script.onload = () => {
                 if (window.__NOTE_MANIFEST__ && Array.isArray(window.__NOTE_MANIFEST__.files)) {
                     resolve(window.__NOTE_MANIFEST__);
