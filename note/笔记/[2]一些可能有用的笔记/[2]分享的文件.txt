@@ -6,21 +6,9 @@
 
 ## Windows
 
-- **MAS Windows-Office激活**  
-——激活 Windows 和 Office
-[MAS_AIO 181KB](https://anmingcat.pages.dev/share/MAS_AIO.zip)  
-
-- **PC-clean**  
-——里面有一些清理存储, 卸载软件的工具和我写的清理存储脚本, 记得以管理员身份运行
-[PC-clean.zip 8.66MB](https://anmingcat.pages.dev/share/PC-clean.zip)  
-
-- **Windows 媒体播放器视频插件**  
-——让你的 Windows 能播放 AV1, HEIF, HEVC, MPEG2, Raw image, VP9, web 媒体扩展, 不用去买了
-[MediaExt 19.4MB](https://anmingcat.pages.dev/share/Win10-MediaExt-main.rar)  
-
-- **Winrar-x64 汉化无广**  
-——最好用的压缩/解压软件
-[RAR 3.83MB](https://anmingcat.pages.dev/share/winrar-x64.exe)  
+- **AnTools**  
+——桉子整理电脑时用的哦! 包含一些工具, 自解压格式, 提取密码 1379
+[AnTools.exe 33.1MB](https://anming1379.lanzn.com/izXli43of1wf)  
 
 - **希沃白板插件**  
 ——运行后电脑上的希沃白板可以和大屏幕白板一样使用演示白板
