@@ -631,6 +631,7 @@
         :focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
     </style>
 <base target="_blank">
+<base target="_blank">
 </head>
 <body theme="light">
 
@@ -778,6 +779,18 @@
                     <span class="material-icons" style="font-size:14px;">delete</span> 清空
                 </button>
             </div>
+
+            <!-- API Key 设置 -->
+            <div class="api-key-section">
+                <label style="font-size:0.75rem;font-weight:600;color:var(--color-dark-60);display:block;margin-bottom:4px;">API Key（可选）</label>
+                <div class="api-input-row">
+                    <input type="password" id="apiKeyInput" placeholder="输入你的 API Key" style="flex:1;padding:6px 10px;font-family:var(--font-main);font-size:0.8rem;border:1px solid var(--color-dark-12);background:var(--color-white);color:var(--color-dark);outline:none;" />
+                    <button class="an-btn an-btn-sm an-btn-primary" id="saveApiKeyBtn" style="flex-shrink:0;padding:6px 14px;font-size:0.75rem;">保存</button>
+                </div>
+                <div class="api-key-status" id="apiKeyStatus">使用匿名模式</div>
+            </div>
+        </div>
+    </aside>
 
     <!-- ==================== 导航栏 ==================== -->
     <header class="navbar" id="navbar">
@@ -1579,6 +1592,6 @@
             console.log('🧠 推理深度: minimal | low | medium | high');
             console.log('⌨️  快捷键: T 切换主题 | N 新建对话 | Esc 关闭侧边栏');
         })();
-    </main>
+    </script>
 </body>
 </html>
