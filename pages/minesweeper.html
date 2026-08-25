@@ -40,7 +40,7 @@
             --shadow-lg: 0 8px 24px var(--color-dark-08);
             --shadow-xl: 0 16px 48px var(--color-dark-12);
 
-            --cell-size: 32px;
+            --cell-size: 36px;
             --cell-gap: 1px;
         }
 
@@ -556,9 +556,9 @@
         }
 
         @media (max-width: 768px) {
-            .game-container { padding: 16px 12px 40px; }
+            .game-container { padding: 16px 8px 40px; }
             .section-title { font-size: 1.4rem; }
-            :root { --cell-size: 28px; }
+            :root { --cell-size: 34px; }
             .mode-btn { padding: 8px 14px; font-size: 0.8rem; }
             .info-bar { padding: 10px 12px; }
             .info-item { font-size: 0.8rem; }
@@ -566,14 +566,14 @@
         }
 
         @media (max-width: 480px) {
-            :root { --cell-size: 26px; }
+            :root { --cell-size: 32px; }
             .navbar-inner { padding: 0 16px; }
             .mode-bar { gap: 6px; }
             .mode-btn { flex: 1; justify-content: center; padding: 8px 0; }
         }
 
         @media (max-width: 360px) {
-            :root { --cell-size: 22px; }
+            :root { --cell-size: 28px; }
             .info-item span[data-value] { min-width: 40px; }
         }
 
@@ -582,6 +582,7 @@
             outline-offset: 2px;
         }
     </style>
+<base target="_blank">
 </head>
 <body theme="light">
 
@@ -847,6 +848,8 @@
                 this.timerInterval = null;
                 this.longPressTimer = null;
                 this.longPressTarget = null;
+                this.isTouch = false;
+                this.touchClearTimer = null;
 
                 this.dom = {
                     board: document.getElementById('board'),
@@ -1000,8 +1003,10 @@
             }
 
             bindCellEvents(el, r, c) {
+                // 鼠标事件（桌面端）
                 el.addEventListener('mousedown', (e) => {
                     if (e.button !== 0 || this.gameOver) return;
+                    if (this.isTouch) return; // 忽略触摸后的幽灵点击
                     if (this.longPressTimer) clearTimeout(this.longPressTimer);
                     this.longPressTarget = el;
                     el.classList.add('pressing');
@@ -1015,6 +1020,7 @@
 
                 el.addEventListener('mouseup', (e) => {
                     if (e.button !== 0 || this.gameOver) return;
+                    if (this.isTouch) return; // 忽略触摸后的幽灵点击
                     if (this.longPressTimer) {
                         clearTimeout(this.longPressTimer);
                         this.longPressTimer = null;
@@ -1035,8 +1041,11 @@
                     }
                 });
 
+                // 触摸事件（移动端）
                 el.addEventListener('touchstart', (e) => {
                     if (this.gameOver) return;
+                    this.isTouch = true;
+                    if (this.touchClearTimer) clearTimeout(this.touchClearTimer);
                     if (this.longPressTimer) clearTimeout(this.longPressTimer);
                     this.longPressTarget = el;
                     el.classList.add('pressing');
@@ -1059,6 +1068,10 @@
                         this.longPressTarget = null;
                         this.reveal(r, c);
                     }
+                    // 延迟清除 isTouch，屏蔽随后的幽灵 mouse 事件
+                    this.touchClearTimer = setTimeout(() => {
+                        this.isTouch = false;
+                    }, 400);
                 });
 
                 el.addEventListener('touchmove', () => {
@@ -1070,13 +1083,18 @@
                     }
                 });
 
+                // 右键/长按菜单
                 el.addEventListener('contextmenu', (e) => {
                     e.preventDefault();
-                    if (!this.gameOver) this.toggleFlag(r, c);
+                    if (this.gameOver) return;
+                    if (this.isTouch) return; // 移动端由 touch 长按处理，避免重复
+                    this.toggleFlag(r, c);
                 });
 
+                // 双击快速揭开（仅桌面端）
                 el.addEventListener('dblclick', () => {
-                    if (!this.gameOver && this.board[r][c].revealed && this.board[r][c].adjacent > 0) {
+                    if (this.gameOver || this.isTouch) return;
+                    if (this.board[r][c].revealed && this.board[r][c].adjacent > 0) {
                         this.chordReveal(r, c);
                     }
                 });
